@@ -1,0 +1,477 @@
+{
+  "meta": {
+    "version": "1.0",
+    "notes": "Weekly repeating schedule for Power Conditioning Inc. Colors match Studio Bookings app categories.",
+    "colors": {
+          "purple": "Functional Fitness (co-ed) - In-Studio",
+          "green": "PRO / Athletic Development / Elite Athletes",
+          "yellow": "Virtual Functional Fitness",
+          "orange": "Clarenville Athletic Advanced / Elite",
+          "blue": "Athletic Development Virtual / Advanced",
+          "gray": "Flexibility & Mobility / Cardio Core / Hybrid"
+        }
+  },
+  "schedule": [
+    {
+      "day": "Sunday",
+      "classes": [
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        },
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "Virtual Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        },
+        {
+          "time_start": "20:15",
+          "time_end": "21:15",
+          "title": "Clarenville Athletic Advanced / Elite - 2009, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "orange"
+        },
+        {
+          "time_start": "20:15",
+          "time_end": "21:15",
+          "title": "Athletic Dev ADV/Elite Online (Hybrid)",
+          "instructors": ["Ryan Power"],
+          "color": "blue"
+        }
+      ]
+    },
+    {
+      "day": "Monday",
+      "classes": [
+        {
+          "time_start": "05:30",
+          "time_end": "06:30",
+          "title": "Functional Fitness - Co-ed St. John's",
+          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "color": "purple"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "PRO - St. Johns Studio",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "10:30",
+          "time_end": "11:30",
+          "title": "St Johns Athletic Elite - Elite Athletes, 2007 or older",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "St Johns Athletic Dev Virtual - 2011, 2010, 2009, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "blue"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "St Johns Athletic Development - 2012, 2011, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "St. Johns Athletic Adv VIRTUAL- 2008, 2007, 2006, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "blue"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "St. Johns Athletic Advanced - 2010, 2009, 2008, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "18:30",
+          "time_end": "19:30",
+          "title": "St. Johns Elite Athletes",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "19:30",
+          "time_end": "20:30",
+          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power", "Rhonda Instructor Parsons"],
+          "color": "gray"
+        },
+        {
+          "time_start": "19:30",
+          "time_end": "20:30",
+          "title": "Virtual Functional Fitness (co-ed) via Zoom",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        },
+        {
+          "time_start": "20:15",
+          "time_end": "21:15",
+          "title": "St. John's In-Studio Functional (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "classes": [
+        {
+          "time_start": "05:30",
+          "time_end": "06:30",
+          "title": "Functional Fitness - Co-ed St. John's",
+          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "color": "purple"
+        },
+        {
+          "time_start": "06:00",
+          "time_end": "07:00",
+          "title": "Clarenville In-Studio Functional Fitness Hybrid (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "06:00",
+          "time_end": "07:00",
+          "title": "Virtual Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power", "Rhonda Instructor Parsons"],
+          "color": "gray"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "St Johns Athletic Development - 2014, 2013, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "Clarenville Athletic Advanced / Elite - 2009 or older.",
+          "instructors": ["Ryan Power"],
+          "color": "orange"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        },
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "Clarenville Flexibility & Mobility",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "Flexibility & Mobility - Virtual via Zoom",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        },
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "St. John's Studio Co-ed Functional Fitness",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        }
+      ]
+    },
+    {
+      "day": "Wednesday",
+      "classes": [
+        {
+          "time_start": "07:00",
+          "time_end": "08:00",
+          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "Clarenville In-Studio Functional Fitness",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "PRO - St. Johns Studio",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "Virtual Functional Fitness",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        },
+        {
+          "time_start": "10:30",
+          "time_end": "11:30",
+          "title": "St Johns Athletic Elite - Elite athletes, 2005 or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "Online Athletic Development - 2011, 2010, 2009, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "blue"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "St Johns Athletic Development - 2011, 2010, 2009, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "Athletic Advanced VIRTUAL - 2010, 2009, 2008 or older",
+          "instructors": ["Ryan Power"],
+          "color": "blue"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "St Johns Athletic Advanced - 2010, 2009, 2008, or older",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Greg Pittman"],
+          "color": "gray"
+        },
+        {
+          "time_start": "19:30",
+          "time_end": "20:30",
+          "title": "St. Johns Elite Athletes",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "20:15",
+          "time_end": "21:15",
+          "title": "St. John's Studio Co-ed Functional Fitness",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        }
+      ]
+    },
+    {
+      "day": "Thursday",
+      "classes": [
+        {
+          "time_start": "05:30",
+          "time_end": "06:30",
+          "title": "Functional Fitness - Co-ed St. John's",
+          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "color": "purple"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "Clarenville In-Studio Functional Fitness",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "PRO - St. Johns Studio",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "Clarenville Athletic Development - 2013, 2012, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "orange"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "St Johns Athletic Development - 2014, 2013, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "Clarenville Athletic Advanced / Elite - 2009 or older",
+          "instructors": ["Ryan Power"],
+          "color": "orange"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "St. Johns Athletic Advanced - 2009, 2008, 2007, or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "Virtual Athletic Dev Advanced",
+          "instructors": ["Ryan Power"],
+          "color": "blue"
+        },
+        {
+          "time_start": "19:00",
+          "time_end": "20:00",
+          "title": "St. John's In-Studio Co-ed Functional Fitness",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        },
+        {
+          "time_start": "19:30",
+          "time_end": "20:30",
+          "title": "Clarenville In-Studio Cardio Core (co-ed) Hybrid",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "19:30",
+          "time_end": "20:30",
+          "title": "Virtual Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        }
+      ]
+    },
+    {
+      "day": "Friday",
+      "classes": [
+        {
+          "time_start": "05:30",
+          "time_end": "06:30",
+          "title": "Functional Fitness - Co-ed St. John's",
+          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "color": "purple"
+        },
+        {
+          "time_start": "06:00",
+          "time_end": "07:00",
+          "title": "Clarenville In-Studio Functional Fitness Hybrid (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "06:00",
+          "time_end": "07:00",
+          "title": "Virtual Functional Fitness Hybrid (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        },
+        {
+          "time_start": "07:00",
+          "time_end": "08:00",
+          "title": "St. John's Functional Fitness Co-ed",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "Clarenville In-Studio Functional Fitness",
+          "instructors": ["Ryan Power"],
+          "color": "gray"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "PRO - St. Johns Studio",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "Virtual Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "yellow"
+        },
+        {
+          "time_start": "10:30",
+          "time_end": "11:30",
+          "title": "St. Johns Athletic Elite - Elite Athletes, 2005 or older.",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "St Johns Athletic Development/Advanced & Elite",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "Virtual Athletic Dev / Advanced - 2005 to 2010",
+          "instructors": ["Ryan Power"],
+          "color": "blue"
+        },
+        {
+          "time_start": "17:15",
+          "time_end": "18:15",
+          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "instructors": ["Ryan Power"],
+          "color": "purple"
+        }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "classes": []
+    }
+  ]
+}
