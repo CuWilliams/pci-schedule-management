@@ -8,7 +8,8 @@
           "yellow": "Virtual Functional Fitness",
           "orange": "Clarenville Athletic Advanced / Elite",
           "blue": "Athletic Development Virtual / Advanced",
-          "gray": "Flexibility & Mobility / Cardio Core / Hybrid"
+          "gray": "Flexibility & Mobility / Cardio Core / Hybrid",
+          "red": "Jon Reid - St. John's Athletic Junior"
         }
   },
   "schedule": [
@@ -39,14 +40,14 @@
         {
           "time_start": "20:15",
           "time_end": "21:15",
-          "title": "Clarenville Athletic Advanced / Elite - 2009, or older.",
+          "title": "Clarenville Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "orange"
         },
         {
           "time_start": "20:15",
           "time_end": "21:15",
-          "title": "Athletic Dev ADV/Elite Online (Hybrid)",
+          "title": "Virtual Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         }
@@ -59,7 +60,7 @@
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "Functional Fitness - Co-ed St. John's",
-          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "instructors": ["Ryan Power", "Natasha Cobb"],
           "color": "purple"
         },
         {
@@ -72,49 +73,63 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. Johns Studio",
+          "title": "PRO - St. John's Studio (Pro or by invite only)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "10:30",
           "time_end": "11:30",
-          "title": "St Johns Athletic Elite - Elite Athletes, 2007 or older",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
+          "time_start": "12:00",
+          "time_end": "13:30",
+          "title": "St. John's Athletic Junior (2010+ elite)",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St Johns Athletic Dev Virtual - 2011, 2010, 2009, or older.",
+          "title": "Virtual Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St Johns Athletic Development - 2012, 2011, or older.",
+          "title": "St. John's Athletic U15 (2012/13)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "St. John's Athletic U15 (2012/13) & U18 (2009/10/11) - Upper Gym",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. Johns Athletic Adv VIRTUAL- 2008, 2007, 2006, or older.",
+          "title": "Virtual Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. Johns Athletic Advanced - 2010, 2009, 2008, or older.",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "18:30",
           "time_end": "19:30",
-          "title": "St. Johns Elite Athletes",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -122,7 +137,7 @@
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville In-Studio Functional Fitness (co-ed)",
-          "instructors": ["Ryan Power", "Rhonda Instructor Parsons"],
+          "instructors": ["Ryan Power", "Rhonda Parsons"],
           "color": "gray"
         },
         {
@@ -148,7 +163,7 @@
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "Functional Fitness - Co-ed St. John's",
-          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "instructors": ["Ryan Power", "Natasha Cobb"],
           "color": "purple"
         },
         {
@@ -169,20 +184,34 @@
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville In-Studio Functional Fitness (co-ed)",
-          "instructors": ["Ryan Power", "Rhonda Instructor Parsons"],
+          "instructors": ["Ryan Power", "Rhonda Parsons"],
           "color": "gray"
+        },
+        {
+          "time_start": "13:00",
+          "time_end": "14:30",
+          "title": "St. John's Athletic Junior (2010+ elite)",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
+          "time_start": "15:00",
+          "time_end": "17:00",
+          "title": "St. John's Athletic U15 (2012/13) & U18 (2009/10/11) - Upper Gym",
+          "instructors": ["Jon Reid"],
+          "color": "red"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St Johns Athletic Development - 2014, 2013, or older.",
+          "title": "St. John's Athletic U11 (2016/17) & U13 (2014/15)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Clarenville Athletic Advanced / Elite - 2009 or older.",
+          "title": "Clarenville Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "orange"
         },
@@ -236,49 +265,56 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. Johns Studio",
-          "instructors": ["Ryan Power"],
-          "color": "green"
-        },
-        {
-          "time_start": "09:00",
-          "time_end": "10:00",
           "title": "Virtual Functional Fitness",
           "instructors": ["Ryan Power"],
           "color": "yellow"
         },
         {
+          "time_start": "09:00",
+          "time_end": "10:00",
+          "title": "PRO - St. John's Studio (Pro or by invite only)",
+          "instructors": ["Ryan Power"],
+          "color": "green"
+        },
+        {
           "time_start": "10:30",
           "time_end": "11:30",
-          "title": "St Johns Athletic Elite - Elite athletes, 2005 or older.",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
+          "time_start": "12:00",
+          "time_end": "13:30",
+          "title": "St. John's Athletic Junior (2010+ elite)",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "Online Athletic Development - 2011, 2010, 2009, or older.",
+          "title": "Virtual Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St Johns Athletic Development - 2011, 2010, 2009, or older.",
+          "title": "St. John's Athletic U15 (2012/13)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Athletic Advanced VIRTUAL - 2010, 2009, 2008 or older",
+          "title": "Virtual Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St Johns Athletic Advanced - 2010, 2009, 2008, or older",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -290,9 +326,9 @@
           "color": "gray"
         },
         {
-          "time_start": "19:30",
-          "time_end": "20:30",
-          "title": "St. Johns Elite Athletes",
+          "time_start": "18:30",
+          "time_end": "19:30",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -312,7 +348,7 @@
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "Functional Fitness - Co-ed St. John's",
-          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "instructors": ["Ryan Power", "Natasha Cobb"],
           "color": "purple"
         },
         {
@@ -325,42 +361,56 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. Johns Studio",
+          "title": "PRO - St. John's Studio (Pro or by invite only)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
+          "time_start": "13:00",
+          "time_end": "14:30",
+          "title": "St. John's Athletic Junior (2010+ elite)",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "Clarenville Athletic Development - 2013, 2012, or older.",
+          "title": "St. John's Athletic U15 (2012/13) & U18 (2009/10/11) - Upper Gym",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "Clarenville Athletic U13 (2014/15)",
           "instructors": ["Ryan Power"],
           "color": "orange"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St Johns Athletic Development - 2014, 2013, or older.",
+          "title": "St. John's Athletic U11 (2016/17) & U13 (2014/15)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Clarenville Athletic Advanced / Elite - 2009 or older",
+          "title": "Clarenville Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "orange"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. Johns Athletic Advanced - 2009, 2008, 2007, or older.",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Virtual Athletic Dev Advanced",
+          "title": "Virtual Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
@@ -394,7 +444,7 @@
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "Functional Fitness - Co-ed St. John's",
-          "instructors": ["Ryan Power", "Nabaisha Cobb"],
+          "instructors": ["Ryan Power", "Natasha Cobb"],
           "color": "purple"
         },
         {
@@ -428,7 +478,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. Johns Studio",
+          "title": "PRO - St. John's Studio (Pro or by invite only)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -442,21 +492,21 @@
         {
           "time_start": "10:30",
           "time_end": "11:30",
-          "title": "St. Johns Athletic Elite - Elite Athletes, 2005 or older.",
+          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St Johns Athletic Development/Advanced & Elite",
+          "title": "St. John's Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "Virtual Athletic Dev / Advanced - 2005 to 2010",
+          "title": "Virtual Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
