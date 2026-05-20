@@ -59,8 +59,8 @@
         {
           "time_start": "05:30",
           "time_end": "06:30",
-          "title": "Functional Fitness - Co-ed St. John's",
-          "instructors": ["Ryan Power", "Natasha Cobb"],
+          "title": "St. John's Functional HIIT (co-ed)",
+          "instructors": ["Natasha Cobb"],
           "color": "purple"
         },
         {
@@ -73,63 +73,63 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. John's Studio (Pro or by invite only)",
+          "title": "St. John's PRO (Pro athletes only)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "10:30",
           "time_end": "11:30",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "12:00",
           "time_end": "13:30",
-          "title": "St. John's Athletic Junior (2010+ elite)",
+          "title": "St. John's Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "Virtual Athletic via Zoom",
+          "title": "St. John's Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St. John's Athletic U15 (2012/13)",
+          "title": "St. John's Athletic U15 (2013/12+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St. John's Athletic U15 (2012/13) & U18 (2009/10/11) - Upper Gym",
+          "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09) Upper Gym",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Virtual Athletic via Zoom",
+          "title": "St. John's Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's U18 (2011/2010/2009) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "18:30",
           "time_end": "19:30",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's U18 (2011/2010/2009) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -150,7 +150,7 @@
         {
           "time_start": "20:15",
           "time_end": "21:15",
-          "title": "St. John's In-Studio Functional (co-ed)",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         }
@@ -251,8 +251,8 @@
         {
           "time_start": "07:00",
           "time_end": "08:00",
-          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
-          "instructors": ["Ryan Power"],
+          "title": "St. John's Functional HIIT (co-ed)",
+          "instructors": ["Brendan McCarthy"],
           "color": "purple"
         },
         {
@@ -272,49 +272,49 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. John's Studio (Pro or by invite only)",
+          "title": "St. John's PRO (Pro athletes only)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "10:30",
           "time_end": "11:30",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "12:00",
           "time_end": "13:30",
-          "title": "St. John's Athletic Junior (2010+ elite)",
+          "title": "St. John's Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "Virtual Athletic via Zoom",
+          "title": "St. John's Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St. John's Athletic U15 (2012/13)",
+          "title": "St. John's Athletic U15 (2013/12+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Virtual Athletic via Zoom",
+          "title": "St. John's Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's U18 (2011/2010/2009) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -328,14 +328,14 @@
         {
           "time_start": "18:30",
           "time_end": "19:30",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's U18 (2011/2010/2009) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "20:15",
           "time_end": "21:15",
-          "title": "St. John's Studio Co-ed Functional Fitness",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         }
