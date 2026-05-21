@@ -64,6 +64,13 @@
           "color": "purple"
         },
         {
+          "time_start": "07:00",
+          "time_end": "08:00",
+          "title": "St. John's Functional HIIT (co-ed)",
+          "instructors": ["Brendan McCarthy"],
+          "color": "purple"
+        },
+        {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
