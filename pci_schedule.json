@@ -3,13 +3,13 @@
     "version": "1.0",
     "notes": "Weekly repeating schedule for Power Conditioning Inc. Colors match Studio Bookings app categories.",
     "colors": {
-          "purple": "Functional Fitness (co-ed) - In-Studio",
-          "green": "PRO / Athletic Development / Elite Athletes",
-          "yellow": "Virtual Functional Fitness",
-          "orange": "Clarenville Athletic Advanced / Elite",
-          "blue": "Athletic Development Virtual / Advanced",
-          "gray": "Flexibility & Mobility / Cardio Core / Hybrid",
-          "red": "Jon Reid - St. John's Athletic Junior"
+          "purple": "St. John's Functional HIIT (co-ed)",
+          "green": "Ryan Power - St. John's Athletic Classes",
+          "yellow": "Clarenville Virtual Classes",
+          "orange": "Clarenville Athletic Classes",
+          "blue": "St. John's Athletic Virtual Classes",
+          "gray": "Clarenville In-Studio (co-ed)",
+          "red": "Jon Reid - St. John's Athletic Classes"
         }
   },
   "schedule": [
@@ -129,14 +129,14 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2011/2010/2009) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "18:30",
           "time_end": "19:30",
-          "title": "St. John's Athletic U18 (2011/2010/2009) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -211,7 +211,7 @@
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St. John's Athletic U11 (2016/17) & U13 (2014/15)",
+          "title": "St. John's Athletic U11 (2017/16) & U13 (2015/14)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -321,7 +321,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2011/2010/2009) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -335,7 +335,7 @@
         {
           "time_start": "18:30",
           "time_end": "19:30",
-          "title": "St. John's Athletic U18 (2011/2010/2009) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -396,7 +396,7 @@
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St. John's Athletic U11 (2016/17) & U13 (2014/15)",
+          "title": "St. John's Athletic U11 (2017/16) & U13 (2015/14)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -410,7 +410,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -492,14 +492,14 @@
         {
           "time_start": "10:30",
           "time_end": "11:30",
-          "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St. John's Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)",
+          "title": "St. John's Athletic U15 (2013/12+), U18 (2011/10/09) & Junior (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
