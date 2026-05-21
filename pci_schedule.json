@@ -26,16 +26,16 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "title": "Clarenville Virtual Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "yellow"
         },
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "Virtual Functional Fitness (co-ed)",
+          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "purple"
         },
         {
           "time_start": "20:15",
@@ -143,7 +143,7 @@
         {
           "time_start": "19:30",
           "time_end": "20:30",
-          "title": "Virtual Functional Fitness (co-ed) via Zoom",
+          "title": "Clarenville Virtual Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow"
         },
@@ -176,7 +176,7 @@
         {
           "time_start": "06:00",
           "time_end": "07:00",
-          "title": "Virtual Functional Fitness (co-ed)",
+          "title": "Clarenville Virtual Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow"
         },
@@ -232,7 +232,7 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "Flexibility & Mobility - Virtual via Zoom",
+          "title": "Clarenville Virtual Flexibility & Mobility via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow"
         },
@@ -265,7 +265,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "Virtual Functional Fitness",
+          "title": "Clarenville Virtual Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow"
         },
@@ -431,7 +431,7 @@
         {
           "time_start": "19:30",
           "time_end": "20:30",
-          "title": "Virtual Functional Fitness (co-ed)",
+          "title": "Clarenville Virtual Cardio & Core via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow"
         }
@@ -455,13 +455,6 @@
           "color": "gray"
         },
         {
-          "time_start": "06:00",
-          "time_end": "07:00",
-          "title": "Virtual Functional Fitness Hybrid (co-ed)",
-          "instructors": ["Ryan Power"],
-          "color": "yellow"
-        },
-        {
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional Fitness Co-ed",
@@ -478,16 +471,16 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. John's Studio (Pro or by invite only)",
+          "title": "Clarenville Virtual Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "green"
+          "color": "yellow"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "Virtual Functional Fitness (co-ed)",
+          "title": "PRO - St. John's Studio (Pro or by invite only)",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "green"
         },
         {
           "time_start": "10:30",
