@@ -47,7 +47,7 @@
         {
           "time_start": "20:15",
           "time_end": "21:15",
-          "title": "Virtual Athletic via Zoom",
+          "title": "Clarenville Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         }
@@ -190,7 +190,7 @@
         {
           "time_start": "13:00",
           "time_end": "14:30",
-          "title": "St. John's Athletic Junior (2010+ elite)",
+          "title": "St. John's Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
@@ -361,14 +361,14 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. John's Studio (Pro or by invite only)",
+          "title": "St. John's PRO (Pro athletes only)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
         {
           "time_start": "13:00",
           "time_end": "14:30",
-          "title": "St. John's Athletic Junior (2010+ elite)",
+          "title": "St. John's Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
@@ -410,7 +410,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Virtual Athletic via Zoom",
+          "title": "St. John's Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
@@ -478,7 +478,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "PRO - St. John's Studio (Pro or by invite only)",
+          "title": "St. John's PRO (Pro athletes only)",
           "instructors": ["Ryan Power"],
           "color": "green"
         },
@@ -499,7 +499,7 @@
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "Virtual Athletic via Zoom",
+          "title": "St. John's Athletic via Zoom",
           "instructors": ["Ryan Power"],
           "color": "blue"
         },
