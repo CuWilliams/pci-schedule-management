@@ -3,13 +3,13 @@
     "version": "1.0",
     "notes": "Weekly repeating schedule for Power Conditioning Inc. Colors match Studio Bookings app categories.",
     "colors": {
-          "purple": "St. John's Functional HIIT (co-ed)",
-          "green": "Ryan Power - St. John's Athletic Classes",
-          "yellow": "Clarenville Virtual Classes",
-          "orange": "Clarenville Athletic Classes",
-          "blue": "St. John's Athletic Virtual Classes",
-          "gray": "Clarenville In-Studio (co-ed)",
-          "red": "Jon Reid - St. John's Athletic Classes"
+          "purple": "St. John's Functional HIIT",
+          "green": "Ryan Power - St. John's Pro/Athletic",
+          "yellow": "Clarenville Virtual",
+          "orange": "Clarenville Athletic",
+          "blue": "St. John's Athletic Virtual",
+          "gray": "Clarenville In-Studio",
+          "red": "Jon Reid - St. John's Pro/Athletic"
         }
   },
   "schedule": [
