@@ -19,7 +19,7 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -66,7 +66,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -136,7 +136,7 @@
         {
           "time_start": "19:30",
           "time_end": "20:30",
-          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Rhonda Parsons"],
           "color": "gray"
         },
@@ -169,7 +169,7 @@
         {
           "time_start": "06:00",
           "time_end": "07:00",
-          "title": "Clarenville In-Studio Functional Fitness Hybrid (co-ed)",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -183,7 +183,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Rhonda Parsons"],
           "color": "gray"
         },
@@ -225,7 +225,7 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "Clarenville Flexibility & Mobility",
+          "title": "Clarenville Flexibility & Mobility (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -258,7 +258,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "Clarenville In-Studio Functional Fitness",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -321,7 +321,7 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "Clarenville In-Studio Functional Fitness (co-ed)",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Greg Pittman"],
           "color": "gray"
         },
@@ -354,7 +354,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "Clarenville In-Studio Functional Fitness",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -424,7 +424,7 @@
         {
           "time_start": "19:30",
           "time_end": "20:30",
-          "title": "Clarenville In-Studio Cardio Core (co-ed) Hybrid",
+          "title": "Clarenville Cardio & Core (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -450,7 +450,7 @@
         {
           "time_start": "06:00",
           "time_end": "07:00",
-          "title": "Clarenville In-Studio Functional Fitness Hybrid (co-ed)",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
@@ -471,7 +471,7 @@
         {
           "time_start": "09:00",
           "time_end": "10:00",
-          "title": "Clarenville In-Studio Functional Fitness",
+          "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "gray"
         },
