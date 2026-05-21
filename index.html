@@ -150,111 +150,6 @@
 <footer>Generated from pci_schedule.json</footer>
 
 <script>
-const schedule = [
-  {
-    "day": "Sunday",
-    "classes": [
-      { "time_start": "19:00", "time_end": "20:00", "title": "Clarenville In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "19:00", "time_end": "20:00", "title": "St. Johns In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "purple" },
-      { "time_start": "19:00", "time_end": "20:00", "title": "Virtual Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "yellow" },
-      { "time_start": "20:15", "time_end": "21:15", "title": "Clarenville Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "orange" },
-      { "time_start": "20:15", "time_end": "21:15", "title": "Virtual Athletic via Zoom", "instructors": ["Ryan Power"], "color": "blue" }
-    ]
-  },
-  {
-    "day": "Monday",
-    "classes": [
-      { "time_start": "05:30", "time_end": "06:30", "title": "Functional Fitness - Co-ed St. John's", "instructors": ["Ryan Power", "Natasha Cobb"], "color": "purple" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "Clarenville In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "PRO - St. John's Studio (Pro or by invite only)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "10:30", "time_end": "11:30", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "12:00", "time_end": "13:30", "title": "St. John's Athletic Junior (2010+ elite)", "instructors": ["Jon Reid"], "color": "red" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "Virtual Athletic via Zoom", "instructors": ["Ryan Power"], "color": "blue" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "St. John's Athletic U15 (2012/13)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "St. John's Athletic U15 (2012/13) & U18 (2009/10/11) - Upper Gym", "instructors": ["Jon Reid"], "color": "red" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "Virtual Athletic via Zoom", "instructors": ["Ryan Power"], "color": "blue" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "18:30", "time_end": "19:30", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "19:30", "time_end": "20:30", "title": "Clarenville In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power", "Rhonda Parsons"], "color": "gray" },
-      { "time_start": "19:30", "time_end": "20:30", "title": "Virtual Functional Fitness (co-ed) via Zoom", "instructors": ["Ryan Power"], "color": "yellow" },
-      { "time_start": "20:15", "time_end": "21:15", "title": "St. John's In-Studio Functional (co-ed)", "instructors": ["Ryan Power"], "color": "purple" }
-    ]
-  },
-  {
-    "day": "Tuesday",
-    "classes": [
-      { "time_start": "05:30", "time_end": "06:30", "title": "Functional Fitness - Co-ed St. John's", "instructors": ["Ryan Power", "Natasha Cobb"], "color": "purple" },
-      { "time_start": "06:00", "time_end": "07:00", "title": "Clarenville In-Studio Functional Fitness Hybrid (co-ed)", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "06:00", "time_end": "07:00", "title": "Virtual Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "yellow" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "Clarenville In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power", "Rhonda Parsons"], "color": "gray" },
-      { "time_start": "13:00", "time_end": "14:30", "title": "St. John's Athletic Junior (2010+ elite)", "instructors": ["Jon Reid"], "color": "red" },
-      { "time_start": "15:00", "time_end": "17:00", "title": "St. John's Athletic U15 (2012/13) & U18 (2009/10/11) - Upper Gym", "instructors": ["Jon Reid"], "color": "red" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "St. John's Athletic U11 (2016/17) & U13 (2014/15)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "Clarenville Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "orange" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "St. Johns In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "purple" },
-      { "time_start": "19:00", "time_end": "20:00", "title": "Clarenville Flexibility & Mobility", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "19:00", "time_end": "20:00", "title": "Flexibility & Mobility - Virtual via Zoom", "instructors": ["Ryan Power"], "color": "yellow" },
-      { "time_start": "19:00", "time_end": "20:00", "title": "St. John's Studio Co-ed Functional Fitness", "instructors": ["Ryan Power"], "color": "purple" }
-    ]
-  },
-  {
-    "day": "Wednesday",
-    "classes": [
-      { "time_start": "07:00", "time_end": "08:00", "title": "St. Johns In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "purple" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "Clarenville In-Studio Functional Fitness", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "Virtual Functional Fitness", "instructors": ["Ryan Power"], "color": "yellow" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "PRO - St. John's Studio (Pro or by invite only)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "10:30", "time_end": "11:30", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "12:00", "time_end": "13:30", "title": "St. John's Athletic Junior (2010+ elite)", "instructors": ["Jon Reid"], "color": "red" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "Virtual Athletic via Zoom", "instructors": ["Ryan Power"], "color": "blue" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "St. John's Athletic U15 (2012/13)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "Virtual Athletic via Zoom", "instructors": ["Ryan Power"], "color": "blue" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "19:00", "time_end": "20:00", "title": "Clarenville In-Studio Functional Fitness (co-ed)", "instructors": ["Greg Pittman"], "color": "gray" },
-      { "time_start": "18:30", "time_end": "19:30", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "20:15", "time_end": "21:15", "title": "St. John's Studio Co-ed Functional Fitness", "instructors": ["Ryan Power"], "color": "purple" }
-    ]
-  },
-  {
-    "day": "Thursday",
-    "classes": [
-      { "time_start": "05:30", "time_end": "06:30", "title": "Functional Fitness - Co-ed St. John's", "instructors": ["Ryan Power", "Natasha Cobb"], "color": "purple" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "Clarenville In-Studio Functional Fitness", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "PRO - St. John's Studio (Pro or by invite only)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "13:00", "time_end": "14:30", "title": "St. John's Athletic Junior (2010+ elite)", "instructors": ["Jon Reid"], "color": "red" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "St. John's Athletic U15 (2012/13) & U18 (2009/10/11) - Upper Gym", "instructors": ["Jon Reid"], "color": "red" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "Clarenville Athletic U13 (2014/15)", "instructors": ["Ryan Power"], "color": "orange" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "St. John's Athletic U11 (2016/17) & U13 (2014/15)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "Clarenville Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "orange" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "Virtual Athletic via Zoom", "instructors": ["Ryan Power"], "color": "blue" },
-      { "time_start": "19:00", "time_end": "20:00", "title": "St. John's In-Studio Co-ed Functional Fitness", "instructors": ["Ryan Power"], "color": "purple" },
-      { "time_start": "19:30", "time_end": "20:30", "title": "Clarenville In-Studio Cardio Core (co-ed) Hybrid", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "19:30", "time_end": "20:30", "title": "Virtual Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "yellow" }
-    ]
-  },
-  {
-    "day": "Friday",
-    "classes": [
-      { "time_start": "05:30", "time_end": "06:30", "title": "Functional Fitness - Co-ed St. John's", "instructors": ["Ryan Power", "Natasha Cobb"], "color": "purple" },
-      { "time_start": "06:00", "time_end": "07:00", "title": "Clarenville In-Studio Functional Fitness Hybrid (co-ed)", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "06:00", "time_end": "07:00", "title": "Virtual Functional Fitness Hybrid (co-ed)", "instructors": ["Ryan Power"], "color": "yellow" },
-      { "time_start": "07:00", "time_end": "08:00", "title": "St. John's Functional Fitness Co-ed", "instructors": ["Ryan Power"], "color": "purple" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "Clarenville In-Studio Functional Fitness", "instructors": ["Ryan Power"], "color": "gray" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "PRO - St. John's Studio (Pro or by invite only)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "09:00", "time_end": "10:00", "title": "Virtual Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "yellow" },
-      { "time_start": "10:30", "time_end": "11:30", "title": "St. John's Athletic U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "St. John's Athletic U15 (2012/13), U18 (2009/10/11) & Junior (2010+ elite)", "instructors": ["Ryan Power"], "color": "green" },
-      { "time_start": "16:00", "time_end": "17:00", "title": "Virtual Athletic via Zoom", "instructors": ["Ryan Power"], "color": "blue" },
-      { "time_start": "17:15", "time_end": "18:15", "title": "St. Johns In-Studio Functional Fitness (co-ed)", "instructors": ["Ryan Power"], "color": "purple" }
-    ]
-  },
-  {
-    "day": "Saturday",
-    "classes": []
-  }
-];
-
 function formatTime(t) {
   const [h, m] = t.split(':').map(Number);
   const period = h >= 12 ? 'PM' : 'AM';
@@ -262,58 +157,67 @@ function formatTime(t) {
   return `${hour}:${m.toString().padStart(2,'0')} ${period}`;
 }
 
-const container = document.getElementById('schedule');
+function renderSchedule(schedule) {
+  const container = document.getElementById('schedule');
 
-schedule.forEach(day => {
-  const block = document.createElement('div');
-  block.className = 'day-block';
+  schedule.forEach(day => {
+    const block = document.createElement('div');
+    block.className = 'day-block';
 
-  const header = document.createElement('div');
-  header.className = 'day-header';
-  header.textContent = day.day;
-  block.appendChild(header);
+    const header = document.createElement('div');
+    header.className = 'day-header';
+    header.textContent = day.day;
+    block.appendChild(header);
 
-  if (day.classes.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'empty-day';
-    empty.textContent = 'No classes scheduled';
-    block.appendChild(empty);
-  } else {
-    // Sort by time
-    const sorted = [...day.classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
-    sorted.forEach(cls => {
-      const item = document.createElement('div');
-      item.className = `class-item bg-${cls.color}`;
+    if (day.classes.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-day';
+      empty.textContent = 'No classes scheduled';
+      block.appendChild(empty);
+    } else {
+      const sorted = [...day.classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
+      sorted.forEach(cls => {
+        const item = document.createElement('div');
+        item.className = `class-item bg-${cls.color}`;
 
-      const bar = document.createElement('div');
-      bar.className = `color-bar color-${cls.color}`;
+        const bar = document.createElement('div');
+        bar.className = `color-bar color-${cls.color}`;
 
-      const body = document.createElement('div');
-      body.className = 'class-body';
+        const body = document.createElement('div');
+        body.className = 'class-body';
 
-      const time = document.createElement('div');
-      time.className = 'class-time';
-      time.textContent = `${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}`;
+        const time = document.createElement('div');
+        time.className = 'class-time';
+        time.textContent = `${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}`;
 
-      const title = document.createElement('div');
-      title.className = 'class-title';
-      title.textContent = cls.title;
+        const title = document.createElement('div');
+        title.className = 'class-title';
+        title.textContent = cls.title;
 
-      const instructor = document.createElement('div');
-      instructor.className = 'class-instructor';
-      instructor.textContent = 'With ' + cls.instructors.join(', ');
+        const instructor = document.createElement('div');
+        instructor.className = 'class-instructor';
+        instructor.textContent = 'With ' + cls.instructors.join(', ');
 
-      body.appendChild(time);
-      body.appendChild(title);
-      body.appendChild(instructor);
-      item.appendChild(bar);
-      item.appendChild(body);
-      block.appendChild(item);
-    });
-  }
+        body.appendChild(time);
+        body.appendChild(title);
+        body.appendChild(instructor);
+        item.appendChild(bar);
+        item.appendChild(body);
+        block.appendChild(item);
+      });
+    }
 
-  container.appendChild(block);
-});
+    container.appendChild(block);
+  });
+}
+
+fetch('pci_schedule.json')
+  .then(res => res.json())
+  .then(data => renderSchedule(data.schedule))
+  .catch(err => {
+    document.getElementById('schedule').textContent = 'Failed to load schedule.';
+    console.error(err);
+  });
 </script>
 </body>
 </html>
