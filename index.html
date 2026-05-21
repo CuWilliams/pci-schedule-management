@@ -136,6 +136,65 @@
       color: #aaa;
       padding: 16px;
     }
+
+    .filter-bar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 8px 12px;
+      position: sticky;
+      top: 57px;
+      z-index: 9;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .filter-bar::-webkit-scrollbar { display: none; }
+
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1.5px solid #ddd;
+      background: #f7f7f7;
+      font-size: 11px;
+      font-weight: 600;
+      color: #555;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+
+    .filter-pill:hover {
+      border-color: #aaa;
+      background: #eee;
+    }
+
+    .filter-pill.active {
+      border-color: #3a3a3a;
+      background: #3a3a3a;
+      color: #fff;
+    }
+
+    .filter-pill.active .pill-dot {
+      box-shadow: 0 0 0 1.5px rgba(255,255,255,0.6);
+    }
+
+    .pill-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .class-item.hidden { display: none; }
+
+    .day-block.hidden { display: none; }
   </style>
 </head>
 <body>
@@ -145,16 +204,93 @@
   <p>Weekly Schedule — All Classes</p>
 </header>
 
+<div class="filter-bar" id="filterBar"></div>
+
 <div class="schedule" id="schedule"></div>
 
 <footer>Generated from pci_schedule.json</footer>
 
 <script>
+const COLOR_HEX = {
+  purple: '#7B68C8',
+  green:  '#6AAF3D',
+  yellow: '#E8C840',
+  orange: '#E8803A',
+  blue:   '#5BA3D9',
+  gray:   '#9E9E9E',
+  red:    '#D95050'
+};
+
 function formatTime(t) {
   const [h, m] = t.split(':').map(Number);
   const period = h >= 12 ? 'PM' : 'AM';
   const hour = h % 12 || 12;
   return `${hour}:${m.toString().padStart(2,'0')} ${period}`;
+}
+
+let activeColors = new Set();
+
+function buildFilterBar(colors) {
+  const bar = document.getElementById('filterBar');
+
+  const clearPill = document.createElement('button');
+  clearPill.className = 'filter-pill active';
+  clearPill.dataset.color = 'all';
+  clearPill.textContent = 'All';
+  bar.appendChild(clearPill);
+
+  Object.entries(colors).forEach(([color, label]) => {
+    const pill = document.createElement('button');
+    pill.className = 'filter-pill';
+    pill.dataset.color = color;
+    pill.title = label;
+
+    const dot = document.createElement('span');
+    dot.className = 'pill-dot';
+    dot.style.backgroundColor = COLOR_HEX[color] || '#999';
+
+    pill.appendChild(dot);
+    pill.appendChild(document.createTextNode(color.charAt(0).toUpperCase() + color.slice(1)));
+    bar.appendChild(pill);
+  });
+
+  bar.addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill');
+    if (!pill) return;
+
+    if (pill.dataset.color === 'all') {
+      activeColors.clear();
+    } else {
+      if (activeColors.has(pill.dataset.color)) {
+        activeColors.delete(pill.dataset.color);
+      } else {
+        activeColors.add(pill.dataset.color);
+      }
+    }
+
+    bar.querySelectorAll('.filter-pill').forEach(p => {
+      if (p.dataset.color === 'all') {
+        p.classList.toggle('active', activeColors.size === 0);
+      } else {
+        p.classList.toggle('active', activeColors.has(p.dataset.color));
+      }
+    });
+
+    applyFilter();
+  });
+}
+
+function applyFilter() {
+  document.querySelectorAll('.day-block').forEach(block => {
+    const items = block.querySelectorAll('.class-item');
+    let visible = 0;
+    items.forEach(item => {
+      const show = activeColors.size === 0 || activeColors.has(item.dataset.color);
+      item.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    block.classList.toggle('hidden', visible === 0);
+  });
 }
 
 function renderSchedule(schedule) {
@@ -179,6 +315,7 @@ function renderSchedule(schedule) {
       sorted.forEach(cls => {
         const item = document.createElement('div');
         item.className = `class-item bg-${cls.color}`;
+        item.dataset.color = cls.color;
 
         const bar = document.createElement('div');
         bar.className = `color-bar color-${cls.color}`;
@@ -213,7 +350,10 @@ function renderSchedule(schedule) {
 
 fetch('pci_schedule.json')
   .then(res => res.json())
-  .then(data => renderSchedule(data.schedule))
+  .then(data => {
+    buildFilterBar(data.meta.colors);
+    renderSchedule(data.schedule);
+  })
   .catch(err => {
     document.getElementById('schedule').textContent = 'Failed to load schedule.';
     console.error(err);
