@@ -33,7 +33,7 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         },
@@ -162,7 +162,7 @@
         {
           "time_start": "05:30",
           "time_end": "06:30",
-          "title": "Functional Fitness - Co-ed St. John's",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Natasha Cobb"],
           "color": "purple"
         },
@@ -218,7 +218,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         },
@@ -239,7 +239,7 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "St. John's Studio Co-ed Functional Fitness",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         }
@@ -347,7 +347,7 @@
         {
           "time_start": "05:30",
           "time_end": "06:30",
-          "title": "Functional Fitness - Co-ed St. John's",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Natasha Cobb"],
           "color": "purple"
         },
@@ -417,7 +417,7 @@
         {
           "time_start": "19:00",
           "time_end": "20:00",
-          "title": "St. John's In-Studio Co-ed Functional Fitness",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         },
@@ -443,7 +443,7 @@
         {
           "time_start": "05:30",
           "time_end": "06:30",
-          "title": "Functional Fitness - Co-ed St. John's",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Natasha Cobb"],
           "color": "purple"
         },
@@ -457,7 +457,7 @@
         {
           "time_start": "07:00",
           "time_end": "08:00",
-          "title": "St. John's Functional Fitness Co-ed",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         },
@@ -506,7 +506,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. Johns In-Studio Functional Fitness (co-ed)",
+          "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
           "color": "purple"
         }
