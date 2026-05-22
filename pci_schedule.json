@@ -256,6 +256,13 @@
       "day": "Wednesday",
       "classes": [
         {
+          "time_start": "05:30",
+          "time_end": "06:30",
+          "title": "St. John's Functional HIIT (co-ed)",
+          "instructors": ["Ryan Power", "Natasha Cobb"],
+          "color": "purple"
+        },
+        {
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional HIIT (co-ed)",
