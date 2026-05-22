@@ -23,6 +23,18 @@
       "flexibility_mobility": {
         "name": "Flexibility & Mobility",
         "description": "Flexibility & Mobility is a dedicated stretching class designed to improve range of motion, reduce tension, and keep your body moving and feeling its best. Each session is instructor-led with hands-on guidance, ensuring every stretch is performed correctly and tailored to where your body is at that day. Flexibility and mobility are foundational to long-term health and injury prevention — this is the class that ties everything else together."
+      },
+      "functional_hiit_online": {
+        "name": "Functional HIIT – Online",
+        "description": "Functional HIIT combines high-intensity interval training with functional movement to build real strength, endurance, and results. Every class is instructor-led with hands-on coaching, with real-time modifications called out for whatever equipment you have available at home. Join live via Zoom and train alongside in-studio participants — same class, same coaching, same results. To receive your Zoom link, make sure you register for the online class."
+      },
+      "cardio_core_online": {
+        "name": "Cardio & Core – Online",
+        "description": "Cardio & Core is a high-energy class focused on building cardiovascular endurance and a stronger, more stable core through bodyweight-driven movements and light resistance training. The instructor calls out modifications throughout the class so you can follow along effectively from home with whatever you have on hand. Join live via Zoom and get the same coached experience as everyone in the studio. To receive your Zoom link, make sure you register for the online class."
+      },
+      "flexibility_mobility_online": {
+        "name": "Flexibility & Mobility – Online",
+        "description": "Flexibility & Mobility is a dedicated stretching class designed to improve range of motion, reduce tension, and keep your body moving and feeling its best. The instructor provides real-time guidance and modifications so every stretch translates effectively to your home environment. Flexibility and mobility are foundational to long-term health and injury prevention — this is the class that ties everything else together. To receive your Zoom link, make sure you register for the online class."
       }
     }
   },
@@ -44,7 +56,7 @@
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow",
-          "type": "functional_hiit"
+          "type": "functional_hiit_online"
         },
         {
           "time_start": "19:00",
@@ -174,7 +186,7 @@
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow",
-          "type": "functional_hiit"
+          "type": "functional_hiit_online"
         },
         {
           "time_start": "20:15",
@@ -211,7 +223,7 @@
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow",
-          "type": "functional_hiit"
+          "type": "functional_hiit_online"
         },
         {
           "time_start": "09:00",
@@ -271,7 +283,7 @@
           "title": "Clarenville Flexibility & Mobility via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow",
-          "type": "flexibility_mobility"
+          "type": "flexibility_mobility_online"
         },
         {
           "time_start": "19:00",
@@ -316,7 +328,7 @@
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow",
-          "type": "functional_hiit"
+          "type": "functional_hiit_online"
         },
         {
           "time_start": "09:00",
@@ -489,7 +501,7 @@
           "title": "Clarenville Cardio & Core via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow",
-          "type": "cardio_core"
+          "type": "cardio_core_online"
         }
       ]
     },
@@ -534,7 +546,7 @@
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
           "color": "yellow",
-          "type": "functional_hiit"
+          "type": "functional_hiit_online"
         },
         {
           "time_start": "09:00",
