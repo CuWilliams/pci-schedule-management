@@ -15,6 +15,14 @@
       "functional_hiit": {
         "name": "Functional HIIT",
         "description": "Functional HIIT at Power Conditioning combines high-intensity interval training with functional movement across a fully equipped open-floor facility — free weights, sleds, battle ropes, squat racks, and more. Every class is instructor-led with hands-on coaching, so movements are adapted to your fitness level and goals in real time. No matter where you're starting from, you're never just left to figure it out on your own."
+      },
+      "cardio_core": {
+        "name": "Cardio & Core",
+        "description": "Cardio & Core is a high-energy class focused on building cardiovascular endurance and a stronger, more stable core through bodyweight-driven movements and light resistance training. Every session is instructor-led with hands-on coaching, so exercises are adapted to suit your current fitness level and keep you progressing. It's a full-body burn with a purpose — and you'll never be left guessing what to do next."
+      },
+      "flexibility_mobility": {
+        "name": "Flexibility & Mobility",
+        "description": "Flexibility & Mobility is a dedicated stretching class designed to improve range of motion, reduce tension, and keep your body moving and feeling its best. Each session is instructor-led with hands-on guidance, ensuring every stretch is performed correctly and tailored to where your body is at that day. Flexibility and mobility are foundational to long-term health and injury prevention — this is the class that ties everything else together."
       }
     }
   },
@@ -254,14 +262,16 @@
           "time_end": "20:00",
           "title": "Clarenville Flexibility & Mobility (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "flexibility_mobility"
         },
         {
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "Clarenville Flexibility & Mobility via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "yellow",
+          "type": "flexibility_mobility"
         },
         {
           "time_start": "19:00",
@@ -470,14 +480,16 @@
           "time_end": "20:30",
           "title": "Clarenville Cardio & Core (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "cardio_core"
         },
         {
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Cardio & Core via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "yellow",
+          "type": "cardio_core"
         }
       ]
     },
