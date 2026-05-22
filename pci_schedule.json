@@ -176,7 +176,7 @@
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Functional HIIT (co-ed)",
-          "instructors": ["Ryan Power", "Rhonda Parsons"],
+          "instructors": ["Rhonda Parsons"],
           "color": "gray",
           "type": "functional_hiit"
         },
@@ -184,7 +184,7 @@
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Functional HIIT via Zoom",
-          "instructors": ["Ryan Power"],
+          "instructors": ["Rhonda Parsons"],
           "color": "yellow",
           "type": "functional_hiit_online"
         },
