@@ -10,7 +10,13 @@
           "blue": "St. John's Athletic Virtual",
           "gray": "Clarenville In-Studio",
           "red": "Jon Reid - St. John's Pro/Athletic"
-        }
+        },
+    "class_descriptions": {
+      "functional_hiit": {
+        "name": "Functional HIIT",
+        "description": "Functional HIIT at Power Conditioning combines high-intensity interval training with functional movement across a fully equipped open-floor facility — free weights, sleds, battle ropes, squat racks, and more. Every class is instructor-led with hands-on coaching, so movements are adapted to your fitness level and goals in real time. No matter where you're starting from, you're never just left to figure it out on your own."
+      }
+    }
   },
   "schedule": [
     {
@@ -21,21 +27,24 @@
           "time_end": "20:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "yellow",
+          "type": "functional_hiit"
         },
         {
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "20:15",
@@ -61,21 +70,24 @@
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Natasha Cobb"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Brendan McCarthy"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
@@ -145,21 +157,24 @@
           "time_end": "20:30",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Rhonda Parsons"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "yellow",
+          "type": "functional_hiit"
         },
         {
           "time_start": "20:15",
           "time_end": "21:15",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         }
       ]
     },
@@ -171,28 +186,32 @@
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Natasha Cobb"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "06:00",
           "time_end": "07:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "06:00",
           "time_end": "07:00",
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "yellow",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Rhonda Parsons"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "13:00",
@@ -227,7 +246,8 @@
           "time_end": "18:15",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "19:00",
@@ -248,7 +268,8 @@
           "time_end": "20:00",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         }
       ]
     },
@@ -260,28 +281,32 @@
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Natasha Cobb"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Brendan McCarthy"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "yellow",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
@@ -337,7 +362,8 @@
           "time_end": "20:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Greg Pittman"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "18:30",
@@ -351,7 +377,8 @@
           "time_end": "21:15",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         }
       ]
     },
@@ -363,14 +390,16 @@
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Natasha Cobb"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
@@ -433,7 +462,8 @@
           "time_end": "20:00",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "19:30",
@@ -459,35 +489,40 @@
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power", "Natasha Cobb"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "06:00",
           "time_end": "07:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "gray"
+          "color": "gray",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT via Zoom",
           "instructors": ["Ryan Power"],
-          "color": "yellow"
+          "color": "yellow",
+          "type": "functional_hiit"
         },
         {
           "time_start": "09:00",
@@ -522,7 +557,8 @@
           "time_end": "18:15",
           "title": "St. John's Functional HIIT (co-ed)",
           "instructors": ["Ryan Power"],
-          "color": "purple"
+          "color": "purple",
+          "type": "functional_hiit"
         }
       ]
     },

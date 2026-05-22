@@ -195,6 +195,88 @@
     .class-item.hidden { display: none; }
 
     .day-block.hidden { display: none; }
+
+    .class-item[data-type] { cursor: pointer; }
+    .class-item[data-type]:hover .class-body { background: rgba(0,0,0,0.02); }
+
+    /* Modal overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay[hidden] { display: none; }
+
+    /* Modal sheet (desktop: centered card) */
+    .modal-sheet {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 480px;
+      width: calc(100% - 32px);
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.4;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #888;
+      cursor: pointer;
+      padding: 0 2px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .modal-close:hover { color: #333; }
+
+    .modal-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    /* Mobile: bottom sheet */
+    @media (max-width: 600px) {
+      .modal-overlay {
+        align-items: flex-end;
+        justify-content: stretch;
+      }
+
+      .modal-sheet {
+        width: 100%;
+        max-width: none;
+        border-radius: 16px 16px 0 0;
+        animation: slideUp 0.22s ease-out;
+      }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(60px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -210,7 +292,19 @@
 
 <footer>Generated from pci_schedule.json</footer>
 
+<div id="descModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span id="modalTitle" class="modal-title"></span>
+      <button class="modal-close" id="modalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <p id="modalDesc" class="modal-desc"></p>
+  </div>
+</div>
+
 <script>
+let classDescriptions = {};
+
 const COLOR_HEX = {
   purple: '#7B68C8',
   green:  '#6AAF3D',
@@ -227,6 +321,28 @@ function formatTime(t) {
   const hour = h % 12 || 12;
   return `${hour}:${m.toString().padStart(2,'0')} ${period}`;
 }
+
+function openModal(typeKey, classTitle) {
+  const desc = classDescriptions[typeKey];
+  if (!desc) return;
+  document.getElementById('modalTitle').textContent = classTitle;
+  document.getElementById('modalDesc').textContent = desc.description;
+  document.getElementById('descModal').removeAttribute('hidden');
+}
+
+function closeModal() {
+  document.getElementById('descModal').setAttribute('hidden', '');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+
+document.getElementById('descModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
 
 let activeColors = new Set();
 
@@ -316,6 +432,7 @@ function renderSchedule(schedule) {
         const item = document.createElement('div');
         item.className = `class-item bg-${cls.color}`;
         item.dataset.color = cls.color;
+        if (cls.type) item.dataset.type = cls.type;
 
         const bar = document.createElement('div');
         bar.className = `color-bar color-${cls.color}`;
@@ -348,9 +465,17 @@ function renderSchedule(schedule) {
   });
 }
 
+document.getElementById('schedule').addEventListener('click', e => {
+  const item = e.target.closest('.class-item[data-type]');
+  if (!item) return;
+  const titleEl = item.querySelector('.class-title');
+  openModal(item.dataset.type, titleEl ? titleEl.textContent : '');
+});
+
 fetch('pci_schedule.json')
   .then(res => res.json())
   .then(data => {
+    classDescriptions = data.meta.class_descriptions || {};
     buildFilterBar(data.meta.colors);
     renderSchedule(data.schedule);
   })
