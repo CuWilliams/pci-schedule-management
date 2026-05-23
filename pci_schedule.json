@@ -46,7 +46,7 @@
       },
       "athletic": {
         "name": "Athletic",
-        "description": "This program is built for young athletes covering the full spectrum from foundational movement and strength development through high-performance sports conditioning. Every session is instructor-led with direct, hands-on coaching tailored to each athlete's current ability — everyone is challenged, regardless of where they're starting from. While hockey is well represented, training is applicable to any sport including soccer, basketball, baseball, and more. Select your age group and delivery format to view class times and availability."
+        "description": "This program is built for young athletes covering the full spectrum from foundational movement and strength development through high-performance sports conditioning. Every session is instructor-led with hands-on coaching tailored to each athlete's current ability — everyone is challenged, regardless of skill level. Hockey dominates but all sports are welcome. Select your age group and delivery format for class times and availability."
       },
       "athletic_online": {
         "name": "Athletic – Online",
@@ -85,7 +85,7 @@
         {
           "time_start": "20:15",
           "time_end": "21:15",
-          "title": "Clarenville Athletic U15 (2013/12+), U18 (2011/10/09) & Junior (2010+)",
+          "title": "Clarenville Athletic U15, U18 & Junior",
           "instructors": ["Ryan Power"],
           "color": "orange",
           "type": "athletic"
@@ -194,7 +194,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green",
           "type": "athletic"
@@ -202,7 +202,7 @@
         {
           "time_start": "18:30",
           "time_end": "19:30",
-          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green",
           "type": "athletic"
@@ -309,9 +309,17 @@
           "type": "athletic"
         },
         {
+          "time_start": "16:00",
+          "time_end": "17:00",
+          "title": "Clarenville Athletic U11 (2017/16)",
+          "instructors": ["Ryan Power"],
+          "color": "orange",
+          "type": "athletic"
+        },
+        {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Clarenville Athletic U15 (2013/12+), U18 (2011/10/09) & Junior (2010+)",
+          "title": "Clarenville Athletic U15, U18 & Junior",
           "instructors": ["Ryan Power"],
           "color": "orange",
           "type": "athletic"
@@ -436,7 +444,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green",
           "type": "athletic"
@@ -452,7 +460,7 @@
         {
           "time_start": "18:30",
           "time_end": "19:30",
-          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green",
           "type": "athletic"
@@ -529,7 +537,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "Clarenville Athletic U15 (2013/12+), U18 (2011/10/09) & Junior (2010+)",
+          "title": "Clarenville Athletic U15, U18 & Junior",
           "instructors": ["Ryan Power"],
           "color": "orange",
           "type": "athletic"
@@ -537,7 +545,7 @@
         {
           "time_start": "17:15",
           "time_end": "18:15",
-          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green",
           "type": "athletic"
@@ -630,7 +638,7 @@
         {
           "time_start": "10:30",
           "time_end": "11:30",
-          "title": "St. John's Athletic U18 (2011/10/09) & Junior (2010+)",
+          "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
           "instructors": ["Ryan Power"],
           "color": "green",
           "type": "athletic"
@@ -638,7 +646,7 @@
         {
           "time_start": "16:00",
           "time_end": "17:00",
-          "title": "St. John's Athletic U15 (2013/12+), U18 (2011/10/09) & Junior (2010+)",
+          "title": "St. John's Athletic U15, U18 & Junior",
           "instructors": ["Ryan Power"],
           "color": "green",
           "type": "athletic"
