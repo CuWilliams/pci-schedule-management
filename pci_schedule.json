@@ -131,6 +131,13 @@
           "color": "red"
         },
         {
+          "time_start": "15:00",
+          "time_end": "16:00",
+          "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09)",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic via Zoom",
@@ -234,14 +241,28 @@
           "type": "functional_hiit"
         },
         {
+          "time_start": "12:00",
+          "time_end": "13:00",
+          "title": "St. John's Athletic Junior (2010+)",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
           "time_start": "13:00",
-          "time_end": "14:30",
+          "time_end": "14:00",
           "title": "St. John's Athletic Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
         {
           "time_start": "15:00",
+          "time_end": "16:00",
+          "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09)",
+          "instructors": ["Jon Reid"],
+          "color": "red"
+        },
+        {
+          "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09) Upper Gym",
           "instructors": ["Jon Reid"],
@@ -346,7 +367,7 @@
         },
         {
           "time_start": "12:00",
-          "time_end": "13:30",
+          "time_end": "13:00",
           "title": "St. John's Athletic Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
@@ -431,16 +452,16 @@
           "color": "green"
         },
         {
-          "time_start": "13:00",
-          "time_end": "14:30",
+          "time_start": "12:00",
+          "time_end": "13:00",
           "title": "St. John's Athletic Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
         {
-          "time_start": "16:00",
-          "time_end": "17:00",
-          "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09) Upper Gym",
+          "time_start": "13:00",
+          "time_end": "14:00",
+          "title": "St. John's Athletic Junior (2010+)",
           "instructors": ["Jon Reid"],
           "color": "red"
         },
