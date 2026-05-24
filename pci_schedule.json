@@ -4,12 +4,12 @@
     "notes": "Weekly repeating schedule for Power Conditioning Inc. Class categories match Studio Bookings app categories.",
     "class_categories": {
           "purple": "St. John's Adult",
-          "green": "St. John's Pro/Athlete - Base",
+          "green": "St. John's Athletic",
           "yellow": "Clarenville Virtual",
-          "orange": "Clarenville Athlete",
-          "blue": "St. John's Athlete Virtual",
+          "orange": "Clarenville Athletic",
+          "blue": "St. John's Virtual",
           "gray": "Clarenville Adult",
-          "red": "St. John's Pro/Athlete - Merger"
+          "red": "St. John's Athletic (new)"
         },
     "class_descriptions": {
       "functional_hiit": {
