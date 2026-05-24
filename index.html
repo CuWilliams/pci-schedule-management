@@ -344,9 +344,9 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
 
-let activeColors = new Set();
+let activeCategories = new Set();
 
-function buildFilterBar(colors) {
+function buildFilterBar(categories) {
   const bar = document.getElementById('filterBar');
 
   const clearPill = document.createElement('button');
@@ -355,7 +355,7 @@ function buildFilterBar(colors) {
   clearPill.textContent = 'All';
   bar.appendChild(clearPill);
 
-  Object.entries(colors).forEach(([color, label]) => {
+  Object.entries(categories).forEach(([color, label]) => {
     const pill = document.createElement('button');
     pill.className = 'filter-pill';
     pill.dataset.color = color;
@@ -375,20 +375,20 @@ function buildFilterBar(colors) {
     if (!pill) return;
 
     if (pill.dataset.color === 'all') {
-      activeColors.clear();
+      activeCategories.clear();
     } else {
-      if (activeColors.has(pill.dataset.color)) {
-        activeColors.delete(pill.dataset.color);
+      if (activeCategories.has(pill.dataset.color)) {
+        activeCategories.delete(pill.dataset.color);
       } else {
-        activeColors.add(pill.dataset.color);
+        activeCategories.add(pill.dataset.color);
       }
     }
 
     bar.querySelectorAll('.filter-pill').forEach(p => {
       if (p.dataset.color === 'all') {
-        p.classList.toggle('active', activeColors.size === 0);
+        p.classList.toggle('active', activeCategories.size === 0);
       } else {
-        p.classList.toggle('active', activeColors.has(p.dataset.color));
+        p.classList.toggle('active', activeCategories.has(p.dataset.color));
       }
     });
 
@@ -401,7 +401,7 @@ function applyFilter() {
     const items = block.querySelectorAll('.class-item');
     let visible = 0;
     items.forEach(item => {
-      const show = activeColors.size === 0 || activeColors.has(item.dataset.color);
+      const show = activeCategories.size === 0 || activeCategories.has(item.dataset.color);
       item.classList.toggle('hidden', !show);
       if (show) visible++;
     });
@@ -476,7 +476,7 @@ fetch('pci_schedule.json')
   .then(res => res.json())
   .then(data => {
     classDescriptions = data.meta.class_descriptions || {};
-    buildFilterBar(data.meta.colors);
+    buildFilterBar(data.meta.class_categories);
     renderSchedule(data.schedule);
   })
   .catch(err => {

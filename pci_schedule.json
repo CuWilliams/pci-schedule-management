@@ -1,8 +1,8 @@
 {
   "meta": {
     "version": "1.0",
-    "notes": "Weekly repeating schedule for Power Conditioning Inc. Colors match Studio Bookings app categories.",
-    "colors": {
+    "notes": "Weekly repeating schedule for Power Conditioning Inc. Class categories match Studio Bookings app categories.",
+    "class_categories": {
           "purple": "St. John's Adult",
           "green": "St. John's Pro/Athlete - Base",
           "yellow": "Clarenville Virtual",
