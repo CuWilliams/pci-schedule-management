@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCI Admin — Schedule Manager</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand:   #1a1a2e;
+      --accent:  #5B8CDE;
+      --danger:  #D95050;
+      --success: #4CAF50;
+      --border:  #e0e0e0;
+      --bg:      #f4f5f7;
+      --white:   #fff;
+      --text:    #111;
+      --muted:   #777;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Auth Gate ─────────────────────────────────────────────────────────── */
+    #authGate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--brand);
+    }
+
+    .auth-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .auth-card h1 { font-size: 20px; font-weight: 700; color: var(--brand); margin-bottom: 4px; }
+
+    .auth-card .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .auth-card label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .auth-card input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: monospace;
+      margin-bottom: 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .auth-card input:focus { border-color: var(--accent); }
+
+    .auth-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    #authError {
+      font-size: 12px;
+      color: var(--danger);
+      margin-bottom: 12px;
+      min-height: 16px;
+    }
+
+    /* ── App Shell ─────────────────────────────────────────────────────────── */
+    #app { display: none; }
+
+    .topbar {
+      background: var(--brand);
+      color: white;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 52px;
+    }
+
+    .topbar-logo {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .tab-nav { display: flex; gap: 2px; }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.55);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 13px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+    .tab-btn.active { color: white; background: rgba(255,255,255,0.15); }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .dirty-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #FFB300;
+      display: none;
+      flex-shrink: 0;
+    }
+    .dirty-dot.visible { display: block; }
+
+    /* ── Buttons ───────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.15s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .btn:disabled { opacity: 0.4; cursor: default; }
+
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:not(:disabled):hover { background: #4a7ccf; }
+
+    .btn-ghost { background: rgba(255,255,255,0.12); color: white; }
+    .btn-ghost:not(:disabled):hover { background: rgba(255,255,255,0.2); }
+
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:not(:disabled):hover { background: #c44040; }
+
+    .btn-outline { background: var(--white); color: #444; border: 1.5px solid var(--border); }
+    .btn-outline:not(:disabled):hover { background: #f0f0f0; }
+
+    .btn-sm { padding: 5px 11px; font-size: 12px; }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px 7px;
+      border-radius: 4px;
+      font-size: 15px;
+      line-height: 1;
+      color: var(--muted);
+      transition: color 0.15s, background 0.15s;
+      font-family: inherit;
+    }
+
+    .btn-icon:hover { color: var(--text); background: #eee; }
+    .btn-icon.danger:hover { color: var(--danger); background: #faeaea; }
+    .btn-icon:disabled { opacity: 0.3; cursor: default; }
+
+    /* ── Tab Content ───────────────────────────────────────────────────────── */
+    .tab-panel { display: none; padding: 16px; max-width: 800px; margin: 0 auto; }
+    .tab-panel.active { display: block; }
+
+    /* ── Schedule Tab ──────────────────────────────────────────────────────── */
+    .day-section {
+      background: var(--white);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 14px;
+    }
+
+    .day-section-header {
+      background: #3a3a3a;
+      color: white;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .day-name { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+    .class-count { font-size: 11px; color: rgba(255,255,255,0.45); margin-left: 8px; }
+
+    .class-card {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.1s;
+    }
+
+    .class-card:last-of-type { border-bottom: none; }
+    .class-card:hover { background: #fafafa; }
+
+    .class-card-bar { width: 5px; align-self: stretch; flex-shrink: 0; }
+
+    .class-card-info { padding: 9px 12px; flex: 1; min-width: 0; }
+
+    .class-card-time { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.02em; }
+
+    .class-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 1px 0;
+    }
+
+    .class-card-meta { font-size: 11px; color: #999; font-style: italic; }
+
+    .class-card-actions { display: flex; align-items: center; gap: 2px; padding: 0 8px; flex-shrink: 0; }
+
+    .empty-day { padding: 14px; text-align: center; font-size: 12px; color: #bbb; font-style: italic; }
+
+    .add-class-row {
+      padding: 8px 12px;
+      border-top: 1px dashed #e8e8e8;
+    }
+
+    /* ── Instructor Tab ────────────────────────────────────────────────────── */
+    .instructor-row {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .instructor-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e8e8e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    .instructor-name { font-weight: 600; font-size: 14px; }
+    .instructor-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .phase2-badge {
+      font-size: 10px;
+      background: #f0f0f0;
+      color: #aaa;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+
+    .add-instructor-form {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      margin-top: 4px;
+    }
+
+    /* ── Class Types Tab ───────────────────────────────────────────────────── */
+    .type-card {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .type-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .type-card-name { font-size: 14px; font-weight: 700; }
+    .type-card-id { font-size: 11px; color: #aaa; font-family: monospace; }
+    .type-card-desc { font-size: 12px; color: #555; line-height: 1.6; }
+    .online-badge { font-size: 10px; background: #e8f0fc; color: var(--accent); border-radius: 4px; padding: 2px 7px; font-weight: 600; }
+
+    /* ── Form Controls ─────────────────────────────────────────────────────── */
+    .form-group { margin-bottom: 14px; }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-control:focus { border-color: var(--accent); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .warning-text { font-size: 11px; color: #E8803A; margin-top: 4px; }
+
+    /* Toggle */
+    .toggle-row { display: flex; align-items: center; gap: 10px; }
+
+    .toggle { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #ccc;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+    }
+
+    .toggle input:checked + .toggle-slider { background: var(--accent); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    /* Color picker */
+    .color-picker { display: flex; flex-wrap: wrap; gap: 10px; padding: 2px 0; }
+
+    .color-option { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+    .color-option input[type=radio] { display: none; }
+
+    .color-swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2.5px solid transparent;
+      outline: 2px solid transparent;
+      transition: border-color 0.15s, outline-color 0.15s, transform 0.15s;
+    }
+
+    .color-option input:checked + .color-swatch {
+      border-color: #333;
+      outline-color: rgba(0,0,0,0.15);
+      transform: scale(1.18);
+    }
+
+    .color-option-label { font-size: 10px; color: #888; }
+
+    /* Instructor checkboxes */
+    .instructor-checks {
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .instructor-check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .instructor-check-row input { cursor: pointer; }
+
+    /* ── Modals ────────────────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay[hidden] { display: none; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.25);
+    }
+
+    .modal-head {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .modal-head h2 { font-size: 16px; font-weight: 700; }
+
+    .modal-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+
+    .modal-foot {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── Toast ─────────────────────────────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #222;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 999;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.success { background: var(--success); }
+    #toast.error   { background: var(--danger); }
+
+    /* ── Loading overlay ───────────────────────────────────────────────────── */
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,46,0.7);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    #loadingOverlay.visible { display: flex; }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Color bar classes */
+    .bar-purple { background-color: #7B68C8; }
+    .bar-green  { background-color: #6AAF3D; }
+    .bar-yellow { background-color: #E8C840; }
+    .bar-orange { background-color: #E8803A; }
+    .bar-blue   { background-color: #5BA3D9; }
+    .bar-gray   { background-color: #9E9E9E; }
+    .bar-red    { background-color: #D95050; }
+
+    @media (max-width: 600px) {
+      .topbar-logo { display: none; }
+      .tab-btn { padding: 8px 10px; font-size: 12px; }
+      .form-row { grid-template-columns: 1fr; }
+      .topbar { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Auth Gate ─────────────────────────────────────────────────────────── -->
+<div id="authGate">
+  <div class="auth-card">
+    <h1>PCI Schedule Admin</h1>
+    <p class="subtitle">Sign in with a GitHub Personal Access Token to manage the schedule. Your token is stored in this browser only and never leaves your device.</p>
+
+    <label for="patInput">GitHub Personal Access Token</label>
+    <input type="password" id="patInput" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+
+    <p class="auth-hint">
+      Token requires <strong>contents: write</strong> scope on the
+      <strong>CuWilliams/pci-schedule-management</strong> repo.<br>
+      Create one at GitHub → Settings → Developer Settings → Personal access tokens → Fine-grained tokens.
+    </p>
+
+    <div id="authError"></div>
+    <button class="btn btn-primary" id="connectBtn" style="width:100%">Connect</button>
+  </div>
+</div>
+
+<!-- ── Main App ───────────────────────────────────────────────────────────── -->
+<div id="app">
+  <div class="topbar">
+    <span class="topbar-logo">PCI Admin</span>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="schedule">Schedule</button>
+      <button class="tab-btn" data-tab="instructors">Instructors</button>
+      <button class="tab-btn" data-tab="classtypes">Class Types</button>
+    </nav>
+    <div class="topbar-actions">
+      <span class="dirty-dot" id="dirtyDot" title="Unsaved changes"></span>
+      <button class="btn btn-ghost btn-sm" id="discardBtn" disabled>Discard</button>
+      <button class="btn btn-primary btn-sm" id="publishBtn" disabled>&#x2197; Publish</button>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Log out</button>
+    </div>
+  </div>
+
+  <div class="tab-panel active" id="tab-schedule"></div>
+  <div class="tab-panel" id="tab-instructors"></div>
+  <div class="tab-panel" id="tab-classtypes"></div>
+</div>
+
+<!-- ── Class Editor Modal ─────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="classModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="classModalTitle">Add Class</h2>
+      <button class="btn-icon" id="classModalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label class="form-label" for="fieldTitle">Class Title</label>
+        <input type="text" class="form-control" id="fieldTitle" placeholder="e.g. St. John's Functional HIIT (co-ed)">
+        <div class="warning-text" id="titleWarning" style="display:none">
+          Title should start with "St. John's" or "Clarenville" to match Studio Bookings exactly.
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fieldDay">Day</label>
+          <select class="form-control" id="fieldDay">
+            <option value="0">Sunday</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">&nbsp;</label>
+          <div class="toggle-row" style="padding-top:9px">
+            <label class="toggle">
+              <input type="checkbox" id="fieldOnline">
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-size:13px;color:#444">Via Zoom (online)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fieldTimeStart">Start Time</label>
+          <input type="time" class="form-control" id="fieldTimeStart">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fieldTimeEnd">End Time</label>
+          <input type="time" class="form-control" id="fieldTimeEnd">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fieldLocation">Location</label>
+          <select class="form-control" id="fieldLocation"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fieldType">Class Type</label>
+          <select class="form-control" id="fieldType"></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Instructors</label>
+        <div class="instructor-checks" id="fieldInstructors"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Color / Category</label>
+        <div class="color-picker" id="fieldColor"></div>
+        <div id="colorSuggestion" style="font-size:11px;color:var(--accent);margin-top:6px;display:none"></div>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="classModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="classModalSave">Save Class</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Instructor Modal ───────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="instructorModal" hidden>
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <h2 id="instructorModalTitle">Add Instructor</h2>
+      <button class="btn-icon" id="instructorModalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label" for="fieldInstructorName">Display Name</label>
+        <input type="text" class="form-control" id="fieldInstructorName" placeholder="Full name as it appears in Studio Bookings">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="instructorModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="instructorModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Confirm Delete Modal ───────────────────────────────────────────────── -->
+<div class="modal-overlay" id="confirmModal" hidden>
+  <div class="modal" style="max-width:360px">
+    <div class="modal-head">
+      <h2>Confirm Delete</h2>
+      <button class="btn-icon" id="confirmModalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;line-height:1.6;color:#333" id="confirmMessage"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="confirmOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ─────────────────────────────────────────────────────────────── -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ── Loading Overlay ───────────────────────────────────────────────────── -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <span id="loadingMsg">Publishing to GitHub…</span>
+</div>
+
+<script>
+// ── Config ───────────────────────────────────────────────────────────────────
+const CONFIG = {
+  owner:  'CuWilliams',
+  repo:   'pci-schedule-management',
+  branch: 'main'
+};
+
+const TOKEN_KEY = 'pci_admin_pat';
+
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAY_ABBREV = ['sun','mon','tue','wed','thu','fri','sat'];
+
+const COLOR_HEX = {
+  purple: '#7B68C8',
+  green:  '#6AAF3D',
+  yellow: '#E8C840',
+  orange: '#E8803A',
+  blue:   '#5BA3D9',
+  gray:   '#9E9E9E',
+  red:    '#D95050'
+};
+
+// ── State ────────────────────────────────────────────────────────────────────
+const state = {
+  scheduleData:    null,
+  instructors:     [],
+  locations:       [],
+  classTypes:      [],
+  classCategories: {},
+  dirty:           false
+};
+
+let classEditCtx      = null;  // { mode, dayIndex, origDayIndex, classId }
+let instructorEditCtx = null;  // { mode, id }
+let confirmCallback   = null;
+
+// ── Utilities ────────────────────────────────────────────────────────────────
+function formatTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  return `${h % 12 || 12}:${m.toString().padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
+}
+
+function generateId(dayIndex) {
+  return `${DAY_ABBREV[dayIndex]}_${Date.now()}`;
+}
+
+function nameToId(name) {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function resolveInstructorNames(ids) {
+  if (!ids || ids.length === 0) return '';
+  return ids.map(id => {
+    const found = state.instructors.find(i => i.id === id);
+    return found ? found.display_name : id;
+  }).join(', ');
+}
+
+function classesRefCount(instructorId) {
+  let n = 0;
+  state.scheduleData.schedule.forEach(day =>
+    day.classes.forEach(cls => {
+      if (cls.instructor_ids?.includes(instructorId)) n++;
+    })
+  );
+  return n;
+}
+
+function suggestColor(locationId, isOnline, typeId) {
+  const athletic = typeId && (typeId.startsWith('athletic') || typeId.startsWith('pro'));
+  if (locationId === 'stjohns') {
+    if (isOnline) return 'blue';
+    return athletic ? 'green' : 'purple';
+  }
+  if (locationId === 'clarenville') {
+    if (isOnline) return 'yellow';
+    return athletic ? 'orange' : 'gray';
+  }
+  return 'gray';
+}
+
+// ── Dirty / unsaved state ────────────────────────────────────────────────────
+function markDirty(dirty) {
+  state.dirty = dirty;
+  document.getElementById('dirtyDot').classList.toggle('visible', dirty);
+  document.getElementById('publishBtn').disabled = !dirty;
+  document.getElementById('discardBtn').disabled = !dirty;
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `show ${type}`.trim();
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3200);
+}
+
+// ── Loading overlay ──────────────────────────────────────────────────────────
+function setLoading(msg) {
+  const el = document.getElementById('loadingOverlay');
+  if (msg) {
+    document.getElementById('loadingMsg').textContent = msg;
+    el.classList.add('visible');
+  } else {
+    el.classList.remove('visible');
+  }
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+async function validateToken(token) {
+  const res = await fetch(
+    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}`,
+    { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json' } }
+  );
+  if (!res.ok) throw new Error(
+    res.status === 401 ? 'Invalid token.' :
+    res.status === 404 ? 'Repository not found. Check token permissions.' :
+    `GitHub returned ${res.status}.`
+  );
+}
+
+// ── Data Loading ─────────────────────────────────────────────────────────────
+async function loadData() {
+  const [scheduleData, classTypesData, instructorsData, locationsData] = await Promise.all([
+    fetch('pci_schedule.json').then(r => r.json()),
+    fetch('data/class_types.json').then(r => r.json()),
+    fetch('data/instructors.json').then(r => r.json()),
+    fetch('data/locations.json').then(r => r.json())
+  ]);
+
+  state.scheduleData    = scheduleData;
+  state.instructors     = instructorsData.instructors;
+  state.locations       = locationsData.locations;
+  state.classTypes      = classTypesData.class_types;
+  state.classCategories = classTypesData.class_categories;
+}
+
+// ── GitHub Publish ───────────────────────────────────────────────────────────
+async function getFileSHA(path, token) {
+  const res = await fetch(
+    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}?ref=${CONFIG.branch}`,
+    { headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json' } }
+  );
+  if (!res.ok) throw new Error(`Cannot read ${path} from GitHub (${res.status})`);
+  const { sha } = await res.json();
+  return sha;
+}
+
+async function putFile(path, content, sha, token) {
+  // UTF-8-safe base64 encode
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  const res = await fetch(
+    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Update ${path} via PCI Admin`,
+        content: encoded,
+        sha,
+        branch: CONFIG.branch
+      })
+    }
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message || `Failed to write ${path} (${res.status})`);
+  }
+}
+
+async function publishChanges() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) { showToast('Session expired — please log in again.', 'error'); return; }
+
+  setLoading('Publishing to GitHub…');
+  document.getElementById('publishBtn').disabled = true;
+
+  try {
+    const files = {
+      'pci_schedule.json':      JSON.stringify(state.scheduleData, null, 2) + '\n',
+      'data/instructors.json':  JSON.stringify({ instructors: state.instructors }, null, 2) + '\n'
+    };
+
+    for (const [path, content] of Object.entries(files)) {
+      setLoading(`Updating ${path}…`);
+      const sha = await getFileSHA(path, token);
+      await putFile(path, content, sha, token);
+    }
+
+    markDirty(false);
+    showToast('Published! GitHub Pages will update in ~1 minute.', 'success');
+  } catch (e) {
+    showToast(e.message, 'error');
+    document.getElementById('publishBtn').disabled = false;
+  } finally {
+    setLoading(null);
+  }
+}
+
+// ── Tab Navigation ────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+  });
+});
+
+// ── Schedule Rendering ────────────────────────────────────────────────────────
+function renderSchedule() {
+  const container = document.getElementById('tab-schedule');
+  container.innerHTML = '';
+
+  state.scheduleData.schedule.forEach((day, dayIndex) => {
+    const sorted = [...day.classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
+
+    const section = document.createElement('div');
+    section.className = 'day-section';
+    section.innerHTML = `
+      <div class="day-section-header">
+        <span>
+          <span class="day-name">${day.day}</span>
+          <span class="class-count">${sorted.length} ${sorted.length === 1 ? 'class' : 'classes'}</span>
+        </span>
+      </div>
+    `;
+
+    if (sorted.length === 0) {
+      section.innerHTML += `<div class="empty-day">No classes scheduled</div>`;
+    } else {
+      sorted.forEach(cls => {
+        const card = document.createElement('div');
+        card.className = 'class-card';
+        card.innerHTML = `
+          <div class="class-card-bar bar-${cls.color}"></div>
+          <div class="class-card-info">
+            <div class="class-card-time">${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}</div>
+            <div class="class-card-title">${cls.title}</div>
+            <div class="class-card-meta">${resolveInstructorNames(cls.instructor_ids)}</div>
+          </div>
+          <div class="class-card-actions">
+            <button class="btn-icon" title="Edit" data-action="edit" data-id="${cls.id}" data-day="${dayIndex}">&#9998;</button>
+            <button class="btn-icon" title="Duplicate" data-action="dupe" data-id="${cls.id}" data-day="${dayIndex}">&#x2398;</button>
+            <button class="btn-icon danger" title="Delete" data-action="delete" data-id="${cls.id}" data-day="${dayIndex}">&#x1F5D1;</button>
+          </div>
+        `;
+        section.appendChild(card);
+      });
+    }
+
+    section.innerHTML += `
+      <div class="add-class-row">
+        <button class="btn btn-outline btn-sm" data-action="add" data-day="${dayIndex}">+ Add Class</button>
+      </div>
+    `;
+
+    container.appendChild(section);
+  });
+}
+
+// ── Class CRUD ────────────────────────────────────────────────────────────────
+function findClass(dayIndex, classId) {
+  return state.scheduleData.schedule[dayIndex].classes.find(c => c.id === classId);
+}
+
+function confirmDeleteClass(dayIndex, classId) {
+  const cls = findClass(dayIndex, classId);
+  if (!cls) return;
+  showConfirm(
+    `Delete "${cls.title}" from ${DAYS[dayIndex]}? This cannot be undone.`,
+    () => {
+      state.scheduleData.schedule[dayIndex].classes =
+        state.scheduleData.schedule[dayIndex].classes.filter(c => c.id !== classId);
+      markDirty(true);
+      renderSchedule();
+      showToast('Class deleted.');
+    }
+  );
+}
+
+// ── Class Editor Modal ────────────────────────────────────────────────────────
+function buildClassModalStatics() {
+  // Location options
+  document.getElementById('fieldLocation').innerHTML =
+    state.locations.map(l => `<option value="${l.id}">${l.display_name}</option>`).join('');
+
+  // Type options
+  document.getElementById('fieldType').innerHTML =
+    state.classTypes.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
+  // Color options
+  document.getElementById('fieldColor').innerHTML = Object.entries(COLOR_HEX).map(([color, hex]) => `
+    <label class="color-option" title="${state.classCategories[color] || color}">
+      <input type="radio" name="classColor" value="${color}">
+      <span class="color-swatch" style="background:${hex}"></span>
+      <span class="color-option-label">${color}</span>
+    </label>`
+  ).join('');
+
+  // Instructor checkboxes
+  document.getElementById('fieldInstructors').innerHTML =
+    state.instructors.map(i => `
+      <label class="instructor-check-row">
+        <input type="checkbox" name="classInstructor" value="${i.id}">
+        ${i.display_name}
+      </label>`
+    ).join('');
+}
+
+function openClassModal(mode, dayIndex, classId) {
+  classEditCtx = { mode, dayIndex, origDayIndex: dayIndex, classId };
+  buildClassModalStatics();
+
+  let cls = null;
+  if (mode === 'edit') {
+    document.getElementById('classModalTitle').textContent = 'Edit Class';
+    cls = findClass(dayIndex, classId);
+  } else if (mode === 'dupe') {
+    document.getElementById('classModalTitle').textContent = 'Duplicate Class';
+    cls = { ...findClass(dayIndex, classId) };
+  } else {
+    document.getElementById('classModalTitle').textContent = 'Add Class';
+  }
+
+  document.getElementById('fieldTitle').value       = cls?.title || '';
+  document.getElementById('fieldDay').value         = String(dayIndex);
+  document.getElementById('fieldTimeStart').value   = cls?.time_start || '09:00';
+  document.getElementById('fieldTimeEnd').value     = cls?.time_end   || '10:00';
+  document.getElementById('fieldLocation').value    = cls?.location_id || state.locations[0]?.id || '';
+  document.getElementById('fieldOnline').checked    = cls?.is_online   || false;
+  document.getElementById('fieldType').value        = cls?.type        || state.classTypes[0]?.id || '';
+  document.getElementById('titleWarning').style.display = 'none';
+
+  // Set color
+  const color = cls?.color || suggestColor(
+    document.getElementById('fieldLocation').value,
+    document.getElementById('fieldOnline').checked,
+    document.getElementById('fieldType').value
+  );
+  const radio = document.querySelector(`input[name="classColor"][value="${color}"]`);
+  if (radio) radio.checked = true;
+
+  // Set instructor checks
+  const selectedIds = cls?.instructor_ids || [];
+  document.querySelectorAll('input[name="classInstructor"]').forEach(cb => {
+    cb.checked = selectedIds.includes(cb.value);
+  });
+
+  refreshColorSuggestion();
+  document.getElementById('classModal').removeAttribute('hidden');
+  requestAnimationFrame(() => document.getElementById('fieldTitle').focus());
+}
+
+function closeClassModal() {
+  document.getElementById('classModal').setAttribute('hidden', '');
+  classEditCtx = null;
+}
+
+function refreshColorSuggestion() {
+  const locationId = document.getElementById('fieldLocation').value;
+  const isOnline   = document.getElementById('fieldOnline').checked;
+  const typeId     = document.getElementById('fieldType').value;
+  const suggested  = suggestColor(locationId, isOnline, typeId);
+  const el = document.getElementById('colorSuggestion');
+
+  if (suggested) {
+    const label = state.classCategories[suggested] || suggested;
+    el.textContent = `Suggested: ${label} (${suggested})`;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function saveClass() {
+  const title = document.getElementById('fieldTitle').value.trim();
+  if (!title) { alert('Class title is required.'); return; }
+
+  const newDayIndex    = parseInt(document.getElementById('fieldDay').value, 10);
+  const locationId     = document.getElementById('fieldLocation').value;
+  const isOnline       = document.getElementById('fieldOnline').checked;
+  const typeId         = document.getElementById('fieldType').value;
+  const color          = document.querySelector('input[name="classColor"]:checked')?.value || 'gray';
+  const instructorIds  = [...document.querySelectorAll('input[name="classInstructor"]:checked')].map(cb => cb.value);
+  const instructorNames = instructorIds.map(id => state.instructors.find(i => i.id === id)?.display_name || id);
+
+  const { mode, origDayIndex, classId } = classEditCtx;
+
+  const classObj = {
+    id:             mode === 'edit' ? classId : generateId(newDayIndex),
+    time_start:     document.getElementById('fieldTimeStart').value,
+    time_end:       document.getElementById('fieldTimeEnd').value,
+    title,
+    location_id:    locationId,
+    is_online:      isOnline,
+    instructors:    instructorNames,
+    instructor_ids: instructorIds,
+    color,
+    type:           typeId
+  };
+
+  if (mode === 'edit') {
+    state.scheduleData.schedule[origDayIndex].classes =
+      state.scheduleData.schedule[origDayIndex].classes.filter(c => c.id !== classId);
+  }
+
+  state.scheduleData.schedule[newDayIndex].classes.push(classObj);
+
+  markDirty(true);
+  closeClassModal();
+  renderSchedule();
+  showToast(mode === 'edit' ? 'Class updated.' : 'Class added.');
+}
+
+// ── Instructor Manager ────────────────────────────────────────────────────────
+function renderInstructors() {
+  const container = document.getElementById('tab-instructors');
+  container.innerHTML = '';
+
+  const list = document.createElement('div');
+  state.instructors.forEach(inst => {
+    const refCount = classesRefCount(inst.id);
+    const initials = inst.display_name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+
+    const row = document.createElement('div');
+    row.className = 'instructor-row';
+    row.innerHTML = `
+      <div class="instructor-avatar">${initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="instructor-name">${inst.display_name}</div>
+        <div class="instructor-meta">
+          ${refCount} class${refCount !== 1 ? 'es' : ''}
+          &ensp;<span class="phase2-badge">Bio: Phase 2</span>
+          &ensp;<span class="phase2-badge">Photo: Phase 2</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button class="btn-icon" data-inst-action="edit" data-inst-id="${inst.id}" title="Edit name">&#9998;</button>
+        <button class="btn-icon danger" data-inst-action="delete" data-inst-id="${inst.id}"
+          ${refCount > 0 ? 'disabled title="Cannot delete — instructor has active classes"' : 'title="Delete"'}>&#x1F5D1;</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+
+  const addForm = document.createElement('div');
+  addForm.className = 'add-instructor-form';
+  addForm.innerHTML = `
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">Add New Instructor</label>
+      <div style="display:flex;gap:8px">
+        <input type="text" class="form-control" id="newInstructorName" placeholder="Full name">
+        <button class="btn btn-primary btn-sm" id="addInstructorBtn" style="white-space:nowrap;flex-shrink:0">Add</button>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(list);
+  container.appendChild(addForm);
+}
+
+function openInstructorModal(mode, id) {
+  instructorEditCtx = { mode, id };
+  const inst = mode === 'edit' ? state.instructors.find(i => i.id === id) : null;
+  document.getElementById('instructorModalTitle').textContent = mode === 'edit' ? 'Edit Instructor' : 'Add Instructor';
+  document.getElementById('fieldInstructorName').value = inst?.display_name || '';
+  document.getElementById('instructorModal').removeAttribute('hidden');
+  requestAnimationFrame(() => document.getElementById('fieldInstructorName').focus());
+}
+
+function closeInstructorModal() {
+  document.getElementById('instructorModal').setAttribute('hidden', '');
+  instructorEditCtx = null;
+}
+
+function saveInstructor() {
+  const name = document.getElementById('fieldInstructorName').value.trim();
+  if (!name) { alert('Name is required.'); return; }
+
+  const { mode, id } = instructorEditCtx;
+
+  if (mode === 'add') {
+    const newId = nameToId(name);
+    if (state.instructors.find(i => i.id === newId)) {
+      alert('An instructor with a similar name already exists.'); return;
+    }
+    state.instructors.push({ id: newId, display_name: name, bio: null, photo_url: null });
+  } else {
+    const inst = state.instructors.find(i => i.id === id);
+    if (inst) {
+      const oldName = inst.display_name;
+      inst.display_name = name;
+      // Keep legacy instructors string array in sync
+      state.scheduleData.schedule.forEach(day =>
+        day.classes.forEach(cls => {
+          if (cls.instructors) cls.instructors = cls.instructors.map(n => n === oldName ? name : n);
+        })
+      );
+    }
+  }
+
+  markDirty(true);
+  closeInstructorModal();
+  document.getElementById('newInstructorName').value = '';
+  renderInstructors();
+  showToast(mode === 'add' ? 'Instructor added.' : 'Instructor updated.');
+}
+
+function confirmDeleteInstructor(id) {
+  const inst = state.instructors.find(i => i.id === id);
+  if (!inst) return;
+  showConfirm(
+    `Delete "${inst.display_name}"? This cannot be undone.`,
+    () => {
+      state.instructors = state.instructors.filter(i => i.id !== id);
+      markDirty(true);
+      renderInstructors();
+      showToast('Instructor deleted.');
+    }
+  );
+}
+
+// ── Class Types (read-only) ───────────────────────────────────────────────────
+function renderClassTypes() {
+  const container = document.getElementById('tab-classtypes');
+  container.innerHTML = `<p style="font-size:12px;color:#aaa;margin-bottom:14px">
+    Class types and descriptions are read-only in Phase 1.</p>`;
+
+  state.classTypes.forEach(ct => {
+    const card = document.createElement('div');
+    card.className = 'type-card';
+    card.innerHTML = `
+      <div class="type-card-header">
+        <span>
+          <span class="type-card-name">${ct.name}</span>
+          <span class="type-card-id" style="margin-left:8px">${ct.id}</span>
+        </span>
+        ${ct.online_variant_id ? `<span class="online-badge">Has online variant</span>` : ''}
+      </div>
+      <p class="type-card-desc">${ct.description}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ── Confirm Modal ─────────────────────────────────────────────────────────────
+function showConfirm(message, onOk) {
+  document.getElementById('confirmMessage').textContent = message;
+  confirmCallback = onOk;
+  document.getElementById('confirmModal').removeAttribute('hidden');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').setAttribute('hidden', '');
+  confirmCallback = null;
+}
+
+// ── Render All ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderSchedule();
+  renderInstructors();
+  renderClassTypes();
+}
+
+// ── Init App ──────────────────────────────────────────────────────────────────
+async function initApp() {
+  setLoading('Loading schedule data…');
+  try {
+    await loadData();
+  } finally {
+    setLoading(null);
+  }
+
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  renderAll();
+  markDirty(false);
+
+  window.addEventListener('beforeunload', e => {
+    if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+}
+
+// ── Event Listeners (set up once) ─────────────────────────────────────────────
+
+// Auth gate
+document.getElementById('connectBtn').addEventListener('click', async () => {
+  const token = document.getElementById('patInput').value.trim();
+  const errEl = document.getElementById('authError');
+  if (!token) { errEl.textContent = 'Please enter your token.'; return; }
+  errEl.textContent = '';
+  const btn = document.getElementById('connectBtn');
+  btn.disabled = true;
+  btn.textContent = 'Connecting…';
+  try {
+    await validateToken(token);
+    localStorage.setItem(TOKEN_KEY, token);
+    await initApp();
+  } catch (e) {
+    errEl.textContent = e.message;
+    btn.disabled = false;
+    btn.textContent = 'Connect';
+  }
+});
+
+document.getElementById('patInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('connectBtn').click();
+});
+
+// Topbar actions
+document.getElementById('publishBtn').addEventListener('click', publishChanges);
+
+document.getElementById('discardBtn').addEventListener('click', async () => {
+  if (!confirm('Discard all unsaved changes and reload from server?')) return;
+  await loadData();
+  renderAll();
+  markDirty(false);
+  showToast('Changes discarded.');
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  if (state.dirty && !confirm('You have unsaved changes. Log out anyway?')) return;
+  localStorage.removeItem(TOKEN_KEY);
+  location.reload();
+});
+
+// Schedule tab delegation
+document.getElementById('tab-schedule').addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action   = btn.dataset.action;
+  const dayIndex = parseInt(btn.dataset.day, 10);
+  const classId  = btn.dataset.id;
+
+  if (action === 'add')    openClassModal('add',  dayIndex, null);
+  else if (action === 'edit')   openClassModal('edit', dayIndex, classId);
+  else if (action === 'dupe')   openClassModal('dupe', dayIndex, classId);
+  else if (action === 'delete') confirmDeleteClass(dayIndex, classId);
+});
+
+// Class editor modal
+document.getElementById('classModalClose').addEventListener('click', closeClassModal);
+document.getElementById('classModalCancel').addEventListener('click', closeClassModal);
+document.getElementById('classModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeClassModal();
+});
+document.getElementById('classModalSave').addEventListener('click', saveClass);
+
+document.getElementById('fieldTitle').addEventListener('input', () => {
+  const v = document.getElementById('fieldTitle').value.trim();
+  const warn = document.getElementById('titleWarning');
+  warn.style.display = (v && !v.startsWith("St. John's") && !v.startsWith('Clarenville')) ? 'block' : 'none';
+});
+
+['fieldLocation','fieldType'].forEach(id => {
+  document.getElementById(id).addEventListener('change', refreshColorSuggestion);
+});
+document.getElementById('fieldOnline').addEventListener('change', refreshColorSuggestion);
+
+// Instructor tab delegation
+document.getElementById('tab-instructors').addEventListener('click', e => {
+  if (e.target.id === 'addInstructorBtn' || e.target.closest('#addInstructorBtn')) {
+    const prefill = document.getElementById('newInstructorName')?.value.trim() || '';
+    openInstructorModal('add', null);
+    if (prefill) document.getElementById('fieldInstructorName').value = prefill;
+    return;
+  }
+  const btn = e.target.closest('[data-inst-action]');
+  if (!btn || btn.disabled) return;
+  const action = btn.dataset.instAction;
+  const id     = btn.dataset.instId;
+  if (action === 'edit')   openInstructorModal('edit', id);
+  if (action === 'delete') confirmDeleteInstructor(id);
+});
+
+document.getElementById('tab-instructors').addEventListener('keydown', e => {
+  if (e.target.id === 'newInstructorName' && e.key === 'Enter') {
+    document.getElementById('addInstructorBtn')?.click();
+  }
+});
+
+// Instructor modal
+document.getElementById('instructorModalClose').addEventListener('click', closeInstructorModal);
+document.getElementById('instructorModalCancel').addEventListener('click', closeInstructorModal);
+document.getElementById('instructorModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeInstructorModal();
+});
+document.getElementById('instructorModalSave').addEventListener('click', saveInstructor);
+document.getElementById('fieldInstructorName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveInstructor();
+});
+
+// Confirm modal
+document.getElementById('confirmModalClose').addEventListener('click', closeConfirm);
+document.getElementById('confirmCancel').addEventListener('click', closeConfirm);
+document.getElementById('confirmOk').addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  closeConfirm();
+});
+document.getElementById('confirmModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeConfirm();
+});
+
+// Global Escape key
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!document.getElementById('classModal').hidden) { closeClassModal(); return; }
+  if (!document.getElementById('instructorModal').hidden) { closeInstructorModal(); return; }
+  if (!document.getElementById('confirmModal').hidden) { closeConfirm(); }
+});
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+(async () => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    try {
+      await validateToken(token);
+      await initApp();
+    } catch {
+      localStorage.removeItem(TOKEN_KEY);
+      // Auth gate will show since #app remains hidden
+    }
+  }
+})();
+</script>
+</body>
+</html>
