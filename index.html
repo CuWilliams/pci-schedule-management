@@ -908,7 +908,12 @@ function renderCalendarView(schedule) {
     col.dataset.day = day.day;
     col.style.height = `${totalHeight}px`;
 
-    assignLanes(day.classes).forEach(cls => {
+    // Assign lanes per location so cross-location classes don't inflate _totalLanes
+    const byLoc = {};
+    day.classes.forEach(c => (byLoc[c.location_id] = byLoc[c.location_id] || []).push(c));
+    Object.values(byLoc).forEach(locClasses => assignLanes(locClasses));
+
+    day.classes.forEach(cls => {
       const [sh, sm] = cls.time_start.split(':').map(Number);
       const [eh, em] = cls.time_end.split(':').map(Number);
       const startMin = Math.max(0, sh * 60 + sm - HOUR_START * 60);
