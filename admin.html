@@ -207,6 +207,30 @@
     .tab-panel.active { display: block; }
 
     /* ── Schedule Tab ──────────────────────────────────────────────────────── */
+    .admin-loc-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin: -16px -16px 16px;
+      padding: 0 16px;
+      background: var(--white);
+    }
+
+    .admin-loc-tab {
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .admin-loc-tab:hover { color: #333; }
+    .admin-loc-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+
     .day-section {
       background: var(--white);
       border-radius: 8px;
@@ -748,6 +772,8 @@ const TOKEN_KEY = 'pci_admin_pat';
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const DAY_ABBREV = ['sun','mon','tue','wed','thu','fri','sat'];
 
+let activeAdminLocation = 'stjohns';
+
 const COLOR_HEX = {
   purple: '#7B68C8',
   green:  '#6AAF3D',
@@ -955,8 +981,19 @@ function renderSchedule() {
   const container = document.getElementById('tab-schedule');
   container.innerHTML = '';
 
+  // Location selector
+  const locBar = document.createElement('div');
+  locBar.className = 'admin-loc-tabs';
+  locBar.innerHTML = `
+    <button class="admin-loc-tab${activeAdminLocation === 'stjohns' ? ' active' : ''}" data-loc="stjohns">St. John's</button>
+    <button class="admin-loc-tab${activeAdminLocation === 'clarenville' ? ' active' : ''}" data-loc="clarenville">Clarenville</button>
+  `;
+  container.appendChild(locBar);
+
   state.scheduleData.schedule.forEach((day, dayIndex) => {
-    const sorted = [...day.classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
+    const sorted = [...day.classes]
+      .filter(c => c.location_id === activeAdminLocation)
+      .sort((a, b) => a.time_start.localeCompare(b.time_start));
 
     const section = document.createElement('div');
     section.className = 'day-section';
@@ -1070,7 +1107,7 @@ function openClassModal(mode, dayIndex, classId) {
   document.getElementById('fieldDay').value         = String(dayIndex);
   document.getElementById('fieldTimeStart').value   = cls?.time_start || '09:00';
   document.getElementById('fieldTimeEnd').value     = cls?.time_end   || '10:00';
-  document.getElementById('fieldLocation').value    = cls?.location_id || state.locations[0]?.id || '';
+  document.getElementById('fieldLocation').value    = cls?.location_id || activeAdminLocation || state.locations[0]?.id || '';
   document.getElementById('fieldOnline').checked    = cls?.is_online   || false;
   document.getElementById('fieldUpperGym').checked  = cls?.sub_location === 'upper_gym';
   document.getElementById('fieldType').value        = cls?.type        || state.classTypes[0]?.id || '';
@@ -1375,6 +1412,9 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 
 // Schedule tab delegation
 document.getElementById('tab-schedule').addEventListener('click', e => {
+  const locTab = e.target.closest('[data-loc]');
+  if (locTab) { activeAdminLocation = locTab.dataset.loc; renderSchedule(); return; }
+
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
   const action   = btn.dataset.action;
