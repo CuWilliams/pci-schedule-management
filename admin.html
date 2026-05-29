@@ -638,6 +638,13 @@
             </label>
             <span style="font-size:13px;color:#444">Via Zoom (online)</span>
           </div>
+          <div class="toggle-row" style="padding-top:8px">
+            <label class="toggle">
+              <input type="checkbox" id="fieldUpperGym">
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-size:13px;color:#444">Upper Gym</span>
+          </div>
         </div>
       </div>
 
@@ -972,7 +979,7 @@ function renderSchedule() {
           <div class="class-card-bar bar-${cls.color}"></div>
           <div class="class-card-info">
             <div class="class-card-time">${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}</div>
-            <div class="class-card-title">${cls.title}</div>
+            <div class="class-card-title">${cls.title}${cls.sub_location === 'upper_gym' ? ' <span style="font-size:10px;font-weight:700;color:#888;letter-spacing:0.04em">↑ UPPER</span>' : ''}</div>
             <div class="class-card-meta">${resolveInstructorNames(cls.instructor_ids)}</div>
           </div>
           <div class="class-card-actions">
@@ -1065,6 +1072,7 @@ function openClassModal(mode, dayIndex, classId) {
   document.getElementById('fieldTimeEnd').value     = cls?.time_end   || '10:00';
   document.getElementById('fieldLocation').value    = cls?.location_id || state.locations[0]?.id || '';
   document.getElementById('fieldOnline').checked    = cls?.is_online   || false;
+  document.getElementById('fieldUpperGym').checked  = cls?.sub_location === 'upper_gym';
   document.getElementById('fieldType').value        = cls?.type        || state.classTypes[0]?.id || '';
   document.getElementById('titleWarning').style.display = 'none';
 
@@ -1123,11 +1131,14 @@ function saveClass() {
 
   const { mode, origDayIndex, classId } = classEditCtx;
 
+  const isUpperGym = document.getElementById('fieldUpperGym').checked;
+
   const classObj = {
     id:             mode === 'edit' ? classId : generateId(newDayIndex),
     time_start:     document.getElementById('fieldTimeStart').value,
     time_end:       document.getElementById('fieldTimeEnd').value,
     title,
+    ...(isUpperGym ? { sub_location: 'upper_gym' } : {}),
     location_id:    locationId,
     is_online:      isOnline,
     instructors:    instructorNames,

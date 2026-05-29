@@ -454,6 +454,16 @@
       -webkit-box-orient: vertical;
     }
 
+    .cal-block-gym-tag {
+      font-size: 8px;
+      font-weight: 700;
+      color: #555;
+      margin-top: 2px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
     .cal-class-block.hidden { display: none; }
   </style>
 </head>
@@ -528,6 +538,12 @@ function formatTime(t) {
   const period = h >= 12 ? 'PM' : 'AM';
   const hour = h % 12 || 12;
   return `${hour}:${m.toString().padStart(2,'0')} ${period}`;
+}
+
+function displayTitle(cls) {
+  return cls.title
+    .replace(/^St\.\s*John's\s+/i, '')
+    .replace(/^Clarenville\s+/i, '');
 }
 
 function openModal(typeKey, classTitle) {
@@ -717,7 +733,7 @@ function renderSchedule(schedule) {
 
         const title = document.createElement('div');
         title.className = 'class-title';
-        title.textContent = cls.title;
+        title.textContent = displayTitle(cls);
 
         const instructor = document.createElement('div');
         instructor.className = 'class-instructor';
@@ -747,6 +763,43 @@ document.getElementById('schedule').addEventListener('click', e => {
 });
 
 // ── Calendar / Week view renderer ────────────────────────
+
+function assignLanes(classes) {
+  const sorted = [...classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
+  sorted.forEach(c => { c._lane = 0; c._totalLanes = 1; });
+
+  function overlaps(a, b) {
+    return a.time_start < b.time_end && b.time_start < a.time_end;
+  }
+
+  const visited = new Set();
+  sorted.forEach((cls, i) => {
+    if (visited.has(i)) return;
+    const group = [i];
+    visited.add(i);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      sorted.forEach((other, j) => {
+        if (visited.has(j)) return;
+        if (group.some(k => overlaps(sorted[k], sorted[j]))) {
+          group.push(j); visited.add(j); changed = true;
+        }
+      });
+    }
+    const laneEnds = [];
+    group.map(k => sorted[k])
+         .sort((a, b) => a.time_start.localeCompare(b.time_start))
+         .forEach(c => {
+           let lane = laneEnds.findIndex(end => c.time_start >= end);
+           if (lane === -1) { lane = laneEnds.length; laneEnds.push(c.time_end); }
+           else laneEnds[lane] = c.time_end;
+           c._lane = lane;
+         });
+    group.forEach(k => { sorted[k]._totalLanes = laneEnds.length; });
+  });
+  return sorted;
+}
 
 function renderCalendarView(schedule) {
   // Populate sticky day-header bar
@@ -790,7 +843,7 @@ function renderCalendarView(schedule) {
     col.dataset.day = day.day;
     col.style.height = `${totalHeight}px`;
 
-    day.classes.forEach(cls => {
+    assignLanes(day.classes).forEach(cls => {
       const [sh, sm] = cls.time_start.split(':').map(Number);
       const [eh, em] = cls.time_end.split(':').map(Number);
       const startMin = Math.max(0, sh * 60 + sm - HOUR_START * 60);
@@ -808,16 +861,31 @@ function renderCalendarView(schedule) {
       block.style.top    = `${topPx}px`;
       block.style.height = `${heightPx}px`;
 
+      // Lane-based horizontal positioning
+      const gap = 2;
+      const pct = 100 / cls._totalLanes;
+      block.style.left  = `calc(${cls._lane * pct}% + ${gap}px)`;
+      block.style.width = `calc(${pct}% - ${gap * 2}px)`;
+      block.style.right = '';
+
       const timeEl = document.createElement('div');
       timeEl.className = 'cal-block-time';
       timeEl.textContent = formatTime(cls.time_start);
 
       const titleEl = document.createElement('div');
       titleEl.className = 'cal-block-title';
-      titleEl.textContent = cls.title;
+      titleEl.textContent = displayTitle(cls);
 
       block.appendChild(timeEl);
       block.appendChild(titleEl);
+
+      if (cls.sub_location === 'upper_gym') {
+        const tag = document.createElement('div');
+        tag.className = 'cal-block-gym-tag';
+        tag.textContent = '↑ Upper';
+        block.appendChild(tag);
+      }
+
       col.appendChild(block);
     });
 
