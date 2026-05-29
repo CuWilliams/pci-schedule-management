@@ -1,0 +1,73 @@
+{
+  "class_categories": {
+    "purple": "St. John's Adult",
+    "green":  "St. John's Athletic",
+    "yellow": "Clarenville Virtual",
+    "orange": "Clarenville Athletic",
+    "blue":   "St. John's Virtual",
+    "gray":   "Clarenville Adult",
+    "red":    "St. John's Athletic (new)"
+  },
+  "class_types": [
+    {
+      "id": "functional_hiit",
+      "name": "Functional HIIT",
+      "online_variant_id": "functional_hiit_online",
+      "description": "Functional HIIT at Power Conditioning combines high-intensity interval training with functional movement across a fully equipped open-floor facility — free weights, sleds, battle ropes, squat racks, and more. Every class is instructor-led with hands-on coaching, so movements are adapted to your fitness level and goals in real time. No matter where you're starting from, you're never just left to figure it out on your own."
+    },
+    {
+      "id": "functional_hiit_online",
+      "name": "Functional HIIT – Online",
+      "online_variant_id": null,
+      "description": "Functional HIIT combines high-intensity interval training with functional movement to build real strength, endurance, and results. Every class is instructor-led with hands-on coaching, with real-time modifications called out for whatever equipment you have available at home. Join live via Zoom and train alongside in-studio participants — same class, same coaching, same results. To receive your Zoom link, make sure you register for the online class."
+    },
+    {
+      "id": "cardio_core",
+      "name": "Cardio & Core",
+      "online_variant_id": "cardio_core_online",
+      "description": "Cardio & Core is a high-energy class focused on building cardiovascular endurance and a stronger, more stable core through bodyweight-driven movements and light resistance training. Every session is instructor-led with hands-on coaching, so exercises are adapted to suit your current fitness level and keep you progressing. It's a full-body burn with a purpose — and you'll never be left guessing what to do next."
+    },
+    {
+      "id": "cardio_core_online",
+      "name": "Cardio & Core – Online",
+      "online_variant_id": null,
+      "description": "Cardio & Core is a high-energy class focused on building cardiovascular endurance and a stronger, more stable core through bodyweight-driven movements and light resistance training. The instructor calls out modifications throughout the class so you can follow along effectively from home with whatever you have on hand. Join live via Zoom and get the same coached experience as everyone in the studio. To receive your Zoom link, make sure you register for the online class."
+    },
+    {
+      "id": "flexibility_mobility",
+      "name": "Flexibility & Mobility",
+      "online_variant_id": "flexibility_mobility_online",
+      "description": "Flexibility & Mobility is a dedicated stretching class designed to improve range of motion, reduce tension, and keep your body moving and feeling its best. Each session is instructor-led with hands-on guidance, ensuring every stretch is performed correctly and tailored to where your body is at that day. Flexibility and mobility are foundational to long-term health and injury prevention — this is the class that ties everything else together."
+    },
+    {
+      "id": "flexibility_mobility_online",
+      "name": "Flexibility & Mobility – Online",
+      "online_variant_id": null,
+      "description": "Flexibility & Mobility is a dedicated stretching class designed to improve range of motion, reduce tension, and keep your body moving and feeling its best. The instructor provides real-time guidance and modifications so every stretch translates effectively to your home environment. Flexibility and mobility are foundational to long-term health and injury prevention — this is the class that ties everything else together. To receive your Zoom link, make sure you register for the online class."
+    },
+    {
+      "id": "pro",
+      "name": "St. John's PRO",
+      "online_variant_id": "pro_online",
+      "description": "This is elite-level sports conditioning for athletes who are already performing at or near the professional level — built around the demands of your sport, your body, and your goals. Every session is instructor-led with direct, hands-on coaching tailored to where you are in your season and your career. While hockey is well represented, this program welcomes athletes across all sports. Pro-level athletes only — by invitation."
+    },
+    {
+      "id": "pro_online",
+      "name": "St. John's PRO – Online",
+      "online_variant_id": null,
+      "description": "Elite-level sports conditioning doesn't stop when you're on the road — this is the same pro-level program, delivered in real time via Zoom alongside in-studio athletes. Ryan and his coaching staff are actively coaching throughout every session, providing the same direct, personalized instruction whether you're in the room or not. Pro-level athletes only — by invitation. To receive your Zoom link, make sure you register for the online class."
+    },
+    {
+      "id": "athletic",
+      "name": "Athletic",
+      "online_variant_id": "athletic_online",
+      "description": "This program is built for young athletes covering the full spectrum from foundational movement and strength development through high-performance sports conditioning. Every session is instructor-led with hands-on coaching tailored to each athlete's current ability — everyone is challenged, regardless of skill level. Hockey dominates but all sports are welcome. Select your age group and delivery format for class times and availability."
+    },
+    {
+      "id": "athletic_online",
+      "name": "Athletic – Online",
+      "online_variant_id": null,
+      "description": "The same high-quality sports conditioning your athlete gets in the studio, delivered in real time via Zoom alongside in-studio participants. Coaches are actively working with online athletes throughout every session, calling out modifications so every exercise translates effectively from home. All sports, all ability levels, U13 to U18 — select your age group and delivery format to view class times and availability. To receive your Zoom link, make sure you register for the online class."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "instructors": [
+    { "id": "ryan_power",       "display_name": "Ryan Power",       "bio": null, "photo_url": null },
+    { "id": "natasha_cobb",     "display_name": "Natasha Cobb",     "bio": null, "photo_url": null },
+    { "id": "brendan_mccarthy", "display_name": "Brendan McCarthy", "bio": null, "photo_url": null },
+    { "id": "jon_reid",         "display_name": "Jon Reid",         "bio": null, "photo_url": null },
+    { "id": "rhonda_parsons",   "display_name": "Rhonda Parsons",   "bio": null, "photo_url": null },
+    { "id": "greg_pittman",     "display_name": "Greg Pittman",     "bio": null, "photo_url": null }
+  ]
+}

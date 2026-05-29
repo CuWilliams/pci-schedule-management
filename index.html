@@ -290,7 +290,7 @@
 
 <div class="schedule" id="schedule"></div>
 
-<footer>Generated from pci_schedule.json</footer>
+<footer>Power Conditioning Inc.</footer>
 
 <div id="descModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
   <div class="modal-sheet">
@@ -304,6 +304,7 @@
 
 <script>
 let classDescriptions = {};
+let instructorMap = {};
 
 const COLOR_HEX = {
   purple: '#7B68C8',
@@ -450,7 +451,10 @@ function renderSchedule(schedule) {
 
         const instructor = document.createElement('div');
         instructor.className = 'class-instructor';
-        instructor.textContent = 'With ' + cls.instructors.join(', ');
+        const names = cls.instructor_ids
+          ? cls.instructor_ids.map(id => instructorMap[id] || id)
+          : (cls.instructors || []);
+        instructor.textContent = 'With ' + names.join(', ');
 
         body.appendChild(time);
         body.appendChild(title);
@@ -472,12 +476,18 @@ document.getElementById('schedule').addEventListener('click', e => {
   openModal(item.dataset.type, titleEl ? titleEl.textContent : '');
 });
 
-fetch('pci_schedule.json')
-  .then(res => res.json())
-  .then(data => {
-    classDescriptions = data.meta.class_descriptions || {};
-    buildFilterBar(data.meta.class_categories);
-    renderSchedule(data.schedule);
+Promise.all([
+  fetch('pci_schedule.json').then(r => r.json()),
+  fetch('data/class_types.json').then(r => r.json()),
+  fetch('data/instructors.json').then(r => r.json())
+])
+  .then(([scheduleData, classTypesData, instructorsData]) => {
+    instructorsData.instructors.forEach(i => { instructorMap[i.id] = i.display_name; });
+    classTypesData.class_types.forEach(ct => {
+      classDescriptions[ct.id] = { name: ct.name, description: ct.description };
+    });
+    buildFilterBar(classTypesData.class_categories);
+    renderSchedule(scheduleData.schedule);
   })
   .catch(err => {
     document.getElementById('schedule').textContent = 'Failed to load schedule.';

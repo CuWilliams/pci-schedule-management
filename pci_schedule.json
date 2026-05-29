@@ -1,100 +1,69 @@
 {
   "meta": {
-    "version": "1.0",
-    "notes": "Weekly repeating schedule for Power Conditioning Inc. Class categories match Studio Bookings app categories.",
-    "class_categories": {
-          "purple": "St. John's Adult",
-          "green": "St. John's Athletic",
-          "yellow": "Clarenville Virtual",
-          "orange": "Clarenville Athletic",
-          "blue": "St. John's Virtual",
-          "gray": "Clarenville Adult",
-          "red": "St. John's Athletic (new)"
-        },
-    "class_descriptions": {
-      "functional_hiit": {
-        "name": "Functional HIIT",
-        "description": "Functional HIIT at Power Conditioning combines high-intensity interval training with functional movement across a fully equipped open-floor facility — free weights, sleds, battle ropes, squat racks, and more. Every class is instructor-led with hands-on coaching, so movements are adapted to your fitness level and goals in real time. No matter where you're starting from, you're never just left to figure it out on your own."
-      },
-      "cardio_core": {
-        "name": "Cardio & Core",
-        "description": "Cardio & Core is a high-energy class focused on building cardiovascular endurance and a stronger, more stable core through bodyweight-driven movements and light resistance training. Every session is instructor-led with hands-on coaching, so exercises are adapted to suit your current fitness level and keep you progressing. It's a full-body burn with a purpose — and you'll never be left guessing what to do next."
-      },
-      "flexibility_mobility": {
-        "name": "Flexibility & Mobility",
-        "description": "Flexibility & Mobility is a dedicated stretching class designed to improve range of motion, reduce tension, and keep your body moving and feeling its best. Each session is instructor-led with hands-on guidance, ensuring every stretch is performed correctly and tailored to where your body is at that day. Flexibility and mobility are foundational to long-term health and injury prevention — this is the class that ties everything else together."
-      },
-      "functional_hiit_online": {
-        "name": "Functional HIIT – Online",
-        "description": "Functional HIIT combines high-intensity interval training with functional movement to build real strength, endurance, and results. Every class is instructor-led with hands-on coaching, with real-time modifications called out for whatever equipment you have available at home. Join live via Zoom and train alongside in-studio participants — same class, same coaching, same results. To receive your Zoom link, make sure you register for the online class."
-      },
-      "cardio_core_online": {
-        "name": "Cardio & Core – Online",
-        "description": "Cardio & Core is a high-energy class focused on building cardiovascular endurance and a stronger, more stable core through bodyweight-driven movements and light resistance training. The instructor calls out modifications throughout the class so you can follow along effectively from home with whatever you have on hand. Join live via Zoom and get the same coached experience as everyone in the studio. To receive your Zoom link, make sure you register for the online class."
-      },
-      "flexibility_mobility_online": {
-        "name": "Flexibility & Mobility – Online",
-        "description": "Flexibility & Mobility is a dedicated stretching class designed to improve range of motion, reduce tension, and keep your body moving and feeling its best. The instructor provides real-time guidance and modifications so every stretch translates effectively to your home environment. Flexibility and mobility are foundational to long-term health and injury prevention — this is the class that ties everything else together. To receive your Zoom link, make sure you register for the online class."
-      },
-      "pro": {
-        "name": "St. John's PRO",
-        "description": "This is elite-level sports conditioning for athletes who are already performing at or near the professional level — built around the demands of your sport, your body, and your goals. Every session is instructor-led with direct, hands-on coaching tailored to where you are in your season and your career. While hockey is well represented, this program welcomes athletes across all sports. Pro-level athletes only — by invitation."
-      },
-      "pro_online": {
-        "name": "St. John's PRO – Online",
-        "description": "Elite-level sports conditioning doesn't stop when you're on the road — this is the same pro-level program, delivered in real time via Zoom alongside in-studio athletes. Ryan and his coaching staff are actively coaching throughout every session, providing the same direct, personalized instruction whether you're in the room or not. Pro-level athletes only — by invitation. To receive your Zoom link, make sure you register for the online class."
-      },
-      "athletic": {
-        "name": "Athletic",
-        "description": "This program is built for young athletes covering the full spectrum from foundational movement and strength development through high-performance sports conditioning. Every session is instructor-led with hands-on coaching tailored to each athlete's current ability — everyone is challenged, regardless of skill level. Hockey dominates but all sports are welcome. Select your age group and delivery format for class times and availability."
-      },
-      "athletic_online": {
-        "name": "Athletic – Online",
-        "description": "The same high-quality sports conditioning your athlete gets in the studio, delivered in real time via Zoom alongside in-studio participants. Coaches are actively working with online athletes throughout every session, calling out modifications so every exercise translates effectively from home. All sports, all ability levels, U13 to U18 — select your age group and delivery format to view class times and availability. To receive your Zoom link, make sure you register for the online class."
-      }
-    }
+    "version": "2.0",
+    "notes": "Weekly repeating schedule for Power Conditioning Inc. Class categories match Studio Bookings app categories."
   },
   "schedule": [
     {
       "day": "Sunday",
       "classes": [
         {
+          "id": "sun_001",
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "sun_002",
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "Clarenville Functional HIIT via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "yellow",
           "type": "functional_hiit_online"
         },
         {
+          "id": "sun_003",
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "sun_004",
           "time_start": "20:15",
           "time_end": "21:15",
           "title": "Clarenville Athletic U15, U18 & Junior",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "orange",
           "type": "athletic"
         },
         {
+          "id": "sun_005",
           "time_start": "20:15",
           "time_end": "21:15",
           "title": "Clarenville Athletic via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "blue",
           "type": "athletic_online"
         }
@@ -104,130 +73,194 @@
       "day": "Monday",
       "classes": [
         {
+          "id": "mon_001",
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Natasha Cobb"],
+          "instructor_ids": ["natasha_cobb"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "mon_002",
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Brendan McCarthy"],
+          "instructor_ids": ["brendan_mccarthy"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "mon_003",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "mon_004",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "St. John's PRO (Pro athletes only)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "pro"
         },
         {
+          "id": "mon_005",
           "time_start": "10:30",
           "time_end": "11:30",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "mon_006",
           "time_start": "12:00",
           "time_end": "13:00",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "mon_007",
           "time_start": "15:00",
           "time_end": "16:00",
           "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "mon_008",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic via Zoom",
+          "location_id": "stjohns",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "blue",
           "type": "athletic_online"
         },
         {
+          "id": "mon_009",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U15 (2013/12+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "mon_010",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09) Upper Gym",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "mon_011",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Athletic via Zoom",
+          "location_id": "stjohns",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "blue",
           "type": "athletic_online"
         },
         {
+          "id": "mon_012",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "mon_013",
           "time_start": "18:30",
           "time_end": "19:30",
           "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "mon_014",
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Rhonda Parsons"],
+          "instructor_ids": ["rhonda_parsons"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "mon_015",
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Functional HIIT via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Rhonda Parsons"],
+          "instructor_ids": ["rhonda_parsons"],
           "color": "yellow",
           "type": "functional_hiit_online"
         },
         {
+          "id": "mon_016",
           "time_start": "20:15",
           "time_end": "21:15",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         }
@@ -237,122 +270,182 @@
       "day": "Tuesday",
       "classes": [
         {
+          "id": "tue_001",
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power", "Natasha Cobb"],
+          "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "tue_002",
           "time_start": "06:00",
           "time_end": "07:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "tue_003",
           "time_start": "06:00",
           "time_end": "07:00",
           "title": "Clarenville Functional HIIT via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "yellow",
           "type": "functional_hiit_online"
         },
         {
+          "id": "tue_004",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power", "Rhonda Parsons"],
+          "instructor_ids": ["ryan_power", "rhonda_parsons"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "tue_005",
           "time_start": "12:00",
           "time_end": "13:00",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "tue_006",
           "time_start": "13:00",
           "time_end": "14:00",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "tue_007",
           "time_start": "15:00",
           "time_end": "16:00",
           "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "tue_008",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U15 (2013/12+) & U18 (2011/10/09) Upper Gym",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "tue_009",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U11 (2017/16) & U13 (2015/14)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "tue_010",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "Clarenville Athletic U11 (2017/16)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "orange",
           "type": "athletic"
         },
         {
+          "id": "tue_011",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "Clarenville Athletic U15, U18 & Junior",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "orange",
           "type": "athletic"
         },
         {
+          "id": "tue_012",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "tue_013",
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "Clarenville Flexibility & Mobility (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "gray",
           "type": "flexibility_mobility"
         },
         {
+          "id": "tue_014",
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "Clarenville Flexibility & Mobility via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "yellow",
           "type": "flexibility_mobility_online"
         },
         {
+          "id": "tue_015",
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         }
@@ -362,114 +455,170 @@
       "day": "Wednesday",
       "classes": [
         {
+          "id": "wed_001",
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power", "Natasha Cobb"],
+          "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "wed_002",
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Brendan McCarthy"],
+          "instructor_ids": ["brendan_mccarthy"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "wed_003",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Rhonda Parsons"],
+          "instructor_ids": ["rhonda_parsons"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "wed_004",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Rhonda Parsons"],
+          "instructor_ids": ["rhonda_parsons"],
           "color": "yellow",
           "type": "functional_hiit_online"
         },
         {
+          "id": "wed_005",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "St. John's PRO (Pro athletes only)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "pro"
         },
         {
+          "id": "wed_006",
           "time_start": "10:30",
           "time_end": "11:30",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "wed_007",
           "time_start": "12:00",
           "time_end": "13:00",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "wed_008",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic via Zoom",
+          "location_id": "stjohns",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "blue",
           "type": "athletic_online"
         },
         {
+          "id": "wed_009",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U15 (2013/12+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "wed_010",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Athletic via Zoom",
+          "location_id": "stjohns",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "blue",
           "type": "athletic_online"
         },
         {
+          "id": "wed_011",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "wed_012",
           "time_start": "18:00",
           "time_end": "19:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Greg Pittman"],
+          "instructor_ids": ["greg_pittman"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "wed_013",
           "time_start": "18:30",
           "time_end": "19:30",
           "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "wed_014",
           "time_start": "20:15",
           "time_end": "21:15",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         }
@@ -479,106 +628,158 @@
       "day": "Thursday",
       "classes": [
         {
+          "id": "thu_001",
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power", "Natasha Cobb"],
+          "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "thu_002",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "thu_003",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "St. John's PRO (Pro athletes only)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "pro"
         },
         {
+          "id": "thu_004",
           "time_start": "12:00",
           "time_end": "13:00",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "thu_005",
           "time_start": "13:00",
           "time_end": "14:00",
           "title": "St. John's Athletic Junior (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Jon Reid"],
+          "instructor_ids": ["jon_reid"],
           "color": "red",
           "type": "athletic"
         },
         {
+          "id": "thu_006",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "Clarenville Athletic U13 (2015/14)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "orange",
           "type": "athletic"
         },
         {
+          "id": "thu_007",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U11 (2017/16) & U13 (2015/14)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "thu_008",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "Clarenville Athletic U15, U18 & Junior",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "orange",
           "type": "athletic"
         },
         {
+          "id": "thu_009",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "thu_010",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Athletic via Zoom",
+          "location_id": "stjohns",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "blue",
           "type": "athletic_online"
         },
         {
+          "id": "thu_011",
           "time_start": "19:00",
           "time_end": "20:00",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "thu_012",
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Cardio & Core (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "gray",
           "type": "cardio_core"
         },
         {
+          "id": "thu_013",
           "time_start": "19:30",
           "time_end": "20:30",
           "title": "Clarenville Cardio & Core via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "yellow",
           "type": "cardio_core_online"
         }
@@ -588,82 +789,122 @@
       "day": "Friday",
       "classes": [
         {
+          "id": "fri_001",
           "time_start": "05:30",
           "time_end": "06:30",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power", "Natasha Cobb"],
+          "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "fri_002",
           "time_start": "06:00",
           "time_end": "07:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "fri_003",
           "time_start": "07:00",
           "time_end": "08:00",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         },
         {
+          "id": "fri_004",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT (co-ed)",
+          "location_id": "clarenville",
+          "is_online": false,
           "instructors": ["Rhonda Parsons"],
+          "instructor_ids": ["rhonda_parsons"],
           "color": "gray",
           "type": "functional_hiit"
         },
         {
+          "id": "fri_005",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "Clarenville Functional HIIT via Zoom",
+          "location_id": "clarenville",
+          "is_online": true,
           "instructors": ["Rhonda Parsons"],
+          "instructor_ids": ["rhonda_parsons"],
           "color": "yellow",
           "type": "functional_hiit_online"
         },
         {
+          "id": "fri_006",
           "time_start": "09:00",
           "time_end": "10:00",
           "title": "St. John's PRO (Pro athletes only)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "pro"
         },
         {
+          "id": "fri_007",
           "time_start": "10:30",
           "time_end": "11:30",
           "title": "St. John's Athletic U18 (2011/10/09) & Jr (2010+)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "fri_008",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic U15, U18 & Junior",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "green",
           "type": "athletic"
         },
         {
+          "id": "fri_009",
           "time_start": "16:00",
           "time_end": "17:00",
           "title": "St. John's Athletic via Zoom",
+          "location_id": "stjohns",
+          "is_online": true,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "blue",
           "type": "athletic_online"
         },
         {
+          "id": "fri_010",
           "time_start": "17:15",
           "time_end": "18:15",
           "title": "St. John's Functional HIIT (co-ed)",
+          "location_id": "stjohns",
+          "is_online": false,
           "instructors": ["Ryan Power"],
+          "instructor_ids": ["ryan_power"],
           "color": "purple",
           "type": "functional_hiit"
         }
