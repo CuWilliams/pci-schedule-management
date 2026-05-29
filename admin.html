@@ -109,6 +109,26 @@
       height: 52px;
     }
 
+    .topbar-back {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 5px 8px;
+      border-radius: 5px;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    .topbar-back:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+    }
+
     .topbar-logo {
       font-size: 13px;
       font-weight: 700;
@@ -604,6 +624,10 @@
 <!-- ── Main App ───────────────────────────────────────────────────────────── -->
 <div id="app">
   <div class="topbar">
+    <a class="topbar-back" href="index.html" title="Back to Schedule">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px;height:14px;flex-shrink:0"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Schedule
+    </a>
     <span class="topbar-logo">PCI Admin</span>
     <nav class="tab-nav">
       <button class="tab-btn active" data-tab="schedule">Schedule</button>
