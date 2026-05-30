@@ -4,28 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PCI Admin — Schedule Manager</title>
+  <link rel="stylesheet" href="pci-tokens.css">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Bridge: pci-tokens.css uses --surface; admin.html templates use --white */
+    :root { --white: var(--surface); }
 
-    :root {
-      --brand:   #1a1a2e;
-      --accent:  #5B8CDE;
-      --danger:  #D95050;
-      --success: #4CAF50;
-      --border:  #e0e0e0;
-      --bg:      #f4f5f7;
-      --white:   #fff;
-      --text:    #111;
-      --muted:   #777;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      min-height: 100vh;
-    }
+    body { min-height: 100vh; }
 
     /* ── Auth Gate ─────────────────────────────────────────────────────────── */
     #authGate {
@@ -97,7 +81,7 @@
     #app { display: none; }
 
     .topbar {
-      background: var(--brand);
+      background: var(--pci-black);
       color: white;
       padding: 0 16px;
       display: flex;
@@ -173,53 +157,17 @@
     }
     .dirty-dot.visible { display: block; }
 
-    /* ── Buttons ───────────────────────────────────────────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 7px 14px;
-      border-radius: 6px;
-      border: none;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.15s, background 0.15s;
-      white-space: nowrap;
-      font-family: inherit;
-    }
-
-    .btn:disabled { opacity: 0.4; cursor: default; }
-
-    .btn-primary { background: var(--accent); color: white; }
+    /* ── Buttons (btn, btn-*, btn-icon base from pci-tokens.css) ── */
+    .btn { padding: 7px 14px; font-size: 13px; font-weight: 600; }
+    .btn-primary { background: var(--accent); }
     .btn-primary:not(:disabled):hover { background: #4a7ccf; }
-
-    .btn-ghost { background: rgba(255,255,255,0.12); color: white; }
-    .btn-ghost:not(:disabled):hover { background: rgba(255,255,255,0.2); }
-
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:not(:disabled):hover { background: #c44040; }
-
-    .btn-outline { background: var(--white); color: #444; border: 1.5px solid var(--border); }
-    .btn-outline:not(:disabled):hover { background: #f0f0f0; }
-
-    .btn-sm { padding: 5px 11px; font-size: 12px; }
-
     .btn-icon {
-      background: none;
-      border: none;
-      cursor: pointer;
+      width: auto; height: auto;
       padding: 5px 7px;
-      border-radius: 4px;
       font-size: 15px;
       line-height: 1;
-      color: var(--muted);
-      transition: color 0.15s, background 0.15s;
       font-family: inherit;
     }
-
-    .btn-icon:hover { color: var(--text); background: #eee; }
-    .btn-icon.danger:hover { color: var(--danger); background: #faeaea; }
     .btn-icon:disabled { opacity: 0.3; cursor: default; }
 
     /* ── Tab Content ───────────────────────────────────────────────────────── */
@@ -530,34 +478,11 @@
       flex-shrink: 0;
     }
 
-    /* ── Toast ─────────────────────────────────────────────────────────────── */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(10px);
-      background: #222;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      opacity: 0;
-      transition: opacity 0.2s, transform 0.2s;
-      z-index: 999;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    #toast.success { background: var(--success); }
-    #toast.error   { background: var(--danger); }
-
     /* ── Loading overlay ───────────────────────────────────────────────────── */
     #loadingOverlay {
       position: fixed;
       inset: 0;
-      background: rgba(26,26,46,0.7);
+      background: rgba(10,10,10,0.80);
       z-index: 300;
       display: none;
       align-items: center;
@@ -581,15 +506,6 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Color bar classes */
-    .bar-purple { background-color: #7B68C8; }
-    .bar-green  { background-color: #6AAF3D; }
-    .bar-yellow { background-color: #E8C840; }
-    .bar-orange { background-color: #E8803A; }
-    .bar-blue   { background-color: #5BA3D9; }
-    .bar-gray   { background-color: #9E9E9E; }
-    .bar-red    { background-color: #D95050; }
 
     @media (max-width: 600px) {
       .topbar-logo { display: none; }
@@ -624,7 +540,7 @@
 <!-- ── Main App ───────────────────────────────────────────────────────────── -->
 <div id="app">
   <div class="topbar">
-    <a class="topbar-back" href="index.html" title="Back to Schedule">
+    <a class="topbar-back" href="schedule.html" title="Back to Schedule">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px;height:14px;flex-shrink:0"><polyline points="15 18 9 12 15 6"></polyline></svg>
       Schedule
     </a>

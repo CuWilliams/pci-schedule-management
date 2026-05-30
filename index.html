@@ -3,1001 +3,331 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Power Conditioning Inc. — Weekly Schedule</title>
+  <title>Power Conditioning Inc.</title>
+  <link rel="stylesheet" href="pci-tokens.css">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ── Landing-specific layout ─────────────────────────── */
+    html, body { height: 100%; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: #f0f0f0;
-      color: #111;
-      font-size: 14px;
+    body.landing {
+      background: var(--pci-black);
+      color: var(--pci-white);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    header {
-      background: #fff;
-      border-bottom: 1px solid #ddd;
-      padding: 14px 16px;
-      text-align: center;
+    /* ── Site header ─────────────────────────────────────── */
+    .site-header {
       position: sticky;
       top: 0;
-      z-index: 10;
-    }
-
-    header h1 {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      color: #222;
-    }
-
-    header p {
-      font-size: 11px;
-      color: #888;
-      margin-top: 2px;
-    }
-
-    .view-toggle {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      border: 1.5px solid #ddd;
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .view-btn {
-      padding: 5px 10px;
-      background: #f7f7f7;
-      border: none;
-      font-size: 11px;
-      font-weight: 600;
-      color: #555;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-    }
-
-    .view-btn + .view-btn { border-left: 1.5px solid #ddd; }
-
-    .view-btn.active {
-      background: #3a3a3a;
-      color: #fff;
-    }
-
-    .admin-link {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
+      z-index: 50;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(200,16,46,0.25);
+      height: 56px;
       display: flex;
       align-items: center;
-      gap: 5px;
-      padding: 5px 10px;
-      border-radius: 6px;
-      border: 1.5px solid #ddd;
-      background: #f7f7f7;
-      color: #555;
-      font-size: 11px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-      white-space: nowrap;
+      justify-content: space-between;
+      padding: 0 20px;
     }
 
-    .admin-link:hover {
-      background: #3a3a3a;
-      border-color: #3a3a3a;
-      color: #fff;
-    }
-
-    .admin-link.logged-in {
-      background: #3a3a3a;
-      border-color: #3a3a3a;
-      color: #fff;
-    }
-
-    .admin-link .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #6AAF3D;
-      flex-shrink: 0;
-    }
-
-    .admin-link svg {
-      width: 13px;
-      height: 13px;
-      flex-shrink: 0;
-    }
-
-    /* ── Location tabs ── */
-
-    .location-tabs {
-      background: #fff;
-      border-bottom: 2px solid #ddd;
-      padding: 0 12px;
-      position: sticky;
-      top: 57px;
-      z-index: 9;
-      display: flex;
-      gap: 0;
-    }
-
-    .loc-tab {
-      padding: 10px 18px;
-      background: none;
-      border: none;
-      border-bottom: 3px solid transparent;
+    .site-wordmark {
       font-size: 13px;
-      font-weight: 600;
-      color: #888;
-      cursor: pointer;
-      letter-spacing: 0.01em;
-      transition: color 0.15s, border-color 0.15s;
-      margin-bottom: -2px; /* overlap the bar's bottom border */
-    }
-
-    .loc-tab:hover { color: #333; }
-
-    .loc-tab.active {
-      color: #111;
-      border-bottom-color: #3a3a3a;
-    }
-
-    /* ── List view ── */
-
-    .schedule {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 12px 10px 40px;
-    }
-
-    .day-block {
-      margin-bottom: 16px;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .day-header {
-      background: #3a3a3a;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 700;
+      font-weight: 900;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 8px 12px;
+      color: var(--pci-white);
+      text-decoration: none;
     }
 
-    .class-item {
-      display: flex;
-      align-items: stretch;
-      border-bottom: 1px solid #e8e8e8;
+    .site-wordmark span {
+      color: var(--pci-red);
     }
 
-    .class-item:last-child { border-bottom: none; }
-
-    .color-bar { width: 6px; flex-shrink: 0; }
-
-    .class-body { padding: 8px 10px; flex: 1; }
-
-    .class-time {
-      font-size: 11px;
-      font-weight: 700;
-      color: #555;
-      margin-bottom: 2px;
-      letter-spacing: 0.02em;
-    }
-
-    .class-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: #111;
-      line-height: 1.3;
-      margin-bottom: 2px;
-    }
-
-    .class-instructor {
-      font-size: 11px;
-      color: #777;
-      font-style: italic;
-    }
-
-    .color-purple { background-color: #7B68C8; }
-    .color-green  { background-color: #6AAF3D; }
-    .color-yellow { background-color: #E8C840; }
-    .color-orange { background-color: #E8803A; }
-    .color-blue   { background-color: #5BA3D9; }
-    .color-gray   { background-color: #9E9E9E; }
-    .color-red    { background-color: #D95050; }
-
-    .bg-purple { background-color: #f0eef9; }
-    .bg-green  { background-color: #eef6e7; }
-    .bg-yellow { background-color: #fdfbe8; }
-    .bg-orange { background-color: #fef3ea; }
-    .bg-blue   { background-color: #eaf4fc; }
-    .bg-gray   { background-color: #f5f5f5; }
-    .bg-red    { background-color: #faeaea; }
-
-    .empty-day {
-      padding: 12px;
-      color: #aaa;
-      font-size: 12px;
-      font-style: italic;
-      text-align: center;
-    }
-
-    footer {
-      text-align: center;
-      font-size: 11px;
-      color: #aaa;
-      padding: 16px;
-    }
-
-    /* ── Filter bar ── */
-
-    .filter-bar {
-      background: #fff;
-      border-bottom: 1px solid #ddd;
-      padding: 8px 12px;
-      position: sticky;
-      top: 95px;
-      z-index: 9;
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-
-    .filter-bar::-webkit-scrollbar { display: none; }
-
-    .filter-pill {
+    .header-admin {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      border: 1.5px solid #ddd;
-      background: #f7f7f7;
-      font-size: 11px;
-      font-weight: 600;
-      color: #555;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: border-color 0.15s, background 0.15s, color 0.15s;
-    }
-
-    .filter-pill:hover { border-color: #aaa; background: #eee; }
-
-    .filter-pill.active {
-      border-color: #3a3a3a;
-      background: #3a3a3a;
-      color: #fff;
-    }
-
-    .filter-pill.active .pill-dot { box-shadow: 0 0 0 1.5px rgba(255,255,255,0.6); }
-
-    .pill-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .class-item.hidden  { display: none; }
-    .day-block.hidden   { display: none; }
-
-    .class-item[data-type] { cursor: pointer; }
-    .class-item[data-type]:hover .class-body { background: rgba(0,0,0,0.02); }
-
-    /* ── Modal ── */
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay[hidden] { display: none; }
-
-    .modal-sheet {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 480px;
-      width: calc(100% - 32px);
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .modal-title {
-      font-size: 14px;
+      gap: 6px;
+      padding: 6px 14px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
       font-weight: 700;
-      color: #111;
-      line-height: 1.4;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .header-admin:hover {
+      border-color: rgba(255,255,255,0.40);
+      color: var(--pci-white);
+    }
+    .header-admin.logged-in {
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .header-admin svg { width: 13px; height: 13px; }
+
+    .admin-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+      display: none;
     }
 
-    .modal-close {
-      background: none;
-      border: none;
+    /* ── Hero ────────────────────────────────────────────── */
+    .hero {
+      flex: 0 0 auto;
+      background: var(--pci-black);
+      padding: 72px 24px 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--pci-red);
+      margin-bottom: 20px;
+    }
+
+    .hero-headline {
+      font-size: clamp(48px, 11vw, 96px);
+      font-weight: 900;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--pci-white);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-headline em {
+      font-style: normal;
+      color: var(--pci-red);
+    }
+
+    .hero-sub {
       font-size: 16px;
-      color: #888;
+      font-weight: 400;
+      color: var(--gray-400);
+      letter-spacing: 0.02em;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    /* ── Location select section ─────────────────────────── */
+    .location-select {
+      flex: 1 1 auto;
+      background: var(--gray-100);
+      padding: 48px 24px 64px;
+    }
+
+    .location-select-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 20px;
+    }
+
+    .location-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 580px) {
+      .location-cards { grid-template-columns: 1fr; }
+      .hero { padding: 48px 20px 40px; }
+    }
+
+    .location-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border-left: 5px solid var(--brand);
+      box-shadow: var(--shadow-sm);
+      padding: 28px 28px 24px;
+      text-decoration: none;
+      color: var(--text);
+      min-height: 200px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s;
       cursor: pointer;
-      padding: 0 2px;
-      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .location-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 4px;
+      background: var(--brand);
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+
+    .location-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .location-card:hover::after { opacity: 1; }
+
+    .card-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+
+    .card-label {
+      font-size: 26px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--pci-black);
       line-height: 1;
     }
 
-    .modal-close:hover { color: #333; }
-
-    .modal-desc {
-      font-size: 13px;
-      line-height: 1.6;
-      color: #444;
+    .card-sub {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-top: 6px;
+      letter-spacing: 0.02em;
     }
 
-    @media (max-width: 600px) {
-      .modal-overlay { align-items: flex-end; justify-content: stretch; }
-      .modal-sheet {
-        width: 100%;
-        max-width: none;
-        border-radius: 16px 16px 0 0;
-        animation: slideUp 0.22s ease-out;
-      }
+    .card-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
     }
 
-    @keyframes slideUp {
-      from { transform: translateY(60px); opacity: 0; }
-      to   { transform: translateY(0);   opacity: 1; }
-    }
-
-    /* ── Calendar / Week view ── */
-
-    #calView { display: none; }
-
-    /* Sticky day-name bar — sits outside the horizontal scroll container
-       so position:sticky works relative to the page, not the scroll box. */
-    .cal-day-header-bar {
+    .card-cta {
       display: flex;
-      align-items: stretch;
-      background: #fff;
-      border-bottom: 2px solid #d8d8d8;
-      position: sticky;
-      top: 138px; /* below header (~57px) + location tabs (~38px) + filter bar (~43px) */
-      z-index: 8;
-      overflow: hidden; /* hides scrollbar; JS keeps scrollLeft in sync */
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-top: auto;
     }
 
-    .cal-gutter-cell {
-      width: 44px;
-      flex-shrink: 0;
+    .card-cta svg {
+      width: 14px; height: 14px;
+      transition: transform 0.18s;
     }
 
-    .cal-day-head {
-      flex: 1;
-      min-width: 90px;
+    .location-card:hover .card-cta svg {
+      transform: translateX(4px);
+    }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    footer {
+      background: var(--pci-black);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 20px 24px;
       text-align: center;
       font-size: 11px;
-      font-weight: 700;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #555;
-      padding: 7px 2px;
+      color: rgba(255,255,255,0.25);
     }
-
-    .cal-scroll {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      padding-bottom: 40px;
-    }
-
-    .cal-inner {
-      display: flex;
-      min-width: 674px; /* 44px gutter + 7 × 90px columns */
-    }
-
-    .cal-gutter {
-      width: 44px;
-      flex-shrink: 0;
-      position: relative;
-    }
-
-    .cal-time-label {
-      position: absolute;
-      right: 6px;
-      font-size: 10px;
-      color: #aaa;
-      font-weight: 600;
-      transform: translateY(-50%);
-      white-space: nowrap;
-    }
-
-    /* Hour + half-hour grid lines via CSS gradient — no extra DOM nodes */
-    .cal-day-col {
-      flex: 1;
-      min-width: 90px;
-      position: relative;
-      border-left: 1px solid #e0e0e0;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 31px,
-        #ececec 31px,
-        #ececec 32px,   /* half-hour line at 32px */
-        transparent 32px,
-        transparent 63px,
-        #d4d4d4 63px,
-        #d4d4d4 64px    /* hour line at 64px */
-      );
-      background-size: 100% 64px; /* must match HOUR_HEIGHT in JS */
-    }
-
-    .cal-class-block {
-      position: absolute;
-      left: 2px;
-      right: 2px;
-      border-radius: 4px;
-      padding: 3px 4px 3px 6px;
-      overflow: hidden;
-      cursor: pointer;
-      border-left-width: 3px;
-      border-left-style: solid;
-      transition: opacity 0.1s;
-    }
-
-    .cal-class-block:hover { opacity: 0.75; }
-
-    /* Calendar block colors — higher specificity than plain .color-* so
-       tinted background wins over the solid bar color. */
-    .cal-class-block.color-purple { background-color: #e8e5f8; border-left-color: #7B68C8; }
-    .cal-class-block.color-green  { background-color: #e5f3da; border-left-color: #6AAF3D; }
-    .cal-class-block.color-yellow { background-color: #fdf9e0; border-left-color: #E8C840; }
-    .cal-class-block.color-orange { background-color: #fdeede; border-left-color: #E8803A; }
-    .cal-class-block.color-blue   { background-color: #ddeef9; border-left-color: #5BA3D9; }
-    .cal-class-block.color-gray   { background-color: #eeeeee; border-left-color: #9E9E9E; }
-    .cal-class-block.color-red    { background-color: #fadddd; border-left-color: #D95050; }
-
-    .cal-block-time {
-      font-size: 9px;
-      font-weight: 700;
-      color: #555;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
-    }
-
-    .cal-block-title {
-      font-size: 10px;
-      font-weight: 600;
-      color: #222;
-      line-height: 1.25;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      line-clamp: 4;
-      -webkit-box-orient: vertical;
-    }
-
-    .cal-block-gym-tag {
-      font-size: 8px;
-      font-weight: 700;
-      color: #555;
-      margin-top: 2px;
-      opacity: 0.8;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .cal-class-block.hidden { display: none; }
   </style>
 </head>
-<body>
+<body class="landing">
 
-<header>
-  <a class="admin-link" id="adminLink" href="admin.html">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-    </svg>
-    Admin
-    <span class="status-dot" id="adminDot" style="display:none"></span>
-  </a>
-  <h1>Power Conditioning Inc.</h1>
-  <p>Weekly Schedule — All Classes</p>
-  <div class="view-toggle" id="viewToggle">
-    <button class="view-btn active" data-view="list">List</button>
-    <button class="view-btn" data-view="week">Week</button>
-  </div>
-</header>
+  <header class="site-header">
+    <span class="site-wordmark">Power <span>Conditioning</span> Inc.</span>
+    <a href="admin.html" class="header-admin" id="adminLink" title="Admin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Admin
+      <span class="admin-dot" id="adminDot"></span>
+    </a>
+  </header>
 
-<div class="location-tabs" id="locationTabs">
-  <button class="loc-tab active" data-loc="stjohns">St. John's</button>
-  <button class="loc-tab" data-loc="clarenville">Clarenville</button>
-</div>
+  <section class="hero">
+    <p class="hero-eyebrow">Power Conditioning Inc. &mdash; Performance Centers</p>
+    <h1 class="hero-headline">Train.<br><em>Perform.</em><br>Dominate.</h1>
+    <p class="hero-sub">Two Performance Centers. One standard of excellence.</p>
+  </section>
 
-<div class="filter-bar" id="filterBar"></div>
+  <section class="location-select">
+    <div class="location-select-inner">
+      <p class="section-label">Choose Your Location</p>
+      <div class="location-cards">
 
-<div class="schedule" id="schedule"></div>
+        <a class="location-card" href="schedule.html?loc=stjohns">
+          <p class="card-eyebrow">St. John's, NL</p>
+          <div class="card-label">St. John's</div>
+          <div class="card-sub">Performance Center</div>
+          <div class="card-divider"></div>
+          <div class="card-cta">
+            View Schedule
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+        </a>
 
-<div id="calView">
-  <!-- Day headers live outside calScroll so position:sticky works on the page axis -->
-  <div class="cal-day-header-bar" id="calDayHeaderBar">
-    <div class="cal-gutter-cell"></div>
-  </div>
-  <div class="cal-scroll" id="calScroll">
-    <div class="cal-inner" id="calInner"></div>
-  </div>
-</div>
+        <a class="location-card" href="schedule.html?loc=clarenville">
+          <p class="card-eyebrow">Clarenville, NL</p>
+          <div class="card-label">Clarenville</div>
+          <div class="card-sub">Performance Center</div>
+          <div class="card-divider"></div>
+          <div class="card-cta">
+            View Schedule
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+        </a>
 
-<footer>Power Conditioning Inc.</footer>
-
-<div id="descModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
-  <div class="modal-sheet">
-    <div class="modal-header">
-      <span id="modalTitle" class="modal-title"></span>
-      <button class="modal-close" id="modalClose" aria-label="Close">&#x2715;</button>
+      </div>
     </div>
-    <p id="modalDesc" class="modal-desc"></p>
-  </div>
-</div>
+  </section>
 
-<script>
-// Show logged-in state if PAT already stored from admin session
-(function () {
-  if (localStorage.getItem('pci_admin_pat')) {
-    const link = document.getElementById('adminLink');
-    const dot  = document.getElementById('adminDot');
-    if (link) { link.classList.add('logged-in'); link.title = 'Admin (signed in)'; }
-    if (dot)  dot.style.display = '';
-  }
-})();
+  <footer>
+    &copy; Power Conditioning Inc. &mdash; All rights reserved
+  </footer>
 
-let classDescriptions = {};
-let instructorMap = {};
-
-const COLOR_HEX = {
-  purple: '#7B68C8',
-  green:  '#6AAF3D',
-  yellow: '#E8C840',
-  orange: '#E8803A',
-  blue:   '#5BA3D9',
-  gray:   '#9E9E9E',
-  red:    '#D95050'
-};
-
-const DAY_ABBREVS = {
-  Sunday: 'Sun', Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed',
-  Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat'
-};
-
-const HOUR_START  = 5;   // 5 AM
-const HOUR_END    = 21;  // 9 PM
-const HOUR_HEIGHT = 64;  // px — must match background-size in .cal-day-col CSS
-const TOTAL_HOURS = HOUR_END - HOUR_START;
-
-function formatTime(t) {
-  const [h, m] = t.split(':').map(Number);
-  const period = h >= 12 ? 'PM' : 'AM';
-  const hour = h % 12 || 12;
-  return `${hour}:${m.toString().padStart(2,'0')} ${period}`;
-}
-
-function displayTitle(cls) {
-  return cls.title
-    .replace(/^St\.\s*John's\s+/i, '')
-    .replace(/^Clarenville\s+/i, '');
-}
-
-function openModal(typeKey, classTitle) {
-  const desc = classDescriptions[typeKey];
-  if (!desc) return;
-  document.getElementById('modalTitle').textContent = classTitle;
-  document.getElementById('modalDesc').textContent = desc.description;
-  document.getElementById('descModal').removeAttribute('hidden');
-}
-
-function closeModal() {
-  document.getElementById('descModal').setAttribute('hidden', '');
-}
-
-document.getElementById('modalClose').addEventListener('click', closeModal);
-document.getElementById('descModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-// ── View toggle ──────────────────────────────────────────
-
-let currentView = 'list';
-
-function toggleView(view) {
-  currentView = view;
-  document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === view);
-  });
-  document.getElementById('schedule').style.display = view === 'list' ? '' : 'none';
-  document.getElementById('calView').style.display  = view === 'week' ? 'block' : 'none';
-}
-
-document.getElementById('viewToggle').addEventListener('click', e => {
-  const btn = e.target.closest('.view-btn');
-  if (btn) toggleView(btn.dataset.view);
-});
-
-// ── Location tabs ─────────────────────────────────────────
-
-let activeLocation = 'stjohns';
-
-// Populated at load time: color → Set of location_ids that use it
-const locationColors = { stjohns: new Set(), clarenville: new Set() };
-
-function setLocation(loc) {
-  activeLocation = loc;
-
-  document.querySelectorAll('.loc-tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.loc === loc);
-  });
-
-  // Reset category filter and update pill visibility for the new location
-  activeCategories.clear();
-  document.querySelectorAll('.filter-pill').forEach(p => {
-    if (p.dataset.color === 'all') {
-      p.classList.add('active');
-      p.style.display = '';
-    } else {
-      const visible = locationColors[loc]?.has(p.dataset.color);
-      p.style.display = visible ? '' : 'none';
-      p.classList.remove('active');
-    }
-  });
-
-  applyFilter();
-}
-
-document.getElementById('locationTabs').addEventListener('click', e => {
-  const tab = e.target.closest('.loc-tab');
-  if (tab) setLocation(tab.dataset.loc);
-});
-
-// ── Filter bar ───────────────────────────────────────────
-
-let activeCategories = new Set();
-
-function buildFilterBar(categories) {
-  const bar = document.getElementById('filterBar');
-
-  const clearPill = document.createElement('button');
-  clearPill.className = 'filter-pill active';
-  clearPill.dataset.color = 'all';
-  clearPill.textContent = 'All';
-  bar.appendChild(clearPill);
-
-  Object.entries(categories).forEach(([color, label]) => {
-    const pill = document.createElement('button');
-    pill.className = 'filter-pill';
-    pill.dataset.color = color;
-    pill.title = label;
-
-    const dot = document.createElement('span');
-    dot.className = 'pill-dot';
-    dot.style.backgroundColor = COLOR_HEX[color] || '#999';
-
-    pill.appendChild(dot);
-    pill.appendChild(document.createTextNode(color.charAt(0).toUpperCase() + color.slice(1)));
-    bar.appendChild(pill);
-  });
-
-  bar.addEventListener('click', e => {
-    const pill = e.target.closest('.filter-pill');
-    if (!pill) return;
-
-    if (pill.dataset.color === 'all') {
-      activeCategories.clear();
-    } else {
-      if (activeCategories.has(pill.dataset.color)) {
-        activeCategories.delete(pill.dataset.color);
-      } else {
-        activeCategories.add(pill.dataset.color);
+  <script>
+    (function () {
+      if (localStorage.getItem('pci_admin_pat')) {
+        const link = document.getElementById('adminLink');
+        const dot  = document.getElementById('adminDot');
+        if (link) { link.classList.add('logged-in'); link.title = 'Admin (signed in)'; }
+        if (dot)  dot.style.display = 'block';
       }
-    }
+    })();
+  </script>
 
-    bar.querySelectorAll('.filter-pill').forEach(p => {
-      if (p.dataset.color === 'all') {
-        p.classList.toggle('active', activeCategories.size === 0);
-      } else {
-        p.classList.toggle('active', activeCategories.has(p.dataset.color));
-      }
-    });
-
-    applyFilter();
-  });
-}
-
-function applyFilter() {
-  // List view
-  document.querySelectorAll('.day-block').forEach(block => {
-    const items = block.querySelectorAll('.class-item');
-    let visible = 0;
-    items.forEach(item => {
-      const show = item.dataset.location === activeLocation
-                && (activeCategories.size === 0 || activeCategories.has(item.dataset.color));
-      item.classList.toggle('hidden', !show);
-      if (show) visible++;
-    });
-    block.classList.toggle('hidden', visible === 0);
-  });
-
-  // Calendar view
-  document.querySelectorAll('.cal-class-block').forEach(block => {
-    const show = block.dataset.location === activeLocation
-              && (activeCategories.size === 0 || activeCategories.has(block.dataset.color));
-    block.classList.toggle('hidden', !show);
-  });
-}
-
-// ── List view renderer ───────────────────────────────────
-
-function renderSchedule(schedule) {
-  const container = document.getElementById('schedule');
-
-  schedule.forEach(day => {
-    const block = document.createElement('div');
-    block.className = 'day-block';
-
-    const header = document.createElement('div');
-    header.className = 'day-header';
-    header.textContent = day.day;
-    block.appendChild(header);
-
-    if (day.classes.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'empty-day';
-      empty.textContent = 'No classes scheduled';
-      block.appendChild(empty);
-    } else {
-      const sorted = [...day.classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
-      sorted.forEach(cls => {
-        const item = document.createElement('div');
-        item.className = `class-item bg-${cls.color}`;
-        item.dataset.color = cls.color;
-        item.dataset.location = cls.location_id;
-        if (cls.type) item.dataset.type = cls.type;
-
-        const bar = document.createElement('div');
-        bar.className = `color-bar color-${cls.color}`;
-
-        const body = document.createElement('div');
-        body.className = 'class-body';
-
-        const time = document.createElement('div');
-        time.className = 'class-time';
-        time.textContent = `${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}`;
-
-        const title = document.createElement('div');
-        title.className = 'class-title';
-        title.textContent = displayTitle(cls);
-
-        const instructor = document.createElement('div');
-        instructor.className = 'class-instructor';
-        const names = cls.instructor_ids
-          ? cls.instructor_ids.map(id => instructorMap[id] || id)
-          : (cls.instructors || []);
-        instructor.textContent = 'With ' + names.join(', ');
-
-        body.appendChild(time);
-        body.appendChild(title);
-        body.appendChild(instructor);
-        item.appendChild(bar);
-        item.appendChild(body);
-        block.appendChild(item);
-      });
-    }
-
-    container.appendChild(block);
-  });
-}
-
-document.getElementById('schedule').addEventListener('click', e => {
-  const item = e.target.closest('.class-item[data-type]');
-  if (!item) return;
-  const titleEl = item.querySelector('.class-title');
-  openModal(item.dataset.type, titleEl ? titleEl.textContent : '');
-});
-
-// ── Calendar / Week view renderer ────────────────────────
-
-function assignLanes(classes) {
-  const sorted = [...classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
-  sorted.forEach(c => { c._lane = 0; c._totalLanes = 1; });
-
-  function overlaps(a, b) {
-    return a.time_start < b.time_end && b.time_start < a.time_end;
-  }
-
-  const visited = new Set();
-  sorted.forEach((cls, i) => {
-    if (visited.has(i)) return;
-    const group = [i];
-    visited.add(i);
-    let changed = true;
-    while (changed) {
-      changed = false;
-      sorted.forEach((other, j) => {
-        if (visited.has(j)) return;
-        if (group.some(k => overlaps(sorted[k], sorted[j]))) {
-          group.push(j); visited.add(j); changed = true;
-        }
-      });
-    }
-    const laneEnds = [];
-    group.map(k => sorted[k])
-         .sort((a, b) => a.time_start.localeCompare(b.time_start))
-         .forEach(c => {
-           let lane = laneEnds.findIndex(end => c.time_start >= end);
-           if (lane === -1) { lane = laneEnds.length; laneEnds.push(c.time_end); }
-           else laneEnds[lane] = c.time_end;
-           c._lane = lane;
-         });
-    group.forEach(k => { sorted[k]._totalLanes = laneEnds.length; });
-  });
-  return sorted;
-}
-
-function renderCalendarView(schedule) {
-  // Populate sticky day-header bar
-  const headerBar = document.getElementById('calDayHeaderBar');
-  schedule.forEach(day => {
-    const cell = document.createElement('div');
-    cell.className = 'cal-day-head';
-    cell.textContent = DAY_ABBREVS[day.day] || day.day;
-    headerBar.appendChild(cell);
-  });
-
-  // Keep header scrollLeft in sync with content scroll
-  const calScroll = document.getElementById('calScroll');
-  calScroll.addEventListener('scroll', () => {
-    headerBar.scrollLeft = calScroll.scrollLeft;
-  });
-
-  const inner = document.getElementById('calInner');
-  const totalHeight = TOTAL_HOURS * HOUR_HEIGHT;
-
-  // Time gutter
-  const gutter = document.createElement('div');
-  gutter.className = 'cal-gutter';
-  gutter.style.height = `${totalHeight}px`;
-
-  for (let h = HOUR_START; h < HOUR_END; h++) {
-    const label = document.createElement('div');
-    label.className = 'cal-time-label';
-    label.style.top = `${(h - HOUR_START) * HOUR_HEIGHT}px`;
-    if (h === 12)     label.textContent = '12 PM';
-    else if (h < 12)  label.textContent = `${h} AM`;
-    else              label.textContent = `${h - 12} PM`;
-    gutter.appendChild(label);
-  }
-  inner.appendChild(gutter);
-
-  // Day columns
-  schedule.forEach(day => {
-    const col = document.createElement('div');
-    col.className = 'cal-day-col';
-    col.dataset.day = day.day;
-    col.style.height = `${totalHeight}px`;
-
-    // Assign lanes per location so cross-location classes don't inflate _totalLanes
-    const byLoc = {};
-    day.classes.forEach(c => (byLoc[c.location_id] = byLoc[c.location_id] || []).push(c));
-    Object.values(byLoc).forEach(locClasses => assignLanes(locClasses));
-
-    day.classes.forEach(cls => {
-      const [sh, sm] = cls.time_start.split(':').map(Number);
-      const [eh, em] = cls.time_end.split(':').map(Number);
-      const startMin = Math.max(0, sh * 60 + sm - HOUR_START * 60);
-      const endMin   = Math.min(TOTAL_HOURS * 60, eh * 60 + em - HOUR_START * 60);
-      if (startMin >= endMin) return;
-
-      const topPx    = (startMin / 60) * HOUR_HEIGHT;
-      const heightPx = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, 22);
-
-      const block = document.createElement('div');
-      block.className = `cal-class-block color-${cls.color}`;
-      block.dataset.color = cls.color;
-      block.dataset.location = cls.location_id;
-      if (cls.type) block.dataset.type = cls.type;
-      block.style.top    = `${topPx}px`;
-      block.style.height = `${heightPx}px`;
-
-      // Lane-based horizontal positioning
-      const gap = 2;
-      const pct = 100 / cls._totalLanes;
-      block.style.left  = `calc(${cls._lane * pct}% + ${gap}px)`;
-      block.style.width = `calc(${pct}% - ${gap * 2}px)`;
-      block.style.right = '';
-
-      const timeEl = document.createElement('div');
-      timeEl.className = 'cal-block-time';
-      timeEl.textContent = formatTime(cls.time_start);
-
-      const titleEl = document.createElement('div');
-      titleEl.className = 'cal-block-title';
-      titleEl.textContent = displayTitle(cls);
-
-      block.appendChild(timeEl);
-      block.appendChild(titleEl);
-
-      if (cls.sub_location === 'upper_gym') {
-        const tag = document.createElement('div');
-        tag.className = 'cal-block-gym-tag';
-        tag.textContent = '↑ Upper';
-        block.appendChild(tag);
-      }
-
-      col.appendChild(block);
-    });
-
-    inner.appendChild(col);
-  });
-}
-
-document.getElementById('calView').addEventListener('click', e => {
-  const block = e.target.closest('.cal-class-block[data-type]');
-  if (!block) return;
-  const titleEl = block.querySelector('.cal-block-title');
-  openModal(block.dataset.type, titleEl ? titleEl.textContent : '');
-});
-
-// ── Bootstrap ────────────────────────────────────────────
-
-Promise.all([
-  fetch('pci_schedule.json').then(r => r.json()),
-  fetch('data/class_types.json').then(r => r.json()),
-  fetch('data/instructors.json').then(r => r.json())
-])
-  .then(([scheduleData, classTypesData, instructorsData]) => {
-    instructorsData.instructors.forEach(i => { instructorMap[i.id] = i.display_name; });
-    classTypesData.class_types.forEach(ct => {
-      classDescriptions[ct.id] = { name: ct.name, description: ct.description };
-    });
-    // Build color → location map for filter pill visibility
-    scheduleData.schedule.forEach(day =>
-      day.classes.forEach(cls => {
-        if (locationColors[cls.location_id]) locationColors[cls.location_id].add(cls.color);
-      })
-    );
-
-    buildFilterBar(classTypesData.class_categories);
-    renderSchedule(scheduleData.schedule);
-    renderCalendarView(scheduleData.schedule);
-    setLocation('stjohns'); // apply initial location filter
-  })
-  .catch(err => {
-    document.getElementById('schedule').textContent = 'Failed to load schedule.';
-    console.error(err);
-  });
-</script>
 </body>
 </html>

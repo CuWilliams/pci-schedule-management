@@ -1,0 +1,256 @@
+/* pci-tokens.css — PCI shared design tokens + component classes
+   Edit directly and commit to update the live site. */
+
+:root {
+  /* ── Brand palette ─────────────────────────── */
+  --pci-red:    #C8102E;
+  --pci-red-dk: #A50D25;
+  --pci-black:  #0A0A0A;
+  --pci-white:  #FFFFFF;
+
+  /* ── Neutral scale ─────────────────────────── */
+  --gray-900: #111111;
+  --gray-800: #222222;
+  --gray-700: #3A3A3A;
+  --gray-600: #555555;
+  --gray-500: #777777;
+  --gray-400: #999999;
+  --gray-300: #CCCCCC;
+  --gray-200: #E0E0E0;
+  --gray-100: #F4F4F4;
+  --gray-050: #F9F9F9;
+
+  /* ── Semantic roles ────────────────────────── */
+  --brand:      var(--pci-red);
+  --brand-dark: var(--pci-red-dk);
+  --surface:    var(--pci-white);
+  --bg:         var(--gray-100);
+  --text:       var(--gray-900);
+  --muted:      var(--gray-500);
+  --border:     var(--gray-200);
+
+  /* ── Functional colors ─────────────────────── */
+  --accent:  #5B8CDE;
+  --danger:  #D95050;
+  --success: #4CAF50;
+  --warn:    #FFB300;
+
+  /* ── Class category colors ─────────────────── */
+  --cls-purple: #7B68C8;
+  --cls-green:  #6AAF3D;
+  --cls-yellow: #E8C840;
+  --cls-orange: #E8803A;
+  --cls-blue:   #5BA3D9;
+  --cls-gray:   #9E9E9E;
+  --cls-red:    #D95050;
+
+  /* ── Category tints ────────────────────────── */
+  --cls-purple-tint: #e8e5f8;
+  --cls-green-tint:  #e5f3da;
+  --cls-yellow-tint: #fdf9e0;
+  --cls-orange-tint: #fdeede;
+  --cls-blue-tint:   #ddeef9;
+  --cls-gray-tint:   #eeeeee;
+  --cls-red-tint:    #fadddd;
+
+  /* ── Typography ────────────────────────────── */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* ── Spacing scale ─────────────────────────── */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
+  --sp-4: 16px; --sp-5: 20px; --sp-6: 24px;
+
+  /* ── Shape ─────────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-pill: 20px;
+
+  /* ── Shadows ───────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.10);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.20);
+}
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.btn:disabled { opacity: 0.4; cursor: default; }
+
+.btn-primary { background: var(--brand); color: var(--pci-white); }
+.btn-primary:not(:disabled):hover { background: var(--brand-dark); }
+
+.btn-ghost { background: rgba(255,255,255,0.12); color: var(--pci-white); }
+.btn-ghost:not(:disabled):hover { background: rgba(255,255,255,0.22); }
+
+.btn-danger { background: var(--danger); color: var(--pci-white); }
+.btn-danger:not(:disabled):hover { background: #c44040; }
+
+.btn-outline { background: var(--surface); color: var(--gray-700); border: 1.5px solid var(--border); }
+.btn-outline:not(:disabled):hover { background: var(--gray-100); }
+
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+
+.btn-icon {
+  width: 30px; height: 30px; padding: 0;
+  border-radius: var(--radius-sm);
+  background: none; border: none; cursor: pointer;
+  color: var(--gray-500);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-icon:hover { background: var(--gray-100); color: var(--gray-800); }
+.btn-icon.danger:hover { background: #fdeaea; color: var(--danger); }
+
+/* ── Class category color bars ─────────────────────────────── */
+.color-bar { width: 6px; flex-shrink: 0; }
+
+.color-purple { background-color: var(--cls-purple); }
+.color-green  { background-color: var(--cls-green); }
+.color-yellow { background-color: var(--cls-yellow); }
+.color-orange { background-color: var(--cls-orange); }
+.color-blue   { background-color: var(--cls-blue); }
+.color-gray   { background-color: var(--cls-gray); }
+.color-red    { background-color: var(--cls-red); }
+
+/* ── Category tint row backgrounds ─────────────────────────── */
+.bg-purple { background-color: var(--cls-purple-tint); }
+.bg-green  { background-color: var(--cls-green-tint); }
+.bg-yellow { background-color: var(--cls-yellow-tint); }
+.bg-orange { background-color: var(--cls-orange-tint); }
+.bg-blue   { background-color: var(--cls-blue-tint); }
+.bg-gray   { background-color: var(--cls-gray-tint); }
+.bg-red    { background-color: var(--cls-red-tint); }
+
+/* ── Calendar block colors ─────────────────────────────────── */
+.cal-class-block.color-purple { background-color: var(--cls-purple-tint); border-left-color: var(--cls-purple); }
+.cal-class-block.color-green  { background-color: var(--cls-green-tint);  border-left-color: var(--cls-green); }
+.cal-class-block.color-yellow { background-color: var(--cls-yellow-tint); border-left-color: var(--cls-yellow); }
+.cal-class-block.color-orange { background-color: var(--cls-orange-tint); border-left-color: var(--cls-orange); }
+.cal-class-block.color-blue   { background-color: var(--cls-blue-tint);   border-left-color: var(--cls-blue); }
+.cal-class-block.color-gray   { background-color: var(--cls-gray-tint);   border-left-color: var(--cls-gray); }
+.cal-class-block.color-red    { background-color: var(--cls-red-tint);    border-left-color: var(--cls-red); }
+
+/* ── Admin class card bars ─────────────────────────────────── */
+.bar-purple { background-color: var(--cls-purple); }
+.bar-green  { background-color: var(--cls-green); }
+.bar-yellow { background-color: var(--cls-yellow); }
+.bar-orange { background-color: var(--cls-orange); }
+.bar-blue   { background-color: var(--cls-blue); }
+.bar-gray   { background-color: var(--cls-gray); }
+.bar-red    { background-color: var(--cls-red); }
+
+/* ── Filter pills ──────────────────────────────────────────── */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border);
+  background: var(--gray-050);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-600);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.filter-pill:hover { border-color: var(--gray-400); background: var(--gray-100); }
+.filter-pill.active { border-color: var(--brand); background: var(--brand); color: var(--pci-white); }
+.filter-pill.active .pill-dot { box-shadow: 0 0 0 1.5px rgba(255,255,255,0.6); }
+
+.pill-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Location tabs ─────────────────────────────────────────── */
+.loc-tab {
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-400);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -2px;
+}
+.loc-tab:hover { color: var(--gray-800); }
+.loc-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+/* ── Toast notification ────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--gray-800);
+  color: var(--pci-white);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 999;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.success { background: var(--success); }
+#toast.error   { background: var(--danger); }
+
+/* ── Modal overlay (shared structure) ─────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.50);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+.modal-overlay[hidden] { display: none; }
+
+@media (min-width: 480px) {
+  .modal-overlay {
+    align-items: center;
+    padding: var(--sp-4);
+  }
+}
