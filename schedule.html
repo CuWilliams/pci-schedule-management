@@ -11,52 +11,8 @@
       color: var(--text);
     }
 
-    /* ── Topbar ──────────────────────────────────────────── */
-    .topbar {
-      background: var(--pci-black);
-      color: var(--pci-white);
-      height: 52px;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .topbar-back {
-      color: rgba(255,255,255,0.55);
-      text-decoration: none;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      padding: 5px 8px;
-      border-radius: var(--radius-sm);
-      flex-shrink: 0;
-      transition: background 0.15s, color 0.15s;
-    }
-    .topbar-back:hover { background: rgba(255,255,255,0.08); color: var(--pci-white); }
-
-    .topbar-logo {
-      flex: 1;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: var(--pci-white);
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    /* ── Topbar (schedule-specific overrides; base in pci-tokens.css) ────── */
+    .topbar-logo { flex: 1; text-align: center; font-weight: 900; letter-spacing: 0.10em; }
 
     /* ── View toggle ──────────────────────────────────────── */
     .view-toggle {
@@ -167,7 +123,7 @@
     .class-item {
       display: flex;
       align-items: stretch;
-      border-bottom: 1px solid #e8e8e8;
+      border-bottom: 1px solid var(--border);
     }
     .class-item:last-child { border-bottom: none; }
 
@@ -193,14 +149,6 @@
       font-size: 11px;
       color: var(--muted);
       font-style: italic;
-    }
-
-    .empty-day {
-      padding: 12px;
-      color: var(--gray-400);
-      font-size: 12px;
-      font-style: italic;
-      text-align: center;
     }
 
     footer {
@@ -479,6 +427,7 @@
   </div>
 </div>
 
+<script src="pci-shared.js"></script>
 <script>
 const DEV_MODE_KEY = 'pci_dev_mobile';
 function applyDevMode(enabled) {
@@ -512,16 +461,6 @@ const _initialLocation = (_urlLoc === 'clarenville') ? 'clarenville' : 'stjohns'
 
 let classDescriptions = {};
 let instructorMap = {};
-
-const COLOR_HEX = {
-  purple: '#7B68C8',
-  green:  '#6AAF3D',
-  yellow: '#E8C840',
-  orange: '#E8803A',
-  blue:   '#5BA3D9',
-  gray:   '#9E9E9E',
-  red:    '#D95050'
-};
 
 const DAY_ABBREVS = {
   Sunday: 'Sun', Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed',

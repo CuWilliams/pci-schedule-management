@@ -33,6 +33,7 @@ This is a **zero-dependency static site** — no framework, no bundler, no npm. 
 | `schedule.html` | Public schedule viewer — list + week calendar views |
 | `admin.html` | Auth-gated admin UI — full CRUD + GitHub publish |
 | `pci-tokens.css` | Shared design tokens + component CSS (edit directly and commit; not published via admin) |
+| `pci-shared.js` | Shared JS constants that mirror CSS tokens (e.g. `COLOR_HEX`) — loaded before inline scripts in schedule.html and admin.html |
 | `pci_schedule.json` | Canonical schedule data (v2.0 schema) |
 | `data/class_types.json` | Class type definitions + color-to-category mapping |
 | `data/instructors.json` | Instructor roster |
@@ -109,6 +110,56 @@ Raw titles in the JSON must retain the prefix so they match Studio Bookings exac
 4. GitHub Pages redeploys automatically (~1–2 min)
 
 The Publish button only becomes active when unsaved changes exist (`state.dirty`). A yellow dot in the topbar indicates pending changes. The `beforeunload` event blocks navigation with unsaved changes.
+
+## CSS Design System
+
+`pci-tokens.css` is the **single source of truth** for all visual values. Every new CSS rule must use tokens; never write raw hex codes, raw `rgba()`, or raw `px` radius/spacing values when an equivalent token exists.
+
+### Token quick-reference
+
+| Group | Examples |
+|---|---|
+| Brand | `--pci-red`, `--pci-black`, `--pci-white`, `--pci-black-frosted`, `--brand-border` |
+| Neutrals | `--gray-050` … `--gray-900` (8 steps) |
+| Semantic | `--brand`, `--surface`, `--bg`, `--text`, `--muted`, `--border` |
+| Functional | `--accent`, `--accent-dark`, `--danger`, `--success`, `--warn` |
+| Class colors | `--cls-purple` … `--cls-red` (7 colors + 7 `-tint` variants) |
+| On-dark | `--on-dark-primary/secondary/muted/border/surface/divider` — use these for any text, border, or background on the black topbar or dark surfaces |
+| Shape | `--radius-sm` (4px), `--radius-md` (8px), `--radius-lg` (12px), `--radius-pill` (20px) |
+| Spacing | `--sp-1` (4px) … `--sp-6` (24px) — use for new rules going forward |
+| Shadows | `--shadow-sm/md/lg` |
+
+### Where CSS lives
+
+**`pci-tokens.css`** owns all shared components — classes used by 2+ pages:
+- `.topbar`, `.topbar-back`, `.topbar-logo`, `.topbar-actions`
+- `.btn`, `.btn-primary`, `.btn-ghost`, `.btn-danger`, `.btn-outline`, `.btn-sm`, `.btn-icon`
+- `.filter-pill`, `.pill-dot`, `.loc-tab`
+- `.color-bar`, `.color-{color}`, `.bg-{color}`, `.bar-{color}`, `.cal-class-block.color-{color}`
+- `.modal-overlay`, `.modal-overlay--center`, `.empty-day`
+- `#toast`, `.nav-drawer*`, `.nav-menu-btn`, `.dev-mode-btn`
+- Dev Mode phone simulator (`body.dev-mobile` and its children)
+
+**Page `<style>` blocks** are for page-specific rules and small overrides only — never full re-definitions of classes that already exist in `pci-tokens.css`. Comment any intentional divergence (e.g. admin's `z-index: 50` override or its accent-blue `.btn-primary` re-theme).
+
+### Modal pattern
+
+- **Bottom-sheet modal** (schedule.html): `class="modal-overlay"` — renders as bottom sheet on mobile (<600px), centered on desktop.
+- **Dialog modal** (admin.html): `class="modal-overlay modal-overlay--center"` — always centered. Use this for all form/confirm dialogs. **Never redefine `.modal-overlay` inside a page's `<style>` block** — it will silently override the token and break the responsive behavior.
+
+### Shared JS constants (`pci-shared.js`)
+
+`COLOR_HEX` is declared **once** in `pci-shared.js` and loaded via `<script src="pci-shared.js"></script>` before the inline `<script>` in both `schedule.html` and `admin.html`. Do not re-declare `COLOR_HEX` in any page script. If you add a new class color token to `pci-tokens.css`, update `pci-shared.js` to match.
+
+### Responsive breakpoint
+
+**One breakpoint: `600px`** — all `@media` queries in this project use `max-width: 600px` (mobile) or `min-width: 600px` (desktop). Do not introduce new breakpoint values.
+
+### Adding a new shared component
+
+1. Define the base class in `pci-tokens.css` using token values only.
+2. Add page-specific overrides in the page's `<style>` block with a comment explaining the divergence.
+3. If the component needs a JS color reference, add it to `pci-shared.js`.
 
 ## Key Constraints
 

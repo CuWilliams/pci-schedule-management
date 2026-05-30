@@ -23,7 +23,7 @@
 
     .auth-card {
       background: var(--white);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       padding: 32px;
       max-width: 420px;
       width: 100%;
@@ -43,7 +43,7 @@
       display: block;
       font-size: 11px;
       font-weight: 700;
-      color: #444;
+      color: var(--gray-700);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 6px;
@@ -53,7 +53,7 @@
       width: 100%;
       padding: 10px 12px;
       border: 1.5px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
       font-family: monospace;
       margin-bottom: 12px;
@@ -80,78 +80,36 @@
     /* ── App Shell ─────────────────────────────────────────────────────────── */
     #app { display: none; }
 
-    .topbar {
-      background: var(--pci-black);
-      color: white;
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      height: 52px;
-    }
-
-    .topbar-back {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      color: rgba(255,255,255,0.6);
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      padding: 5px 8px;
-      border-radius: 5px;
-      transition: color 0.15s, background 0.15s;
-      white-space: nowrap;
-      margin-right: 4px;
-    }
-
-    .topbar-back:hover {
-      color: #fff;
-      background: rgba(255,255,255,0.1);
-    }
-
-    .topbar-logo {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-      color: rgba(255,255,255,0.9);
-    }
+    /* admin topbar overlays nav drawer and modals */
+    .topbar { z-index: 50; }
+    .topbar-back { margin-right: 4px; }
+    .topbar-logo { font-size: 13px; letter-spacing: 0.06em; color: var(--on-dark-primary); }
+    .topbar-actions { margin-left: auto; }
 
     .tab-nav { display: flex; gap: 2px; }
 
     .tab-btn {
       background: none;
       border: none;
-      color: rgba(255,255,255,0.55);
+      color: var(--on-dark-secondary);
       font-size: 13px;
       font-weight: 600;
       padding: 8px 13px;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: var(--radius-md);
       transition: color 0.15s, background 0.15s;
       white-space: nowrap;
+      font-family: var(--font-body);
     }
 
-    .tab-btn:hover { color: white; background: rgba(255,255,255,0.08); }
-    .tab-btn.active { color: white; background: rgba(255,255,255,0.15); }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-    }
+    .tab-btn:hover  { color: var(--pci-white); background: var(--on-dark-surface); }
+    .tab-btn.active { color: var(--pci-white); background: rgba(255,255,255,0.15); }
 
     .dirty-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #FFB300;
+      background: var(--warn);
       display: none;
       flex-shrink: 0;
     }
@@ -159,8 +117,9 @@
 
     /* ── Buttons (btn, btn-*, btn-icon base from pci-tokens.css) ── */
     .btn { padding: 7px 14px; font-size: 13px; font-weight: 600; }
+    /* admin uses accent-blue for primary actions instead of brand-red */
     .btn-primary { background: var(--accent); }
-    .btn-primary:not(:disabled):hover { background: #4a7ccf; }
+    .btn-primary:not(:disabled):hover { background: var(--accent-dark); }
     .btn-icon {
       width: auto; height: auto;
       padding: 5px 7px;
@@ -190,26 +149,26 @@
       border-bottom: 3px solid transparent;
       font-size: 13px;
       font-weight: 600;
-      color: #888;
+      color: var(--muted);
       cursor: pointer;
       margin-bottom: -2px;
       transition: color 0.15s, border-color 0.15s;
     }
 
-    .admin-loc-tab:hover { color: #333; }
+    .admin-loc-tab:hover { color: var(--gray-800); }
     .admin-loc-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
 
     .day-section {
       background: var(--white);
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       overflow: hidden;
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       margin-bottom: 14px;
     }
 
     .day-section-header {
-      background: #3a3a3a;
-      color: white;
+      background: var(--gray-700);
+      color: var(--pci-white);
       padding: 10px 14px;
       display: flex;
       align-items: center;
@@ -217,17 +176,17 @@
     }
 
     .day-name { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-    .class-count { font-size: 11px; color: rgba(255,255,255,0.45); margin-left: 8px; }
+    .class-count { font-size: 11px; color: var(--on-dark-muted); margin-left: 8px; }
 
     .class-card {
       display: flex;
       align-items: center;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--gray-100);
       transition: background 0.1s;
     }
 
     .class-card:last-of-type { border-bottom: none; }
-    .class-card:hover { background: #fafafa; }
+    .class-card:hover { background: var(--gray-050); }
 
     .class-card-bar { width: 5px; align-self: stretch; flex-shrink: 0; }
 
@@ -245,21 +204,19 @@
       margin: 1px 0;
     }
 
-    .class-card-meta { font-size: 11px; color: #999; font-style: italic; }
+    .class-card-meta { font-size: 11px; color: var(--gray-400); font-style: italic; }
 
     .class-card-actions { display: flex; align-items: center; gap: 2px; padding: 0 8px; flex-shrink: 0; }
 
-    .empty-day { padding: 14px; text-align: center; font-size: 12px; color: #bbb; font-style: italic; }
-
     .add-class-row {
       padding: 8px 12px;
-      border-top: 1px dashed #e8e8e8;
+      border-top: 1px dashed var(--border);
     }
 
     /* ── Instructor Tab ────────────────────────────────────────────────────── */
     .instructor-row {
       background: var(--white);
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       padding: 12px 14px;
       display: flex;
       align-items: center;
@@ -272,13 +229,13 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: #e8e8e8;
+      background: var(--gray-200);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 13px;
       font-weight: 700;
-      color: #666;
+      color: var(--gray-600);
       flex-shrink: 0;
     }
 
@@ -287,16 +244,16 @@
 
     .phase2-badge {
       font-size: 10px;
-      background: #f0f0f0;
-      color: #aaa;
-      border-radius: 4px;
+      background: var(--gray-100);
+      color: var(--gray-400);
+      border-radius: var(--radius-sm);
       padding: 2px 6px;
       font-weight: 600;
     }
 
     .add-instructor-form {
       background: var(--white);
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       padding: 14px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       margin-top: 4px;
@@ -305,7 +262,7 @@
     /* ── Class Types Tab ───────────────────────────────────────────────────── */
     .type-card {
       background: var(--white);
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       padding: 14px 16px;
       margin-bottom: 10px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -320,8 +277,8 @@
     }
 
     .type-card-name { font-size: 14px; font-weight: 700; }
-    .type-card-id { font-size: 11px; color: #aaa; font-family: monospace; }
-    .type-card-desc { font-size: 12px; color: #555; line-height: 1.6; }
+    .type-card-id { font-size: 11px; color: var(--gray-400); font-family: monospace; }
+    .type-card-desc { font-size: 12px; color: var(--gray-600); line-height: 1.6; }
     .online-badge { font-size: 10px; background: #e8f0fc; color: var(--accent); border-radius: 4px; padding: 2px 7px; font-weight: 600; }
 
     /* ── Form Controls ─────────────────────────────────────────────────────── */
@@ -331,7 +288,7 @@
       display: block;
       font-size: 11px;
       font-weight: 700;
-      color: #555;
+      color: var(--gray-600);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 5px;
@@ -341,7 +298,7 @@
       width: 100%;
       padding: 8px 10px;
       border: 1.5px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
       font-family: inherit;
       color: var(--text);
@@ -354,7 +311,7 @@
 
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-    .warning-text { font-size: 11px; color: #E8803A; margin-top: 4px; }
+    .warning-text { font-size: 11px; color: var(--cls-orange); margin-top: 4px; }
 
     /* Toggle */
     .toggle-row { display: flex; align-items: center; gap: 10px; }
@@ -365,7 +322,7 @@
     .toggle-slider {
       position: absolute;
       inset: 0;
-      background: #ccc;
+      background: var(--gray-300);
       border-radius: 20px;
       cursor: pointer;
       transition: background 0.2s;
@@ -376,7 +333,7 @@
       position: absolute;
       width: 14px;
       height: 14px;
-      background: white;
+      background: var(--pci-white);
       border-radius: 50%;
       top: 3px;
       left: 3px;
@@ -402,17 +359,17 @@
     }
 
     .color-option input:checked + .color-swatch {
-      border-color: #333;
+      border-color: var(--gray-800);
       outline-color: rgba(0,0,0,0.15);
       transform: scale(1.18);
     }
 
-    .color-option-label { font-size: 10px; color: #888; }
+    .color-option-label { font-size: 10px; color: var(--muted); }
 
     /* Instructor checkboxes */
     .instructor-checks {
       border: 1.5px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       padding: 8px 10px;
       max-height: 150px;
       overflow-y: auto;
@@ -432,22 +389,9 @@
     .instructor-check-row input { cursor: pointer; }
 
     /* ── Modals ────────────────────────────────────────────────────────────── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .modal-overlay[hidden] { display: none; }
-
     .modal {
       background: var(--white);
-      border-radius: 12px;
+      border-radius: var(--radius-lg);
       width: 100%;
       max-width: 520px;
       max-height: 92vh;
@@ -489,7 +433,7 @@
       justify-content: center;
       flex-direction: column;
       gap: 12px;
-      color: white;
+      color: var(--pci-white);
       font-size: 14px;
       font-weight: 600;
     }
@@ -500,7 +444,7 @@
       width: 32px;
       height: 32px;
       border: 3px solid rgba(255,255,255,0.3);
-      border-top-color: white;
+      border-top-color: var(--pci-white);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
@@ -599,7 +543,7 @@
 </div>
 
 <!-- ── Class Editor Modal ─────────────────────────────────────────────────── -->
-<div class="modal-overlay" id="classModal" hidden>
+<div class="modal-overlay modal-overlay--center" id="classModal" hidden>
   <div class="modal">
     <div class="modal-head">
       <h2 id="classModalTitle">Add Class</h2>
@@ -689,7 +633,7 @@
 </div>
 
 <!-- ── Instructor Modal ───────────────────────────────────────────────────── -->
-<div class="modal-overlay" id="instructorModal" hidden>
+<div class="modal-overlay modal-overlay--center" id="instructorModal" hidden>
   <div class="modal" style="max-width:380px">
     <div class="modal-head">
       <h2 id="instructorModalTitle">Add Instructor</h2>
@@ -709,14 +653,14 @@
 </div>
 
 <!-- ── Confirm Delete Modal ───────────────────────────────────────────────── -->
-<div class="modal-overlay" id="confirmModal" hidden>
+<div class="modal-overlay modal-overlay--center" id="confirmModal" hidden>
   <div class="modal" style="max-width:360px">
     <div class="modal-head">
       <h2>Confirm Delete</h2>
       <button class="btn-icon" id="confirmModalClose" aria-label="Close">&#x2715;</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;line-height:1.6;color:#333" id="confirmMessage"></p>
+      <p style="font-size:13px;line-height:1.6;color:var(--gray-800)" id="confirmMessage"></p>
     </div>
     <div class="modal-foot">
       <button class="btn btn-outline" id="confirmCancel">Cancel</button>
@@ -734,6 +678,7 @@
   <span id="loadingMsg">Publishing to GitHub…</span>
 </div>
 
+<script src="pci-shared.js"></script>
 <script>
 // ── Config ───────────────────────────────────────────────────────────────────
 const CONFIG = {
@@ -759,16 +704,6 @@ const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Satur
 const DAY_ABBREV = ['sun','mon','tue','wed','thu','fri','sat'];
 
 let activeAdminLocation = 'stjohns';
-
-const COLOR_HEX = {
-  purple: '#7B68C8',
-  green:  '#6AAF3D',
-  yellow: '#E8C840',
-  orange: '#E8803A',
-  blue:   '#5BA3D9',
-  gray:   '#9E9E9E',
-  red:    '#D95050'
-};
 
 // ── State ────────────────────────────────────────────────────────────────────
 const state = {
