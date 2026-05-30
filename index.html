@@ -189,6 +189,7 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      container-type: inline-size;
     }
 
     .location-card::after {
@@ -218,12 +219,12 @@
     }
 
     .card-label {
-      font-size: 26px;
+      font-size: clamp(14px, 5cqw, 26px);
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.03em;
       color: var(--pci-black);
-      line-height: 1;
+      line-height: 1.1;
     }
 
     .card-sub {
@@ -240,6 +241,13 @@
       margin: 20px 0;
     }
 
+    .card-cta-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      margin-top: auto;
+    }
+
     .card-cta {
       display: flex;
       align-items: center;
@@ -249,7 +257,7 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--brand);
-      margin-top: auto;
+      text-decoration: none;
     }
 
     .card-cta svg {
@@ -257,7 +265,7 @@
       transition: transform 0.18s;
     }
 
-    .location-card:hover .card-cta svg {
+    .card-cta:hover svg {
       transform: translateX(4px);
     }
 
@@ -311,33 +319,51 @@
       <p class="section-label">Choose Your Location</p>
       <div class="location-cards">
 
-        <a class="location-card" href="schedule.html?loc=stjohns">
+        <div class="location-card">
           <p class="card-eyebrow">St. John's, NL</p>
-          <div class="card-label">St. John's</div>
+          <div class="card-label">287 Kenmount Road</div>
           <div class="card-sub">Performance Center</div>
           <div class="card-divider"></div>
-          <div class="card-cta">
-            View Schedule
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/>
-              <polyline points="12 5 19 12 12 19"/>
-            </svg>
+          <div class="card-cta-group">
+            <a class="card-cta" href="stjohns.html">
+              View Center
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+            <a class="card-cta" href="schedule.html?loc=stjohns">
+              View Schedule
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
           </div>
-        </a>
+        </div>
 
-        <a class="location-card" href="schedule.html?loc=clarenville">
+        <div class="location-card">
           <p class="card-eyebrow">Clarenville, NL</p>
-          <div class="card-label">Clarenville</div>
+          <div class="card-label">57 Thompson Street</div>
           <div class="card-sub">Performance Center</div>
           <div class="card-divider"></div>
-          <div class="card-cta">
-            View Schedule
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/>
-              <polyline points="12 5 19 12 12 19"/>
-            </svg>
+          <div class="card-cta-group">
+            <a class="card-cta" href="clarenville.html">
+              View Center
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+            <a class="card-cta" href="schedule.html?loc=clarenville">
+              View Schedule
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
           </div>
-        </a>
+        </div>
 
       </div>
     </div>
