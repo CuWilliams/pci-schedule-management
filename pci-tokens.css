@@ -565,3 +565,183 @@ body.dev-mobile .nav-drawer.open { display: block; }
   opacity: 0.3;
   pointer-events: none;
 }
+
+/* ── Credit balance badge ─────────────────────────────────────────────────── */
+.credit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--on-dark-surface);
+  border: 1px solid var(--on-dark-border);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--on-dark-primary);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: default;
+}
+.credit-badge.low   { border-color: var(--warn);   color: var(--warn);   }
+.credit-badge.empty { border-color: var(--danger);  color: var(--danger); }
+
+/* ── Role badge ───────────────────────────────────────────────────────────── */
+.role-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.role-badge.role-owner      { background: var(--cls-red-tint);    color: var(--danger);    }
+.role-badge.role-admin      { background: var(--cls-blue-tint);   color: var(--accent);    }
+.role-badge.role-instructor { background: var(--cls-green-tint);  color: var(--cls-green); }
+.role-badge.role-member     { background: var(--cls-gray-tint);   color: var(--gray-600);  }
+
+/* ── Booking CTA area (schedule.html class items) ─────────────────────────── */
+.class-actions {
+  padding: 4px 10px 8px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* ── Roll call card (instructor.html) ─────────────────────────────────────── */
+.rollcall-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--sp-4);
+}
+.rollcall-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--gray-050);
+}
+.rollcall-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+}
+.rollcall-time {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.attendee-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.attendee-row:last-child { border-bottom: none; }
+.attendee-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+.attendee-row.attended  { background: color-mix(in srgb, var(--success) 8%, transparent); }
+.attendee-row.no-show   { background: color-mix(in srgb, var(--danger)  8%, transparent); }
+.attendee-row.attended  .attendee-name { color: var(--success); }
+.attendee-row.no-show   .attendee-name { color: var(--danger); text-decoration: line-through; }
+
+/* ── Package card (buy-credits.html) ──────────────────────────────────────── */
+.package-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--border);
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.package-card:hover { border-color: var(--brand); box-shadow: var(--shadow-md); }
+.package-info { flex: 1; min-width: 0; }
+.package-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.package-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: var(--sp-1);
+}
+.package-price {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--brand);
+  white-space: nowrap;
+  margin-right: var(--sp-3);
+}
+
+/* ── Coming-soon notice ───────────────────────────────────────────────────── */
+.coming-soon-notice {
+  background: var(--cls-yellow-tint);
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 12px;
+  color: var(--gray-700);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+/* ── Auth status row (index.html header) ──────────────────────────────────── */
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.header-auth-name {
+  color: var(--on-dark-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header-signout {
+  background: none;
+  border: 1px solid var(--on-dark-border);
+  color: var(--on-dark-secondary);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
+}
+.header-signout:hover { border-color: var(--on-dark-primary); color: var(--on-dark-primary); }
+.header-signin {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--on-dark-primary);
+  border: 1px solid var(--on-dark-border);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.header-signin:hover { border-color: var(--on-dark-primary); background: rgba(255,255,255,0.07); }

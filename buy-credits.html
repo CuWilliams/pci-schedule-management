@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy Credits — PCI Bookings App</title>
+  <link rel="stylesheet" href="pci-tokens.css">
+  <style>
+    body { background: var(--bg); }
+
+    .page-content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+    }
+
+    .credits-hero {
+      background: var(--pci-black);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .credits-hero-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--on-dark-muted);
+      margin-bottom: 4px;
+    }
+
+    .credits-hero-count {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--on-dark-primary);
+      line-height: 1;
+    }
+
+    .credits-hero-count.empty { color: var(--danger); }
+    .credits-hero-count.low   { color: var(--warn); }
+
+    .credits-hero-sub {
+      font-size: 12px;
+      color: var(--on-dark-muted);
+      margin-top: 4px;
+    }
+
+    .packages-heading {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .package-credits-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--cls-blue-tint);
+      color: var(--accent);
+      border-radius: var(--radius-pill);
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+<div id="phoneFrame">
+<div id="phoneViewport">
+
+<header class="topbar">
+  <a href="schedule.html" class="topbar-back">← Schedule</a>
+  <div class="topbar-logo">Buy Credits</div>
+  <div class="topbar-actions">
+    <span class="credit-badge" id="topbarCredits"></span>
+  </div>
+</header>
+
+<main class="page-content">
+
+  <!-- Current balance hero -->
+  <div class="credits-hero">
+    <div>
+      <div class="credits-hero-label">Your Credit Balance</div>
+      <div class="credits-hero-count" id="heroCredits">–</div>
+      <div class="credits-hero-sub">Each credit books one class session.</div>
+    </div>
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;opacity:0.15;color:#fff">
+      <circle cx="24" cy="24" r="20"/>
+      <path d="M24 14v4m0 12v4m-7-10h14"/>
+    </svg>
+  </div>
+
+  <!-- Stripe notice -->
+  <div class="coming-soon-notice">
+    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;flex-shrink:0">
+      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+    </svg>
+    Payment integration coming soon — packages are displayed for preview. Purchases are not yet active.
+  </div>
+
+  <!-- Package list -->
+  <div class="packages-heading">Available Packages</div>
+  <div id="packageList">
+    <div style="color:var(--muted);font-size:13px">Loading packages…</div>
+  </div>
+
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+</div><!-- /phoneViewport -->
+<div id="phoneHomeBar"></div>
+<div id="devBadge">DEV | 390</div>
+</div><!-- /phoneFrame -->
+
+<script src="pci-auth.js"></script>
+<script src="pci-shared.js"></script>
+<script>
+// ── Role gate ────────────────────────────────────────────────────────────────
+const session = PciAuth.requireRole(['member', 'instructor', 'admin', 'owner']);
+
+// ── Dev mode ─────────────────────────────────────────────────────────────────
+document.body.classList.toggle('dev-mobile', localStorage.getItem('pci_dev_mobile') === '1');
+
+// ── Credit display ───────────────────────────────────────────────────────────
+function renderCreditDisplay() {
+  const credits = (session.role === 'member' && session.credits != null) ? session.credits : null;
+
+  const heroEl  = document.getElementById('heroCredits');
+  const badgeEl = document.getElementById('topbarCredits');
+
+  if (credits === null) {
+    heroEl.textContent = 'N/A';
+    heroEl.className   = 'credits-hero-count';
+    badgeEl.style.display = 'none';
+    return;
+  }
+
+  heroEl.textContent = credits;
+  heroEl.className   = 'credits-hero-count' + (credits === 0 ? ' empty' : credits <= 2 ? ' low' : '');
+
+  badgeEl.textContent = credits + ' credit' + (credits !== 1 ? 's' : '');
+  badgeEl.className   = 'credit-badge' + (credits === 0 ? ' empty' : credits <= 2 ? ' low' : '');
+}
+
+renderCreditDisplay();
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = ('show' + (type ? ' ' + type : '')).trim();
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3200);
+}
+
+// ── Packages ─────────────────────────────────────────────────────────────────
+fetch('data/packages.json')
+  .then(r => r.json())
+  .then(data => {
+    const list = document.getElementById('packageList');
+    list.innerHTML = '';
+    data.packages
+      .filter(p => p.active)
+      .forEach(pkg => {
+        const dollars = (pkg.price_cents / 100).toFixed(2);
+
+        const card = document.createElement('div');
+        card.className = 'package-card';
+
+        const info = document.createElement('div');
+        info.className = 'package-info';
+
+        const name = document.createElement('div');
+        name.className = 'package-name';
+        name.textContent = pkg.name;
+
+        const pill = document.createElement('span');
+        pill.className = 'package-credits-pill';
+        pill.textContent = pkg.credits + ' credits';
+
+        const desc = document.createElement('div');
+        desc.className = 'package-desc';
+        desc.textContent = pkg.description;
+
+        info.appendChild(name);
+        info.appendChild(document.createTextNode(' '));
+        info.appendChild(pill);
+        info.appendChild(desc);
+
+        const right = document.createElement('div');
+        right.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0';
+
+        const price = document.createElement('div');
+        price.className = 'package-price';
+        price.textContent = '$' + dollars;
+
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-primary btn-sm';
+        btn.textContent = 'Purchase';
+        btn.disabled = true;
+        btn.title = 'Payment integration coming soon';
+        btn.style.opacity = '0.5';
+        btn.addEventListener('click', () => showToast('Payment integration coming soon.', ''));
+
+        right.appendChild(price);
+        right.appendChild(btn);
+
+        card.appendChild(info);
+        card.appendChild(right);
+        list.appendChild(card);
+      });
+  })
+  .catch(() => {
+    document.getElementById('packageList').innerHTML =
+      '<div style="color:var(--danger);font-size:13px">Failed to load packages.</div>';
+  });
+</script>
+</body>
+</html>

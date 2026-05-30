@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instructor — PCI Bookings App</title>
+  <link rel="stylesheet" href="pci-tokens.css">
+  <style>
+    body { background: var(--bg); }
+
+    .page-content {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 16px 16px 80px;
+    }
+
+    .day-selector {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 10px 16px;
+      background: var(--pci-black);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      scrollbar-width: none;
+    }
+    .day-selector::-webkit-scrollbar { display: none; }
+
+    .day-pill {
+      flex-shrink: 0;
+      padding: 5px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--on-dark-secondary);
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .day-pill.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: var(--pci-white);
+    }
+
+    .section-heading {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 20px 0 10px;
+    }
+
+    .rollcall-empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .rollcall-summary {
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    .attendee-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .attendee-row.attended .attendee-actions button[data-mark="attended"],
+    .attendee-row.no-show  .attendee-actions button[data-mark="no_show"] {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .no-bookings-row {
+      padding: var(--sp-4);
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+<div id="phoneFrame">
+<div id="phoneViewport">
+
+<header class="topbar">
+  <a href="schedule.html" class="topbar-back">← Schedule</a>
+  <div class="topbar-logo">Instructor</div>
+  <div class="topbar-actions">
+    <span id="sessionName" style="font-size:12px;color:var(--on-dark-secondary);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px"></span>
+    <button class="btn btn-ghost btn-sm" id="signOutBtn">Sign Out</button>
+  </div>
+</header>
+
+<!-- Day selector -->
+<div class="day-selector" id="daySelector"></div>
+
+<!-- Main content -->
+<main class="page-content" id="rollCallMain">
+  <div class="rollcall-empty-state">Loading…</div>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+</div><!-- /phoneViewport -->
+<div id="phoneHomeBar"></div>
+<div id="devBadge">DEV | 390</div>
+</div><!-- /phoneFrame -->
+
+<script src="pci-auth.js"></script>
+<script src="pci-shared.js"></script>
+<script>
+// ── Role gate ────────────────────────────────────────────────────────────────
+const session = PciAuth.requireRole(['instructor', 'admin', 'owner']);
+
+// ── Dev mode ─────────────────────────────────────────────────────────────────
+const DEV_MODE_KEY = 'pci_dev_mobile';
+document.body.classList.toggle('dev-mobile', localStorage.getItem(DEV_MODE_KEY) === '1');
+
+// ── Session header ───────────────────────────────────────────────────────────
+document.getElementById('sessionName').textContent = session.displayName;
+document.getElementById('signOutBtn').addEventListener('click', () => PciAuth.logout());
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = ('show' + (type ? ' ' + type : '')).trim();
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3200);
+}
+
+// ── Bookings store ────────────────────────────────────────────────────────────
+function getBookings() {
+  try { return JSON.parse(localStorage.getItem(BOOKINGS_KEY)) || []; } catch { return []; }
+}
+function saveBookings(arr) {
+  localStorage.setItem(BOOKINGS_KEY, JSON.stringify(arr));
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const DAYS     = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAY_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+let scheduleData  = null;
+let usersData     = null;
+let selectedDay   = null; // day name string e.g. "Monday"
+
+function formatTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 || 12;
+  return `${hour}:${m.toString().padStart(2,'0')} ${period}`;
+}
+
+function displayTitle(title) {
+  return title.replace(/^St\.\s*John's\s+/i, '').replace(/^Clarenville\s+/i, '');
+}
+
+function getUserName(userId) {
+  if (!usersData) return userId;
+  const u = usersData.users.find(x => x.id === userId);
+  return u ? u.display_name : userId;
+}
+
+// ── Day selector ─────────────────────────────────────────────────────────────
+function buildDaySelector() {
+  const bar = document.getElementById('daySelector');
+  bar.innerHTML = '';
+  DAYS.forEach((day, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'day-pill' + (day === selectedDay ? ' active' : '');
+    btn.textContent = DAY_ABBR[i];
+    btn.dataset.day = day;
+    btn.addEventListener('click', () => selectDay(day));
+    bar.appendChild(btn);
+  });
+}
+
+function selectDay(day) {
+  selectedDay = day;
+  buildDaySelector();
+  renderRollCall();
+}
+
+// ── Filter classes for this instructor ───────────────────────────────────────
+function getInstructorClasses(dayName) {
+  if (!scheduleData) return [];
+  const dayObj = scheduleData.schedule.find(d => d.day === dayName);
+  if (!dayObj) return [];
+
+  const classes = dayObj.classes
+    .slice()
+    .sort((a, b) => a.time_start.localeCompare(b.time_start));
+
+  // Admins and owners see all classes; instructors see only their own
+  if (session.role === 'instructor' && session.instructorId) {
+    return classes.filter(cls =>
+      (cls.instructor_ids || []).includes(session.instructorId)
+    );
+  }
+  return classes;
+}
+
+// ── Render roll call ──────────────────────────────────────────────────────────
+function renderRollCall() {
+  const main = document.getElementById('rollCallMain');
+  const classes = getInstructorClasses(selectedDay);
+
+  if (classes.length === 0) {
+    main.innerHTML = '<div class="rollcall-empty-state">'
+      + (session.role === 'instructor'
+        ? 'No classes scheduled for you on ' + selectedDay + '.'
+        : 'No classes on ' + selectedDay + '.')
+      + '</div>';
+    return;
+  }
+
+  const bookings = getBookings();
+  main.innerHTML = '';
+
+  classes.forEach(cls => {
+    const classBookings = bookings.filter(b => b.class_id === cls.id);
+
+    const card = document.createElement('div');
+    card.className = 'rollcall-card';
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'rollcall-header';
+
+    const colorBar = document.createElement('div');
+    colorBar.style.cssText = `width:4px;height:36px;border-radius:2px;background:var(--cls-${cls.color});flex-shrink:0`;
+
+    const titleEl = document.createElement('span');
+    titleEl.className = 'rollcall-title';
+    titleEl.textContent = displayTitle(cls.title);
+
+    const summary = document.createElement('span');
+    summary.className = 'rollcall-summary';
+    const attended = classBookings.filter(b => b.attended === true).length;
+    summary.textContent = classBookings.length + ' booked' + (attended ? ' · ' + attended + ' attended' : '');
+
+    const timeEl = document.createElement('span');
+    timeEl.className = 'rollcall-time';
+    timeEl.textContent = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+
+    header.appendChild(colorBar);
+    header.appendChild(titleEl);
+    header.appendChild(summary);
+    header.appendChild(timeEl);
+    card.appendChild(header);
+
+    // Attendee list
+    if (classBookings.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'no-bookings-row';
+      empty.textContent = 'No bookings yet for this class.';
+      card.appendChild(empty);
+    } else {
+      classBookings.forEach(booking => {
+        const row = document.createElement('div');
+        row.className = 'attendee-row';
+        row.dataset.bookingId = booking.id;
+        if (booking.attended === true) row.classList.add('attended');
+        else if (booking.status === 'no_show') row.classList.add('no-show');
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'attendee-name';
+        nameEl.textContent = getUserName(booking.user_id);
+
+        const actions = document.createElement('div');
+        actions.className = 'attendee-actions';
+
+        const attendBtn = document.createElement('button');
+        attendBtn.className = 'btn btn-sm btn-outline';
+        attendBtn.dataset.mark = 'attended';
+        attendBtn.textContent = '✓ Attended';
+        attendBtn.style.fontSize = '11px';
+        if (booking.attended === true) attendBtn.style.opacity = '0.4';
+
+        const noShowBtn = document.createElement('button');
+        noShowBtn.className = 'btn btn-sm btn-ghost';
+        noShowBtn.dataset.mark = 'no_show';
+        noShowBtn.textContent = '✗ No Show';
+        noShowBtn.style.fontSize = '11px';
+        if (booking.status === 'no_show') noShowBtn.style.opacity = '0.4';
+
+        actions.appendChild(attendBtn);
+        actions.appendChild(noShowBtn);
+        row.appendChild(nameEl);
+        row.appendChild(actions);
+        card.appendChild(row);
+      });
+    }
+
+    main.appendChild(card);
+  });
+}
+
+// ── Roll call action delegation ───────────────────────────────────────────────
+document.getElementById('rollCallMain').addEventListener('click', e => {
+  const btn = e.target.closest('[data-mark]');
+  if (!btn) return;
+
+  const row = btn.closest('.attendee-row');
+  if (!row) return;
+  const bookingId = row.dataset.bookingId;
+  const mark = btn.dataset.mark;
+
+  const bookings = getBookings();
+  const booking = bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+
+  if (mark === 'attended') {
+    booking.attended = true;
+    booking.status = 'attended';
+    row.classList.remove('no-show');
+    row.classList.add('attended');
+    showToast('Marked as attended.', 'success');
+  } else {
+    booking.attended = false;
+    booking.status = 'no_show';
+    row.classList.remove('attended');
+    row.classList.add('no-show');
+    showToast('Marked as no-show.');
+  }
+
+  saveBookings(bookings);
+  // Refresh summary count
+  renderRollCall();
+});
+
+// ── Data load ─────────────────────────────────────────────────────────────────
+Promise.all([
+  fetch('pci_schedule.json').then(r => r.json()),
+  fetch('data/users.json').then(r => r.json())
+]).then(([sched, users]) => {
+  scheduleData = sched;
+  usersData    = users;
+
+  // Default to today
+  const todayIndex = new Date().getDay();
+  selectedDay = DAYS[todayIndex];
+
+  buildDaySelector();
+  renderRollCall();
+}).catch(err => {
+  document.getElementById('rollCallMain').innerHTML =
+    '<div class="rollcall-empty-state">Failed to load data.</div>';
+  console.error(err);
+});
+</script>
+</body>
+</html>

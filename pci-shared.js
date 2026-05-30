@@ -8,3 +8,15 @@ const COLOR_HEX = {
   gray:   '#9E9E9E',
   red:    '#D95050'
 };
+
+// Role constants — mirrors PciAuth.ROLE_HIERARCHY keys
+const ROLES = {
+  OWNER:      'owner',
+  ADMIN:      'admin',
+  INSTRUCTOR: 'instructor',
+  MEMBER:     'member'
+};
+
+// localStorage keys shared across pages
+const SESSION_KEY  = 'pci_session';
+const BOOKINGS_KEY = 'pci_bookings';

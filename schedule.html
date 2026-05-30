@@ -437,6 +437,28 @@
   </div>
 </div>
 
+<!-- ── Booking confirmation modal ────────────────────────────────────────── -->
+<div id="bookModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title">Confirm Booking</span>
+      <button class="modal-close" id="bookModalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div style="padding:12px 16px 4px">
+      <p id="bookModalClass" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:6px"></p>
+      <p id="bookModalTime" style="font-size:12px;color:var(--muted);margin-bottom:14px"></p>
+      <p style="font-size:13px;color:var(--text);margin-bottom:20px">1 credit will be deducted from your balance.</p>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="bookModalConfirm" style="flex:1">Confirm Booking</button>
+        <button class="btn btn-ghost" id="bookModalCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="pci-auth.js"></script>
 <script src="pci-shared.js"></script>
 <script>
 const DEV_MODE_KEY = 'pci_dev_mobile';
@@ -455,15 +477,189 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Show logged-in state if PAT already stored from admin session
+// Update topbar based on auth state
 (function () {
-  if (localStorage.getItem('pci_admin_pat')) {
-    const link = document.getElementById('adminLink');
-    const dot  = document.getElementById('adminDot');
-    if (link) { link.classList.add('logged-in'); link.title = 'Admin (signed in)'; }
-    if (dot)  dot.style.display = '';
+  const session = PciAuth.getSession();
+
+  // Admin link: show when admin/owner or when PAT is set
+  const hasPat = !!localStorage.getItem('pci_admin_pat');
+  const isAdmin = session && ['admin','owner'].includes(session.role);
+  const link = document.getElementById('adminLink');
+  const dot  = document.getElementById('adminDot');
+  if (link) {
+    if (!isAdmin && !hasPat) {
+      link.style.display = 'none';
+    } else if (hasPat || isAdmin) {
+      link.classList.add('logged-in');
+      link.title = 'Admin (signed in)';
+      if (dot) dot.style.display = '';
+    }
+  }
+
+  // Credit badge for members
+  if (session && session.role === 'member') {
+    const credits = session.credits != null ? session.credits : 0;
+    const cls = credits === 0 ? 'empty' : credits <= 2 ? 'low' : '';
+    const badge = document.createElement('span');
+    badge.id = 'creditBadge';
+    badge.className = 'credit-badge' + (cls ? ' ' + cls : '');
+    badge.title = 'Your class credits';
+    badge.textContent = credits + ' credit' + (credits !== 1 ? 's' : '');
+    const actions = document.querySelector('.topbar-actions');
+    if (actions) actions.insertBefore(badge, actions.firstChild);
   }
 })();
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = ('show' + (type ? ' ' + type : '')).trim();
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3200);
+}
+
+// ── Bookings store helpers ───────────────────────────────────────────────────
+function getBookings() {
+  try { return JSON.parse(localStorage.getItem(BOOKINGS_KEY)) || []; } catch { return []; }
+}
+function saveBookings(arr) {
+  localStorage.setItem(BOOKINGS_KEY, JSON.stringify(arr));
+}
+
+// ── Booking CTA builder ──────────────────────────────────────────────────────
+function buildBookingCTA(cls) {
+  const session = PciAuth.getSession();
+  const wrapper = document.createElement('div');
+  wrapper.className = 'class-actions';
+
+  if (!session) {
+    const a = document.createElement('a');
+    a.href = 'login.html?redirect=' + encodeURIComponent(location.href);
+    a.className = 'btn btn-outline btn-sm';
+    a.textContent = 'Sign In to Book';
+    wrapper.appendChild(a);
+    return wrapper;
+  }
+
+  if (session.role === 'member') {
+    const credits = session.credits != null ? session.credits : 0;
+    if (credits > 0) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-primary btn-sm book-btn';
+      btn.dataset.classId = cls.id;
+      btn.dataset.classTitle = displayTitle(cls);
+      btn.dataset.classTime = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+      btn.textContent = 'Book (' + credits + ' credit' + (credits !== 1 ? 's' : '') + ')';
+      wrapper.appendChild(btn);
+    } else {
+      const a = document.createElement('a');
+      a.href = 'buy-credits.html';
+      a.className = 'btn btn-outline btn-sm';
+      a.textContent = 'Buy Credits';
+      wrapper.appendChild(a);
+    }
+  }
+  // Instructor/admin/owner: no booking CTA
+
+  return wrapper;
+}
+
+// ── Booking modal state ──────────────────────────────────────────────────────
+let _pendingBooking = null;
+
+function openBookModal(classId, classTitle, classTime) {
+  _pendingBooking = { classId, classTitle, classTime };
+  document.getElementById('bookModalClass').textContent = classTitle;
+  document.getElementById('bookModalTime').textContent = classTime;
+  document.getElementById('bookModal').removeAttribute('hidden');
+}
+
+function closeBookModal() {
+  document.getElementById('bookModal').setAttribute('hidden', '');
+  _pendingBooking = null;
+}
+
+document.getElementById('bookModalClose').addEventListener('click', closeBookModal);
+document.getElementById('bookModalCancel').addEventListener('click', closeBookModal);
+document.getElementById('bookModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeBookModal();
+});
+
+document.getElementById('bookModalConfirm').addEventListener('click', () => {
+  if (!_pendingBooking) return;
+  const session = PciAuth.getSession();
+  if (!session) { closeBookModal(); return; }
+
+  const currentCredits = session.credits != null ? session.credits : 0;
+  if (currentCredits <= 0) {
+    showToast('Not enough credits.', 'error');
+    closeBookModal();
+    return;
+  }
+
+  // Check for duplicate booking
+  const bookings = getBookings();
+  const already = bookings.find(b => b.class_id === _pendingBooking.classId && b.user_id === session.userId && b.status === 'booked');
+  if (already) {
+    showToast('You already have this class booked.', 'error');
+    closeBookModal();
+    return;
+  }
+
+  // Deduct credit and save booking
+  try {
+    PciAuth.updateCredits(-1);
+  } catch (e) {
+    showToast(e.message, 'error');
+    closeBookModal();
+    return;
+  }
+
+  const record = {
+    id:              'bkg_' + Date.now() + '_' + session.userId,
+    user_id:         session.userId,
+    class_id:        _pendingBooking.classId,
+    class_title:     _pendingBooking.classTitle,
+    location_id:     session.locationId || '',
+    booked_at:       Date.now(),
+    status:          'booked',
+    attended:        null,
+    credits_spent:   1
+  };
+  bookings.push(record);
+  saveBookings(bookings);
+
+  closeBookModal();
+  showToast('Booked! Enjoy your class.', 'success');
+
+  // Update all CTAs and credit badge to reflect new balance
+  refreshBookingCTAs();
+  const newCredits = PciAuth.getSession().credits;
+  const badge = document.getElementById('creditBadge');
+  if (badge) {
+    badge.textContent = newCredits + ' credit' + (newCredits !== 1 ? 's' : '');
+    badge.className = 'credit-badge' + (newCredits === 0 ? ' empty' : newCredits <= 2 ? ' low' : '');
+  }
+});
+
+// Re-render all booking CTAs after a booking (credit count changed)
+function refreshBookingCTAs() {
+  document.querySelectorAll('.class-actions').forEach(el => {
+    const item = el.closest('.class-item');
+    if (!item) return;
+    const classId = item.dataset.classId;
+    if (!classId) return;
+    // Find the class object by id across the cached schedule
+    const cls = _allClasses.find(c => c.id === classId);
+    if (!cls) return;
+    const newCTA = buildBookingCTA(cls);
+    el.replaceWith(newCTA);
+  });
+}
+
+// Cache of all class objects for CTA refresh (populated in data load)
+let _allClasses = [];
 
 // Pre-select location from URL param (?loc=stjohns | ?loc=clarenville)
 const _urlLoc = new URLSearchParams(location.search).get('loc');
@@ -511,7 +707,9 @@ document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('descModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeModal();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeBookModal(); }
+});
 
 // ── View toggle ──────────────────────────────────────────
 
@@ -717,6 +915,8 @@ function renderSchedule(schedule) {
         body.appendChild(instructor);
         item.appendChild(bar);
         item.appendChild(body);
+        item.dataset.classId = cls.id;
+        item.appendChild(buildBookingCTA(cls));
         block.appendChild(item);
       });
     }
@@ -726,6 +926,17 @@ function renderSchedule(schedule) {
 }
 
 document.getElementById('schedule').addEventListener('click', e => {
+  // Book button — open booking confirmation modal
+  const bookBtn = e.target.closest('.book-btn');
+  if (bookBtn) {
+    e.stopPropagation();
+    openBookModal(bookBtn.dataset.classId, bookBtn.dataset.classTitle, bookBtn.dataset.classTime);
+    return;
+  }
+  // Booking CTA area — don't open description modal
+  if (e.target.closest('.class-actions')) return;
+
+  // Class description modal
   const item = e.target.closest('.class-item[data-type]');
   if (!item) return;
   const titleEl = item.querySelector('.class-title');
@@ -884,6 +1095,7 @@ Promise.all([
     scheduleData.schedule.forEach(day =>
       day.classes.forEach(cls => {
         if (locationColors[cls.location_id]) locationColors[cls.location_id].add(cls.color);
+        _allClasses.push(cls);
       })
     );
 

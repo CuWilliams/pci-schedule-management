@@ -1,0 +1,28 @@
+{
+  "packages": [
+    {
+      "id": "pkg_5",
+      "name": "5-Class Pack",
+      "credits": 5,
+      "price_cents": 8500,
+      "description": "5 class credits. Each credit redeems for one class booking.",
+      "active": true
+    },
+    {
+      "id": "pkg_10",
+      "name": "10-Class Pack",
+      "credits": 10,
+      "price_cents": 16000,
+      "description": "10 class credits. Best value for regular attendees.",
+      "active": true
+    },
+    {
+      "id": "pkg_20",
+      "name": "20-Class Pack",
+      "credits": 20,
+      "price_cents": 28000,
+      "description": "20 class credits. Ideal for committed members.",
+      "active": true
+    }
+  ]
+}

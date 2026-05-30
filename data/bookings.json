@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "version": "1.0",
+    "notes": "Mock booking seed. Booking state in mock phase lives in localStorage under pci_bookings."
+  },
+  "bookings": []
+}

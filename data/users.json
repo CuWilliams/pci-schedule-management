@@ -1,0 +1,103 @@
+{
+  "users": [
+    {
+      "id": "owner_001",
+      "email": "ryan@powerconditioning.ca",
+      "password_mock": "changeme",
+      "display_name": "Ryan Power",
+      "role": "owner",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": "ryan_power",
+      "active": true
+    },
+    {
+      "id": "admin_001",
+      "email": "admin@powerconditioning.ca",
+      "password_mock": "admin123",
+      "display_name": "PCI Admin",
+      "role": "admin",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": null,
+      "active": true
+    },
+    {
+      "id": "inst_001",
+      "email": "natasha@powerconditioning.ca",
+      "password_mock": "instructor1",
+      "display_name": "Natasha Cobb",
+      "role": "instructor",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": "natasha_cobb",
+      "active": true
+    },
+    {
+      "id": "inst_002",
+      "email": "brendan@powerconditioning.ca",
+      "password_mock": "instructor1",
+      "display_name": "Brendan McCarthy",
+      "role": "instructor",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": "brendan_mccarthy",
+      "active": true
+    },
+    {
+      "id": "inst_003",
+      "email": "jon@powerconditioning.ca",
+      "password_mock": "instructor1",
+      "display_name": "Jon Reid",
+      "role": "instructor",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": "jon_reid",
+      "active": true
+    },
+    {
+      "id": "inst_004",
+      "email": "rhonda@powerconditioning.ca",
+      "password_mock": "instructor1",
+      "display_name": "Rhonda Parsons",
+      "role": "instructor",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": "rhonda_parsons",
+      "active": true
+    },
+    {
+      "id": "inst_005",
+      "email": "greg@powerconditioning.ca",
+      "password_mock": "instructor1",
+      "display_name": "Greg Pittman",
+      "role": "instructor",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": "greg_pittman",
+      "active": true
+    },
+    {
+      "id": "member_001",
+      "email": "jane@example.com",
+      "password_mock": "member123",
+      "display_name": "Jane Doe",
+      "role": "member",
+      "location_id": "stjohns",
+      "credits": 8,
+      "instructor_id": null,
+      "active": true
+    },
+    {
+      "id": "member_002",
+      "email": "john@example.com",
+      "password_mock": "member123",
+      "display_name": "John Smith",
+      "role": "member",
+      "location_id": "clarenville",
+      "credits": 3,
+      "instructor_id": null,
+      "active": true
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — PCI Bookings App</title>
+  <link rel="stylesheet" href="pci-tokens.css">
+  <style>
+    body { background: var(--brand); }
+
+    #loginGate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: var(--pci-white);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px 32px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    }
+
+    .login-logo {
+      display: block;
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      margin: 0 auto 20px;
+    }
+
+    .login-card h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .login-sub {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .login-card .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-700);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .login-card .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: var(--font-body);
+      margin-bottom: 14px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s;
+      color: var(--text);
+      background: var(--pci-white);
+    }
+
+    .login-card .form-control:focus { border-color: var(--accent); }
+
+    #loginError {
+      font-size: 12px;
+      color: var(--danger);
+      margin-bottom: 12px;
+      min-height: 16px;
+      text-align: center;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 11px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .login-links {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .login-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .login-links a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+<div id="phoneFrame">
+<div id="phoneViewport">
+
+<div id="loginGate">
+  <div class="login-card">
+    <img src="images/pci-logo.png" alt="PCI Logo" class="login-logo">
+    <h1>PCI Bookings App</h1>
+    <p class="login-sub">Sign in to book classes, manage schedules, or access your dashboard.</p>
+
+    <label class="form-label" for="loginEmail">Email</label>
+    <input class="form-control" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" spellcheck="false">
+
+    <label class="form-label" for="loginPassword">Password</label>
+    <input class="form-control" type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+
+    <div id="loginError"></div>
+    <button class="btn btn-primary login-btn" id="loginBtn">Sign In</button>
+
+    <div class="login-links">
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- /phoneViewport -->
+<div id="phoneHomeBar"></div>
+<div id="devBadge">DEV | 390</div>
+</div><!-- /phoneFrame -->
+
+<script src="pci-auth.js"></script>
+<script>
+(function () {
+  const params   = new URLSearchParams(location.search);
+  const redirect = params.get('redirect') || 'index.html';
+  const errorMsg = params.get('error');
+
+  // Already logged in — go straight to destination
+  if (PciAuth.isLoggedIn()) {
+    location.href = redirect;
+    return;
+  }
+
+  // Show unauthorized message if arriving from a role check
+  if (errorMsg === 'unauthorized') {
+    const errEl = document.getElementById('loginError');
+    if (errEl) errEl.textContent = 'You do not have permission to access that page.';
+  }
+
+  const emailEl = document.getElementById('loginEmail');
+  const pwEl    = document.getElementById('loginPassword');
+  const errEl   = document.getElementById('loginError');
+  const btn     = document.getElementById('loginBtn');
+
+  async function doLogin() {
+    errEl.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    try {
+      await PciAuth.login(emailEl.value, pwEl.value);
+      // Role-based default landing if no specific redirect
+      const session = PciAuth.getSession();
+      let dest = redirect === 'index.html' ? null : redirect;
+      if (!dest) {
+        if (['admin','owner'].includes(session.role)) dest = 'admin.html';
+        else if (session.role === 'instructor') dest = 'instructor.html';
+        else dest = 'schedule.html';
+      }
+      location.href = dest;
+    } catch (e) {
+      errEl.textContent = e.message;
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  }
+
+  btn.addEventListener('click', doLogin);
+  pwEl.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  emailEl.addEventListener('keydown', e => { if (e.key === 'Enter') pwEl.focus(); });
+})();
+</script>
+</body>
+</html>
