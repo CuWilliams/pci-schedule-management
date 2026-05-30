@@ -79,6 +79,21 @@
       display: none;
     }
 
+    /* ── Logo band ───────────────────────────────────────── */
+    .logo-band {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 24px;
+    }
+
+    .logo-band img {
+      width: 160px;
+      height: auto;
+      display: block;
+    }
+
     /* ── Hero ────────────────────────────────────────────── */
     .hero {
       flex: 0 0 auto;
@@ -90,10 +105,11 @@
       max-width: 900px;
       width: 100%;
       margin: 0 auto;
+      container-type: inline-size;
     }
 
     .hero-eyebrow {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -102,7 +118,7 @@
     }
 
     .hero-headline {
-      font-size: clamp(48px, 11vw, 96px);
+      font-size: clamp(32px, 11cqw, 96px);
       font-weight: 900;
       line-height: 0.92;
       letter-spacing: -0.02em;
@@ -117,7 +133,7 @@
     }
 
     .hero-sub {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 400;
       color: var(--gray-400);
       letter-spacing: 0.02em;
@@ -155,6 +171,7 @@
     @media (max-width: 580px) {
       .location-cards { grid-template-columns: 1fr; }
       .hero { padding: 48px 20px 40px; }
+      .logo-band img { width: 130px; }
     }
 
     .location-card {
@@ -278,6 +295,10 @@
       </a>
     </div>
   </header>
+
+  <div class="logo-band">
+    <img src="images/pci-logo.png" alt="Power Conditioning Inc.">
+  </div>
 
   <section class="hero">
     <p class="hero-eyebrow">Power Conditioning Inc. &mdash; Performance Centers</p>
