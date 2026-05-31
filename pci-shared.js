@@ -9,6 +9,16 @@ const COLOR_HEX = {
   red:    '#D95050'
 };
 
+// Instructor accent colors — mirrors --inst-* tokens in pci-tokens.css
+const INSTRUCTOR_HEX = {
+  emerald: '#10B981',
+  pink:    '#EC4899',
+  indigo:  '#6366F1',
+  amber:   '#F59E0B',
+  teal:    '#14B8A6',
+  violet:  '#8B5CF6'
+};
+
 // Role constants — mirrors PciAuth.ROLE_HIERARCHY keys
 const ROLES = {
   OWNER:      'owner',

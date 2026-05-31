@@ -83,17 +83,24 @@
     .filter-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 8px 12px;
+      padding: 6px 12px;
       position: sticky;
       top: 90px;   /* topbar 52 + location-tabs ~38 */
       z-index: 9;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .filter-row {
       display: flex;
       gap: 6px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
+      padding: 2px 0;
     }
-    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-row::-webkit-scrollbar { display: none; }
 
     /* ── List view ────────────────────────────────────────── */
     .schedule {
@@ -228,7 +235,7 @@
       border-bottom: 1px solid var(--border);
       padding: 5px 12px;
       position: sticky;
-      top: 133px; /* topbar 52 + loc-tabs 38 + filter-bar 43 */
+      top: 162px; /* topbar 52 + loc-tabs 38 + filter-bar 72 */
       z-index: 9;
       display: flex;
       align-items: center;
@@ -327,7 +334,7 @@
       background: var(--surface);
       border-bottom: 2px solid var(--gray-300);
       position: sticky;
-      top: 173px; /* topbar 52 + loc-tabs 38 + filter-bar 43 + date-nav 40 */
+      top: 202px; /* topbar 52 + loc-tabs 38 + filter-bar 72 + date-nav 40 */
       z-index: 8;
       overflow: hidden;
     }
@@ -529,7 +536,10 @@
   <button class="loc-tab" data-loc="clarenville">Clarenville</button>
 </div>
 
-<div class="filter-bar" id="filterBar"></div>
+<div class="filter-bar" id="filterBar">
+  <div class="filter-row" id="filterCategories"></div>
+  <div class="filter-row" id="filterInstructors"></div>
+</div>
 
 <div class="date-nav" id="dateNav">
   <button class="date-nav-btn" id="prevWeek" aria-label="Previous week">&#8249;</button>
@@ -965,25 +975,26 @@ document.addEventListener('click', e => {
 // ── Location tabs ─────────────────────────────────────────
 
 let activeLocation = 'stjohns';
-const locationColors = { stjohns: new Set(), clarenville: new Set() };
+const locationCategories  = { stjohns: new Set(), clarenville: new Set() };
+const locationInstructors = { stjohns: new Set(), clarenville: new Set() };
 
 function setLocation(loc) {
   activeLocation = loc;
+  activeCategories.clear();
+  activeInstructors.clear();
 
   document.querySelectorAll('.loc-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.loc === loc);
   });
 
-  activeCategories.clear();
-  document.querySelectorAll('.filter-pill').forEach(p => {
-    if (p.dataset.color === 'all') {
-      p.classList.add('active');
-      p.style.display = '';
-    } else {
-      const visible = locationColors[loc]?.has(p.dataset.color);
-      p.style.display = visible ? '' : 'none';
-      p.classList.remove('active');
-    }
+  document.querySelectorAll('.filter-pill[data-all-pill]').forEach(p => p.classList.add('active'));
+  document.querySelectorAll('.filter-pill[data-category]').forEach(p => {
+    p.style.display = locationCategories[loc]?.has(p.dataset.category) ? '' : 'none';
+    p.classList.remove('active');
+  });
+  document.querySelectorAll('.filter-pill[data-instructor]').forEach(p => {
+    p.style.display = locationInstructors[loc]?.has(p.dataset.instructor) ? '' : 'none';
+    p.classList.remove('active');
   });
 
   applyFilter();
@@ -996,54 +1007,92 @@ document.getElementById('locationTabs').addEventListener('click', e => {
 
 // ── Filter bar ───────────────────────────────────────────
 
-let activeCategories = new Set();
+let activeCategories   = new Set();
+let activeInstructors  = new Set();
+let typeToCategory     = {};
+let instructorColorMap = {};
 
-function buildFilterBar(categories) {
-  const bar = document.getElementById('filterBar');
+function _syncAllPill() {
+  const allClear = activeCategories.size === 0 && activeInstructors.size === 0;
+  document.querySelectorAll('.filter-pill[data-all-pill]').forEach(p => p.classList.toggle('active', allClear));
+}
+
+function buildCategoryFilter(categoriesData) {
+  const row = document.getElementById('filterCategories');
 
   const clearPill = document.createElement('button');
   clearPill.className = 'filter-pill active';
-  clearPill.dataset.color = 'all';
+  clearPill.dataset.allPill = 'true';
   clearPill.textContent = 'All';
-  bar.appendChild(clearPill);
+  row.appendChild(clearPill);
 
-  Object.entries(categories).forEach(([color, label]) => {
+  categoriesData.categories.forEach(cat => {
     const pill = document.createElement('button');
     pill.className = 'filter-pill';
-    pill.dataset.color = color;
-    pill.title = label;
+    pill.dataset.category = cat.id;
 
     const dot = document.createElement('span');
     dot.className = 'pill-dot';
-    dot.style.backgroundColor = COLOR_HEX[color] || '#999';
+    dot.style.backgroundColor = COLOR_HEX[cat.color] || '#999';
 
     pill.appendChild(dot);
-    pill.appendChild(document.createTextNode(color.charAt(0).toUpperCase() + color.slice(1)));
-    bar.appendChild(pill);
+    pill.appendChild(document.createTextNode(cat.name));
+    row.appendChild(pill);
   });
 
-  bar.addEventListener('click', e => {
+  row.addEventListener('click', e => {
     const pill = e.target.closest('.filter-pill');
     if (!pill) return;
 
-    if (pill.dataset.color === 'all') {
+    if (pill.dataset.allPill) {
       activeCategories.clear();
+      activeInstructors.clear();
+      document.querySelectorAll('.filter-pill[data-category]').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.filter-pill[data-instructor]').forEach(p => p.classList.remove('active'));
     } else {
-      if (activeCategories.has(pill.dataset.color)) {
-        activeCategories.delete(pill.dataset.color);
-      } else {
-        activeCategories.add(pill.dataset.color);
-      }
+      const catId = pill.dataset.category;
+      if (activeCategories.has(catId)) activeCategories.delete(catId);
+      else activeCategories.add(catId);
+      document.querySelectorAll('.filter-pill[data-category]').forEach(p => {
+        p.classList.toggle('active', activeCategories.has(p.dataset.category));
+      });
     }
 
-    bar.querySelectorAll('.filter-pill').forEach(p => {
-      if (p.dataset.color === 'all') {
-        p.classList.toggle('active', activeCategories.size === 0);
-      } else {
-        p.classList.toggle('active', activeCategories.has(p.dataset.color));
-      }
+    _syncAllPill();
+    applyFilter();
+  });
+}
+
+function buildInstructorFilter(instructors) {
+  const row = document.getElementById('filterInstructors');
+
+  instructors.forEach(inst => {
+    const pill = document.createElement('button');
+    pill.className = 'filter-pill';
+    pill.dataset.instructor = inst.id;
+
+    const dot = document.createElement('span');
+    dot.className = 'pill-dot';
+    dot.style.backgroundColor = INSTRUCTOR_HEX[inst.color] || '#999';
+
+    pill.appendChild(dot);
+    pill.appendChild(document.createTextNode(inst.display_name));
+    row.appendChild(pill);
+  });
+
+  row.addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill');
+    if (!pill) return;
+
+    const instId = pill.dataset.instructor;
+    if (activeInstructors.has(instId)) activeInstructors.delete(instId);
+    else activeInstructors.add(instId);
+
+    document.querySelectorAll('.filter-pill[data-instructor]').forEach(p => {
+      p.classList.toggle('active', activeInstructors.has(p.dataset.instructor));
     });
 
+    _syncAllPill();
     applyFilter();
   });
 }
@@ -1053,8 +1102,9 @@ function applyFilter() {
     const items = block.querySelectorAll('.class-item');
     let visible = 0;
     items.forEach(item => {
-      const show = item.dataset.location === activeLocation
-                && (activeCategories.size === 0 || activeCategories.has(item.dataset.color));
+      const catMatch  = activeCategories.size === 0  || activeCategories.has(item.dataset.category);
+      const instMatch = activeInstructors.size === 0 || activeInstructors.has(item.dataset.primaryInstructor);
+      const show = item.dataset.location === activeLocation && catMatch && instMatch;
       item.classList.toggle('hidden', !show);
       if (show) visible++;
     });
@@ -1062,8 +1112,9 @@ function applyFilter() {
   });
 
   document.querySelectorAll('.cal-class-block').forEach(block => {
-    const show = block.dataset.location === activeLocation
-              && (activeCategories.size === 0 || activeCategories.has(block.dataset.color));
+    const catMatch  = activeCategories.size === 0  || activeCategories.has(block.dataset.category);
+    const instMatch = activeInstructors.size === 0 || activeInstructors.has(block.dataset.primaryInstructor);
+    const show = block.dataset.location === activeLocation && catMatch && instMatch;
     block.classList.toggle('hidden', !show);
   });
 }
@@ -1105,14 +1156,18 @@ function renderSchedule(dateWindow) {
     } else {
       const sorted = [...dayData.classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
       sorted.forEach(cls => {
+        const cat = typeToCategory[cls.type] || { id: 'unknown', color: 'gray' };
+        const instColor = instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray';
+
         const item = document.createElement('div');
-        item.className = `class-item bg-${cls.color}`;
-        item.dataset.color = cls.color;
+        item.className = `class-item bg-${cat.color}`;
+        item.dataset.category = cat.id;
+        item.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
         item.dataset.location = cls.location_id;
         if (cls.type) item.dataset.type = cls.type;
 
         const bar = document.createElement('div');
-        bar.className = `color-bar color-${cls.color}`;
+        bar.className = `color-bar inst-${instColor}`;
 
         const body = document.createElement('div');
         body.className = 'class-body';
@@ -1266,9 +1321,13 @@ function renderCalendarView(dateWindow) {
       const topPx    = (startMin / 60) * HOUR_HEIGHT;
       const heightPx = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, 22);
 
+      const cat = typeToCategory[cls.type] || { id: 'unknown', color: 'gray' };
+      const instColor = instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray';
+
       const block = document.createElement('div');
-      block.className = `cal-class-block color-${cls.color}`;
-      block.dataset.color = cls.color;
+      block.className = `cal-class-block color-${cat.color} inst-${instColor}`;
+      block.dataset.category = cat.id;
+      block.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
       block.dataset.location = cls.location_id;
       if (cls.type) block.dataset.type = cls.type;
       block.style.top    = `${topPx}px`;
@@ -1361,23 +1420,33 @@ document.getElementById('datePicker').addEventListener('change', e => {
 Promise.all([
   fetch('pci_schedule.json').then(r => r.json()),
   fetch('data/class_types.json').then(r => r.json()),
-  fetch('data/instructors.json').then(r => r.json())
+  fetch('data/instructors.json').then(r => r.json()),
+  fetch('data/categories.json').then(r => r.json())
 ])
-  .then(([scheduleData, classTypesData, instructorsData]) => {
-    instructorsData.instructors.forEach(i => { instructorMap[i.id] = i.display_name; });
+  .then(([scheduleData, classTypesData, instructorsData, categoriesData]) => {
+    instructorsData.instructors.forEach(i => {
+      instructorMap[i.id] = i.display_name;
+      instructorColorMap[i.id] = i.color;
+    });
     classTypesData.class_types.forEach(ct => {
       classDescriptions[ct.id] = { name: ct.name, description: ct.description };
+    });
+    categoriesData.categories.forEach(cat => {
+      cat.type_ids.forEach(tid => { typeToCategory[tid] = cat; });
     });
     scheduleData.schedule.forEach(day => {
       _scheduleByDay[day.day] = day;
       day.classes.forEach(cls => {
-        if (locationColors[cls.location_id]) locationColors[cls.location_id].add(cls.color);
+        const cat = typeToCategory[cls.type];
+        if (cat) locationCategories[cls.location_id]?.add(cat.id);
+        (cls.instructor_ids || []).forEach(id => locationInstructors[cls.location_id]?.add(id));
         _allClasses.push(cls);
       });
     });
 
     initViewDate();
-    buildFilterBar(classTypesData.class_categories);
+    buildCategoryFilter(categoriesData);
+    buildInstructorFilter(instructorsData.instructors);
     const dateWindow = buildDateWindow(_viewStartDate);
     updateDateNav(dateWindow);
     renderSchedule(dateWindow);

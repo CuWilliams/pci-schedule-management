@@ -83,6 +83,14 @@
   --accent-dark:       #4a7ccf;
   --brand-border:      rgba(200,16,46,0.25);
   --pci-black-frosted: rgba(10,10,10,0.92);
+
+  /* ── Instructor accent colors ────────────────── */
+  --inst-emerald: #10B981;
+  --inst-pink:    #EC4899;
+  --inst-indigo:  #6366F1;
+  --inst-amber:   #F59E0B;
+  --inst-teal:    #14B8A6;
+  --inst-violet:  #8B5CF6;
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -178,6 +186,24 @@ body {
 .bar-blue   { background-color: var(--cls-blue); }
 .bar-gray   { background-color: var(--cls-gray); }
 .bar-red    { background-color: var(--cls-red); }
+
+/* ── Instructor sidebar bars (list view) ───────────────────── */
+.color-bar.inst-emerald { background-color: var(--inst-emerald); }
+.color-bar.inst-pink    { background-color: var(--inst-pink); }
+.color-bar.inst-indigo  { background-color: var(--inst-indigo); }
+.color-bar.inst-amber   { background-color: var(--inst-amber); }
+.color-bar.inst-teal    { background-color: var(--inst-teal); }
+.color-bar.inst-violet  { background-color: var(--inst-violet); }
+.color-bar.inst-gray    { background-color: var(--cls-gray); }
+
+/* ── Instructor border-left (calendar view) ────────────────── */
+.cal-class-block.inst-emerald { border-left-color: var(--inst-emerald); }
+.cal-class-block.inst-pink    { border-left-color: var(--inst-pink); }
+.cal-class-block.inst-indigo  { border-left-color: var(--inst-indigo); }
+.cal-class-block.inst-amber   { border-left-color: var(--inst-amber); }
+.cal-class-block.inst-teal    { border-left-color: var(--inst-teal); }
+.cal-class-block.inst-violet  { border-left-color: var(--inst-violet); }
+.cal-class-block.inst-gray    { border-left-color: var(--cls-gray); }
 
 /* ── Filter pills ──────────────────────────────────────────── */
 .filter-pill {

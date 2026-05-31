@@ -1,0 +1,10 @@
+{
+  "categories": [
+    { "id": "functional_hiit",     "name": "Functional HIIT",        "color": "orange", "type_ids": ["functional_hiit"] },
+    { "id": "cardio_core",         "name": "Cardio & Core",           "color": "red",    "type_ids": ["cardio_core"] },
+    { "id": "flexibility_mobility","name": "Flexibility & Mobility",  "color": "green",  "type_ids": ["flexibility_mobility"] },
+    { "id": "virtual",             "name": "Virtual",                 "color": "blue",   "type_ids": ["functional_hiit_online", "cardio_core_online", "flexibility_mobility_online"] },
+    { "id": "athletic",            "name": "Athletic",                "color": "purple", "type_ids": ["athletic", "pro"] },
+    { "id": "athletic_virtual",    "name": "Athletic Virtual",        "color": "yellow", "type_ids": ["athletic_online", "pro_online"] }
+  ]
+}

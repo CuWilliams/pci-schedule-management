@@ -1,13 +1,4 @@
 {
-  "class_categories": {
-    "purple": "St. John's Adult",
-    "green":  "St. John's Athletic",
-    "yellow": "Clarenville Virtual",
-    "orange": "Clarenville Athletic",
-    "blue":   "St. John's Virtual",
-    "gray":   "Clarenville Adult",
-    "red":    "St. John's Athletic (new)"
-  },
   "class_types": [
     {
       "id": "functional_hiit",
