@@ -1,8 +1,30 @@
-# PCI Schedule
+# PCI Bookings App
 
-Staging preview of the Power Conditioning Inc. weekly class schedule.
+Staging preview and booking management platform for Power Conditioning Inc.
 
-Live URL: https://CuWilliams.github.io/pci-schedule
+Live URL: https://CuWilliams.github.io/pci-schedule-management
+
+---
+
+## Test Credentials
+
+Mock accounts for local development and staging review. All auth state is stored in `localStorage` — no server required.
+
+| Role | Email | Password |
+|---|---|---|
+| Owner | `ryan@powerconditioning.ca` | `changeme` |
+| Admin | `admin@powerconditioning.ca` | `admin123` |
+| Instructor (Natasha) | `natasha@powerconditioning.ca` | `instructor1` |
+| Instructor (Brendan) | `brendan@powerconditioning.ca` | `instructor1` |
+| Instructor (Jon) | `jon@powerconditioning.ca` | `instructor1` |
+| Instructor (Rhonda) | `rhonda@powerconditioning.ca` | `instructor1` |
+| Instructor (Greg) | `greg@powerconditioning.ca` | `instructor1` |
+| Member (St. John's) | `jane@example.com` | `member123` |
+| Member (Clarenville) | `john@example.com` | `member123` |
+
+> **Note:** Passwords are plaintext mock values stored in `data/users.json`. This file is intentionally non-production — the field is named `password_mock` as a reminder. Replace with real auth when a backend is integrated.
+
+**Admin also requires a GitHub PAT** (`contents: write` on this repo) after signing in, to unlock the Publish button.
 
 ---
 
