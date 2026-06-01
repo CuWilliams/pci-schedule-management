@@ -3,108 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Instructor — PCI Bookings App</title>
+  <title>My Classes — PCI</title>
   <link rel="stylesheet" href="pci-tokens.css">
   <style>
-    body { background: var(--bg); }
+    body { background: var(--bg); color: var(--text); }
 
-    .page-content {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 16px 16px 80px;
-    }
+    /* ── Topbar overrides ───────────────────────────────────── */
+    .topbar-logo { flex: 1; text-align: center; font-weight: 900; letter-spacing: 0.10em; }
 
-    .day-selector {
-      display: flex;
-      gap: 4px;
-      overflow-x: auto;
-      padding: 10px 16px;
-      background: var(--pci-black);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      scrollbar-width: none;
-    }
-    .day-selector::-webkit-scrollbar { display: none; }
+    /* ── View toggle ────────────────────────────────────────── */
+    .view-toggle { display: flex; border: 1.5px solid rgba(255,255,255,0.18); border-radius: var(--radius-sm); overflow: hidden; }
+    .view-btn { padding: 4px 10px; background: transparent; border: none; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.45); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; letter-spacing: 0.04em; text-transform: uppercase; font-family: var(--font-body); }
+    .view-btn + .view-btn { border-left: 1.5px solid rgba(255,255,255,0.18); }
+    .view-btn.active { background: var(--brand); color: var(--pci-white); }
 
-    .day-pill {
-      flex-shrink: 0;
-      padding: 5px 14px;
-      border-radius: var(--radius-pill);
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,0.15);
-      color: var(--on-dark-secondary);
-      background: transparent;
-      cursor: pointer;
-      transition: background 0.12s, color 0.12s, border-color 0.12s;
-    }
-    .day-pill.active {
-      background: var(--brand);
-      border-color: var(--brand);
-      color: var(--pci-white);
-    }
+    /* ── Filter bar ─────────────────────────────────────────── */
+    .filter-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 6px 12px; position: sticky; top: 52px; z-index: 9; display: flex; flex-direction: column; gap: 4px; }
+    .filter-row { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 2px 0; }
+    .filter-row::-webkit-scrollbar { display: none; }
 
-    .section-heading {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 20px 0 10px;
-    }
+    /* ── Date nav ───────────────────────────────────────────── */
+    .date-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 5px 12px; position: sticky; top: 122px; z-index: 9; display: flex; align-items: center; gap: 6px; min-height: 40px; }
+    .date-nav-label { flex: 1; text-align: center; font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
+    .date-nav-btn { background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: var(--text); line-height: 1; padding: 0; flex-shrink: 0; }
+    .date-nav-btn:hover { background: var(--gray-100); }
+    .date-nav-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .date-nav-today-btn { background: none; border: 1.5px solid var(--brand); border-radius: var(--radius-sm); padding: 3px 8px; font-size: 11px; font-weight: 700; color: var(--brand); cursor: pointer; white-space: nowrap; font-family: var(--font-body); }
+    .date-nav-today-btn:hover { background: var(--gray-050); }
+    .date-nav-cal-btn { display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-500); position: relative; width: 28px; height: 28px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); flex-shrink: 0; }
+    .date-nav-cal-btn:hover { color: var(--text); background: var(--gray-100); }
+    .date-nav-cal-btn svg { width: 15px; height: 15px; pointer-events: none; }
+    .date-nav-cal-btn input[type="date"] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; font-size: 0; }
 
-    .rollcall-empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    /* ── List view ──────────────────────────────────────────── */
+    .schedule { max-width: 600px; margin: 0 auto; padding: 12px 10px 40px; }
+    .day-block { margin-bottom: 16px; background: var(--surface); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .day-header { background: var(--gray-700); color: var(--pci-white); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
+    .day-header-date { font-size: 11px; font-weight: 600; opacity: 0.8; letter-spacing: 0; }
+    .day-header--today { background: var(--brand); }
+    .class-item { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .class-item:last-child { border-bottom: none; }
+    .class-item:hover .class-body { background: rgba(0,0,0,0.02); }
+    .class-item.past { opacity: 0.45; }
+    .class-body { padding: 8px 10px; flex: 1; }
+    .class-time { font-size: 11px; font-weight: 700; color: var(--gray-600); margin-bottom: 2px; letter-spacing: 0.02em; }
+    .class-title { font-size: 13px; font-weight: 600; color: var(--gray-900); line-height: 1.3; margin-bottom: 2px; }
+    .class-instructor { font-size: 11px; color: var(--muted); font-style: italic; }
+    .class-item.hidden { display: none; }
+    .day-block.hidden { display: none; }
+    .cal-class-block.past { opacity: 0.45; }
 
-    .rollcall-summary {
-      font-size: 11px;
-      color: var(--muted);
-      margin-left: auto;
-    }
+    /* Roll call badge on own classes */
+    .rollcall-badge { font-size: 10px; font-weight: 700; color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, transparent); border-radius: var(--radius-sm); padding: 2px 7px; margin: auto 8px auto 0; letter-spacing: 0.03em; flex-shrink: 0; }
 
-    .attendee-actions {
-      display: flex;
-      gap: 4px;
-    }
+    /* Booking count line on list items */
+    .class-booked-count { font-size: 11px; color: var(--muted); margin-top: 3px; }
 
+    /* Booking count inside calendar blocks */
+    .cal-block-count { font-size: 9px; color: var(--gray-500); margin-top: 2px; font-weight: 600; }
+
+    /* ── Calendar view ──────────────────────────────────────── */
+    #calView { display: none; }
+    .cal-day-header-bar { display: flex; align-items: stretch; background: var(--surface); border-bottom: 2px solid var(--gray-300); position: sticky; top: 162px; z-index: 8; overflow: hidden; }
+    .cal-gutter-cell { width: 44px; flex-shrink: 0; }
+    .cal-day-head { flex: 1; min-width: 90px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 2px; }
+    .cal-head-name { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-600); }
+    .cal-head-num { font-size: 14px; font-weight: 700; color: var(--gray-800); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .cal-day-head--today .cal-head-name { color: var(--brand); }
+    .cal-day-head--today .cal-head-num { background: var(--brand); color: var(--pci-white); }
+    .cal-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; padding-bottom: 40px; }
+    .cal-inner { display: flex; min-width: 674px; }
+    .cal-gutter { width: 44px; flex-shrink: 0; position: relative; }
+    .cal-time-label { position: absolute; right: 6px; font-size: 10px; color: var(--gray-400); font-weight: 600; transform: translateY(-50%); white-space: nowrap; }
+    .cal-day-col { flex: 1; min-width: 90px; position: relative; border-left: 1px solid var(--gray-200); background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, #ececec 31px, #ececec 32px, transparent 32px, transparent 63px, #d4d4d4 63px, #d4d4d4 64px); background-size: 100% 64px; }
+    .cal-class-block { position: absolute; left: 2px; right: 2px; border-radius: var(--radius-sm); padding: 3px 4px 3px 6px; overflow: hidden; cursor: pointer; border-left-width: 3px; border-left-style: solid; transition: opacity 0.1s; }
+    .cal-class-block:hover { opacity: 0.75; }
+    .cal-block-time { font-size: 9px; font-weight: 700; color: var(--gray-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
+    .cal-block-title { font-size: 10px; font-weight: 600; color: var(--gray-800); line-height: 1.25; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; }
+    .cal-block-gym-tag { font-size: 8px; font-weight: 700; color: var(--gray-600); margin-top: 2px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .cal-class-block.hidden { display: none; }
+
+    /* ── Class detail modal header ──────────────────────────── */
+    .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .modal-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; }
+    .detail-meta { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .modal-desc { font-size: 13px; line-height: 1.6; color: var(--gray-600); margin-top: 8px; }
+
+    /* ── Roll call section inside detail modal ──────────────── */
+    .rollcall-section { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 12px; }
+    .rollcall-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+    .rollcall-summary { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+    .rollcall-lock-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .lock-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--muted); background: var(--border); padding: 3px 10px; border-radius: var(--radius-pill); }
+    .readonly-note { font-size: 11px; color: var(--muted); font-style: italic; }
+    .ior-note { font-size: 11px; color: var(--muted); font-style: italic; padding: 4px 0; margin-bottom: 8px; }
+    .no-bookings-row { padding: var(--sp-4); font-size: 12px; color: var(--muted); text-align: center; font-style: italic; }
+    .attendee-meta { font-size: 11px; color: var(--muted); }
     .attendee-row.attended .attendee-actions button[data-mark="attended"],
-    .attendee-row.no-show  .attendee-actions button[data-mark="no_show"] {
-      opacity: 0.4;
-      pointer-events: none;
-    }
+    .attendee-row.no-show  .attendee-actions button[data-mark="no_show"] { opacity: 0.35; pointer-events: none; }
+    .rollcall-footer { padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--border); }
+    .late-badge { font-size: 10px; font-weight: 700; color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); border-radius: var(--radius-sm); padding: 1px 5px; letter-spacing: 0.04em; }
 
-    .no-bookings-row {
-      padding: var(--sp-4);
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
-      font-style: italic;
-    }
+    /* ── Add Attendee modal ─────────────────────────────────── */
+    .attendee-search { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font-size: 13px; margin-bottom: 10px; box-sizing: border-box; }
+    .attendee-search:focus { outline: none; border-color: var(--accent); }
+    .attendee-pick-list { max-height: 240px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px; }
+    .attendee-pick-row { display: flex; flex-direction: column; align-items: flex-start; padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+    .attendee-pick-row:last-child { border-bottom: none; }
+    .attendee-pick-row.selected { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .pick-name { font-size: 13px; color: var(--text); font-weight: 600; }
+    .pick-eligibility { font-size: 11px; margin-top: 2px; }
+    .pick-eligibility.eligible   { color: var(--success); }
+    .pick-eligibility.ineligible { color: var(--danger); }
+    .add-modal-actions { display: flex; gap: 8px; }
   </style>
 </head>
 <body>
 <div id="phoneFrame">
-<div id="phoneViewport">
 
+<!-- ── Member menu bottom sheet ──────────────────────────────────────────── -->
+<div id="memberMenuModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+  <div class="modal-sheet" style="padding:0;overflow:hidden">
+    <div class="member-menu-title">
+      <div>
+        <div class="member-menu-name" id="menuUserName"></div>
+        <div class="member-menu-email" id="menuUserEmail"></div>
+      </div>
+      <button class="modal-close" id="memberMenuClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="member-menu-list" id="memberMenuList"></div>
+  </div>
+</div>
+
+<!-- ── Class detail + roll call modal ────────────────────────────────────── -->
+<div id="classDetailModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title" id="detailTitle"></span>
+      <button class="modal-close" id="detailClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div id="detailTime" class="detail-meta"></div>
+    <div id="detailInstructors" class="detail-meta"></div>
+    <div id="detailLocation" class="detail-meta"></div>
+    <p id="detailDesc" class="modal-desc" style="display:none"></p>
+
+    <!-- Roll call section — always rendered, editing gated -->
+    <div class="rollcall-section" id="rollcallSection" hidden>
+      <div class="rollcall-section-title">Roll Call</div>
+      <div class="rollcall-summary" id="rollcallSummary"></div>
+      <div class="rollcall-lock-bar" id="rollcallLockBar" hidden>
+        <span class="lock-pill" id="rollcallCountdown"></span>
+        <span class="readonly-note">Viewing only until unlock</span>
+      </div>
+      <div class="ior-note" id="iorNote" hidden>Instructor of record only — view access</div>
+      <div id="rollcallAttendees"></div>
+      <div class="rollcall-footer" id="rollcallFooter" hidden>
+        <button class="btn btn-outline btn-sm" id="addLateBtn">+ Add Late Attendee</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add Late Attendee modal ────────────────────────────────────────────── -->
+<div id="addAttendeeModal" class="modal-overlay modal-overlay--center" role="dialog" aria-modal="true" hidden>
+  <div class="modal-sheet" style="width:100%;max-width:440px">
+    <div class="modal-header" style="margin-bottom:14px">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">Add Late Attendee</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px" id="addAttendeeClassLabel"></div>
+      </div>
+      <button class="modal-close" id="addAttendeeClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <input type="search" class="attendee-search" id="attendeeSearch" placeholder="Search members…" autocomplete="off">
+    <div class="attendee-pick-list" id="attendeePickList"></div>
+    <div id="addAttendeeError" style="font-size:12px;color:var(--danger);margin-bottom:10px;display:none"></div>
+    <div class="add-modal-actions">
+      <button class="btn btn-primary" id="addAttendeeConfirm" disabled style="flex:1">Add to Class</button>
+      <button class="btn btn-ghost" id="addAttendeeCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="phoneViewport">
 <header class="topbar">
-  <a href="schedule.html" class="topbar-back">← Schedule</a>
-  <div class="topbar-logo">Instructor</div>
+  <a href="schedule.html" class="topbar-back" aria-label="Back to schedule">← Schedule</a>
+  <div class="topbar-logo">My Classes</div>
   <div class="topbar-actions">
-    <span id="sessionName" style="font-size:12px;color:var(--on-dark-secondary);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px"></span>
-    <button class="btn btn-ghost btn-sm" id="signOutBtn">Sign Out</button>
+    <div class="view-toggle" id="viewToggle">
+      <button class="view-btn active" data-view="list">List</button>
+      <button class="view-btn" data-view="week">Week</button>
+    </div>
+    <button class="user-chip" id="userChip" aria-haspopup="dialog" aria-controls="memberMenuModal">
+      <span class="user-avatar" id="userAvatar"></span>
+      <span id="userChipName"></span>
+      <span class="user-caret" aria-hidden="true">▾</span>
+    </button>
   </div>
 </header>
 
-<!-- Day selector -->
-<div class="day-selector" id="daySelector"></div>
+<div class="filter-bar" id="filterBar">
+  <div class="filter-row" id="filterCategories"></div>
+  <div class="filter-row" id="filterInstructors"></div>
+</div>
 
-<!-- Main content -->
-<main class="page-content" id="rollCallMain">
-  <div class="rollcall-empty-state">Loading…</div>
-</main>
+<div class="date-nav" id="dateNav">
+  <button class="date-nav-btn" id="prevWeek" aria-label="Previous week">&#8249;</button>
+  <span class="date-nav-label" id="dateNavLabel"></span>
+  <button class="date-nav-btn" id="nextWeek" aria-label="Next week">&#8250;</button>
+  <div class="date-nav-right">
+    <button class="date-nav-today-btn" id="goToToday" hidden>Today</button>
+    <label class="date-nav-cal-btn" title="Jump to a date" aria-label="Open date picker">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <input type="date" id="datePicker" aria-label="Jump to date">
+    </label>
+  </div>
+</div>
+
+<div class="schedule" id="schedule"></div>
+
+<div id="calView">
+  <div class="cal-day-header-bar" id="calDayHeaderBar">
+    <div class="cal-gutter-cell"></div>
+  </div>
+  <div class="cal-scroll" id="calScroll">
+    <div class="cal-inner" id="calInner"></div>
+  </div>
+</div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -116,27 +240,78 @@
 <script src="pci-auth.js"></script>
 <script src="pci-shared.js"></script>
 <script>
-// ── Role gate ────────────────────────────────────────────────────────────────
+// ── Role gate ──────────────────────────────────────────────────────────────────
 const session = PciAuth.requireRole(['instructor', 'admin', 'owner']);
 
-// ── Dev mode ─────────────────────────────────────────────────────────────────
-const DEV_MODE_KEY = 'pci_dev_mobile';
-document.body.classList.toggle('dev-mobile', localStorage.getItem(DEV_MODE_KEY) === '1');
+// ── Dev mode ───────────────────────────────────────────────────────────────────
+document.body.classList.toggle('dev-mobile', localStorage.getItem('pci_dev_mobile') === '1');
 
-// ── Session header ───────────────────────────────────────────────────────────
-document.getElementById('sessionName').textContent = session.displayName;
-document.getElementById('signOutBtn').addEventListener('click', () => PciAuth.logout());
+// ── User chip + member menu ────────────────────────────────────────────────────
+(function () {
+  const chip     = document.getElementById('userChip');
+  const avatar   = document.getElementById('userAvatar');
+  const chipName = document.getElementById('userChipName');
+  const modal    = document.getElementById('memberMenuModal');
+  const close    = document.getElementById('memberMenuClose');
+  const nameEl   = document.getElementById('menuUserName');
+  const emailEl  = document.getElementById('menuUserEmail');
+  const list     = document.getElementById('memberMenuList');
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
+  const initials = session.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  avatar.textContent  = initials;
+  avatar.className    = 'user-avatar role-' + session.role;
+  chipName.textContent = session.displayName.split(' ')[0];
+  nameEl.textContent  = session.displayName;
+  emailEl.textContent = session.email;
+
+  const menuItems = [
+    { type: 'link', href: 'profile.html',  label: 'Profile',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
+    { type: 'link', href: 'settings.html', label: 'Settings',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' },
+    { type: 'divider' },
+    { type: 'btn', id: 'menuSignOut', cls: 'danger', label: 'Sign Out',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' }
+  ];
+
+  menuItems.forEach(item => {
+    if (item.type === 'divider') {
+      const hr = document.createElement('div');
+      hr.className = 'member-menu-divider';
+      list.appendChild(hr);
+    } else if (item.type === 'link') {
+      const a = document.createElement('a');
+      a.href = item.href;
+      a.className = 'member-menu-item';
+      a.innerHTML = item.icon + '<span>' + item.label + '</span>';
+      list.appendChild(a);
+    } else {
+      const btn = document.createElement('button');
+      if (item.id) btn.id = item.id;
+      btn.className = 'member-menu-item' + (item.cls ? ' ' + item.cls : '');
+      btn.innerHTML = item.icon + '<span>' + item.label + '</span>';
+      list.appendChild(btn);
+    }
+  });
+
+  function openMenu()  { modal.removeAttribute('hidden'); document.body.classList.add('modal-open'); }
+  function closeMenu() { modal.setAttribute('hidden', '');  document.body.classList.remove('modal-open'); }
+  chip.addEventListener('click', openMenu);
+  close?.addEventListener('click', closeMenu);
+  modal.addEventListener('click', e => { if (e.target === modal) closeMenu(); });
+  document.getElementById('menuSignOut')?.addEventListener('click', () => PciAuth.logout());
+})();
+
+// ── Toast ──────────────────────────────────────────────────────────────────────
 function showToast(msg, type) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className = ('show' + (type ? ' ' + type : '')).trim();
+  el.className   = ('show' + (type ? ' ' + type : '')).trim();
   clearTimeout(el._t);
   el._t = setTimeout(() => { el.className = ''; }, 3200);
 }
 
-// ── Bookings store ────────────────────────────────────────────────────────────
+// ── Bookings store ─────────────────────────────────────────────────────────────
 function getBookings() {
   try { return JSON.parse(localStorage.getItem(BOOKINGS_KEY)) || []; } catch { return []; }
 }
@@ -144,14 +319,122 @@ function saveBookings(arr) {
   localStorage.setItem(BOOKINGS_KEY, JSON.stringify(arr));
 }
 
-// ── State ─────────────────────────────────────────────────────────────────────
-const DAYS     = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const DAY_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// ── Constants / state ──────────────────────────────────────────────────────────
+const DAY_NAMES_FULL  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAY_ABBREVS     = { Sunday:'Sun', Monday:'Mon', Tuesday:'Tue', Wednesday:'Wed', Thursday:'Thu', Friday:'Fri', Saturday:'Sat' };
+const MONTH_ABBREVS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const WEEK_DATE_KEY   = 'pci_instr_date';
+const HOUR_START      = 5;
+const HOUR_END        = 21;
+const HOUR_HEIGHT     = 64;
+const TOTAL_HOURS     = HOUR_END - HOUR_START;
 
-let scheduleData  = null;
-let usersData     = null;
-let selectedDay   = null; // day name string e.g. "Monday"
+let scheduleData   = null;
+let usersData      = null;
+let categoriesData = null;
+let settingsData   = null;
+let typeToCategory      = {};
+let instructorMap       = {};
+let instructorColorMap  = {};
+let classDescriptions   = {};
+let locationMap         = {};  // id → display name
+let _scheduleByDay      = {};
+let _allClasses         = [];
 
+let UNLOCK_MINUTES = 10;
+let _countdownTimer = null;
+
+let activeCategories  = new Set();
+let activeInstructors = new Set();
+let _viewStartDate    = todayMidnight();
+
+// URL param: auto-open a class detail on load (navigated from schedule.html)
+const _params       = new URLSearchParams(location.search);
+const _focusClassId = _params.get('classId') || null;
+
+// Currently open class in detail modal
+let _detailClassId  = null;
+
+// ── Date helpers ───────────────────────────────────────────────────────────────
+function todayMidnight() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function dateAddDays(base, n) {
+  const d = new Date(base);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function formatShortDate(d) {
+  return MONTH_ABBREVS[d.getMonth()] + ' ' + d.getDate();
+}
+
+function buildDateWindow(startDate) {
+  const today = todayMidnight();
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    d.setHours(0, 0, 0, 0);
+    return { date: d, dayName: DAY_NAMES_FULL[d.getDay()], isToday: d.getTime() === today.getTime() };
+  });
+}
+
+function isCurrentWeek(startDate) {
+  const d = new Date(startDate);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime() === todayMidnight().getTime();
+}
+
+function isClassExpired(cls, entry) {
+  const today = todayMidnight();
+  if (entry.date < today) return true;
+  if (entry.date > today) return false;
+  const [eh, em] = cls.time_end.split(':').map(Number);
+  const classEnd = new Date(today);
+  classEnd.setHours(eh, em, 0, 0);
+  return new Date() >= classEnd;
+}
+
+function initViewDate() {
+  try {
+    const stored = sessionStorage.getItem(WEEK_DATE_KEY);
+    if (stored) {
+      const d = new Date(stored + 'T00:00:00');
+      if (!isNaN(d.getTime())) { _viewStartDate = d; _viewStartDate.setHours(0,0,0,0); return; }
+    }
+  } catch(e) {}
+  _viewStartDate = todayMidnight();
+}
+
+function saveViewDate() {
+  try {
+    const y = _viewStartDate.getFullYear();
+    const m = String(_viewStartDate.getMonth() + 1).padStart(2, '0');
+    const day = String(_viewStartDate.getDate()).padStart(2, '0');
+    sessionStorage.setItem(WEEK_DATE_KEY, `${y}-${m}-${day}`);
+  } catch(e) {}
+}
+
+function updateDateNav(dateWindow) {
+  const start = dateWindow[0].date;
+  const end   = dateWindow[6].date;
+  document.getElementById('dateNavLabel').textContent =
+    formatShortDate(start) + ' – ' + formatShortDate(end);
+  const todayBtn = document.getElementById('goToToday');
+  if (todayBtn) todayBtn.hidden = isCurrentWeek(_viewStartDate);
+  const picker = document.getElementById('datePicker');
+  if (picker) {
+    const y = start.getFullYear();
+    const mo = String(start.getMonth() + 1).padStart(2, '0');
+    const d  = String(start.getDate()).padStart(2, '0');
+    picker.value = `${y}-${mo}-${d}`;
+  }
+}
+
+// ── Format helpers ─────────────────────────────────────────────────────────────
 function formatTime(t) {
   const [h, m] = t.split(':').map(Number);
   const period = h >= 12 ? 'PM' : 'AM';
@@ -159,8 +442,10 @@ function formatTime(t) {
   return `${hour}:${m.toString().padStart(2,'0')} ${period}`;
 }
 
-function displayTitle(title) {
-  return title.replace(/^St\.\s*John's\s+/i, '').replace(/^Clarenville\s+/i, '');
+function displayTitle(cls) {
+  return cls.title
+    .replace(/^St\.\s*John's\s+/i, '')
+    .replace(/^Clarenville\s+/i, '');
 }
 
 function getUserName(userId) {
@@ -169,191 +454,830 @@ function getUserName(userId) {
   return u ? u.display_name : userId;
 }
 
-// ── Day selector ─────────────────────────────────────────────────────────────
-function buildDaySelector() {
-  const bar = document.getElementById('daySelector');
-  bar.innerHTML = '';
-  DAYS.forEach((day, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'day-pill' + (day === selectedDay ? ' active' : '');
-    btn.textContent = DAY_ABBR[i];
-    btn.dataset.day = day;
-    btn.addEventListener('click', () => selectDay(day));
-    bar.appendChild(btn);
+function getCategoryForType(type) {
+  const cat = typeToCategory[type];
+  return cat ? cat.id : null;
+}
+
+function getClassById(classId) {
+  return _allClasses.find(c => c.id === classId) || null;
+}
+
+// ── Access control ─────────────────────────────────────────────────────────────
+function canManageRollCall(cls) {
+  if (['admin', 'owner'].includes(session.role)) return true;
+  return session.role === 'instructor' &&
+    (cls.instructor_ids || []).includes(session.instructorId);
+}
+
+// ── Time-gating ────────────────────────────────────────────────────────────────
+function minsUntilClass(cls) {
+  const now = new Date();
+  const [h, m] = cls.time_start.split(':').map(Number);
+  const start = new Date(now);
+  start.setHours(h, m, 0, 0);
+  return (start - now) / 60000;
+}
+
+function isRollCallUnlocked(cls) {
+  return minsUntilClass(cls) <= UNLOCK_MINUTES;
+}
+
+function formatCountdown(mins) {
+  if (mins <= 0) return 'In progress';
+  if (mins < 60) return 'Opens in ' + Math.ceil(mins) + ' min';
+  const h = Math.floor(mins / 60);
+  const rem = Math.round(mins % 60);
+  return 'Opens in ' + h + 'h ' + rem + 'm';
+}
+
+// ── Eligibility check ──────────────────────────────────────────────────────────
+function checkEligibility(user, cls) {
+  if ((user.credits || 0) > 0) return { eligible: true, pipeline: 'credits' };
+  const cat = getCategoryForType(cls.type);
+  const today = new Date().toISOString().slice(0, 10);
+  const pkg = (user.active_packages || []).find(p =>
+    p.end_date >= today && (p.eligible_categories || []).includes(cat)
+  );
+  if (pkg) return { eligible: true, pipeline: 'unlimited' };
+  return { eligible: false };
+}
+
+// ── Filter ─────────────────────────────────────────────────────────────────────
+function _syncAllPill() {
+  const allClear = activeCategories.size === 0 && activeInstructors.size === 0;
+  document.querySelectorAll('.filter-pill[data-all-pill]').forEach(p => p.classList.toggle('active', allClear));
+}
+
+function buildCategoryFilter(cats) {
+  const row = document.getElementById('filterCategories');
+
+  const clearPill = document.createElement('button');
+  clearPill.className = 'filter-pill active';
+  clearPill.dataset.allPill = 'true';
+  clearPill.textContent = 'All';
+  row.appendChild(clearPill);
+
+  cats.categories.forEach(cat => {
+    const pill = document.createElement('button');
+    pill.className = 'filter-pill';
+    pill.dataset.category = cat.id;
+    const dot = document.createElement('span');
+    dot.className = 'pill-dot';
+    dot.style.backgroundColor = COLOR_HEX[cat.color] || '#999';
+    pill.appendChild(dot);
+    pill.appendChild(document.createTextNode(cat.name));
+    row.appendChild(pill);
+  });
+
+  row.addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill');
+    if (!pill) return;
+    if (pill.dataset.allPill) {
+      activeCategories.clear();
+      activeInstructors.clear();
+      document.querySelectorAll('.filter-pill[data-category]').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.filter-pill[data-instructor]').forEach(p => p.classList.remove('active'));
+    } else {
+      const catId = pill.dataset.category;
+      if (activeCategories.has(catId)) activeCategories.delete(catId);
+      else activeCategories.add(catId);
+      document.querySelectorAll('.filter-pill[data-category]').forEach(p => {
+        p.classList.toggle('active', activeCategories.has(p.dataset.category));
+      });
+    }
+    _syncAllPill();
+    applyFilter();
   });
 }
 
-function selectDay(day) {
-  selectedDay = day;
-  buildDaySelector();
-  renderRollCall();
+function buildInstructorFilter(instructors) {
+  const row = document.getElementById('filterInstructors');
+
+  instructors.forEach(inst => {
+    const pill = document.createElement('button');
+    pill.className = 'filter-pill';
+    pill.dataset.instructor = inst.id;
+    const dot = document.createElement('span');
+    dot.className = 'pill-dot';
+    dot.style.backgroundColor = INSTRUCTOR_HEX[inst.color] || '#999';
+    pill.appendChild(dot);
+    pill.appendChild(document.createTextNode(inst.display_name));
+    row.appendChild(pill);
+  });
+
+  row.addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill[data-instructor]');
+    if (!pill) return;
+    const instId = pill.dataset.instructor;
+    if (activeInstructors.has(instId)) activeInstructors.delete(instId);
+    else activeInstructors.add(instId);
+    document.querySelectorAll('.filter-pill[data-instructor]').forEach(p => {
+      p.classList.toggle('active', activeInstructors.has(p.dataset.instructor));
+    });
+    _syncAllPill();
+    applyFilter();
+  });
 }
 
-// ── Filter classes for this instructor ───────────────────────────────────────
-function getInstructorClasses(dayName) {
-  if (!scheduleData) return [];
-  const dayObj = scheduleData.schedule.find(d => d.day === dayName);
-  if (!dayObj) return [];
-
-  const classes = dayObj.classes
-    .slice()
-    .sort((a, b) => a.time_start.localeCompare(b.time_start));
-
-  // Admins and owners see all classes; instructors see only their own
-  if (session.role === 'instructor' && session.instructorId) {
-    return classes.filter(cls =>
-      (cls.instructor_ids || []).includes(session.instructorId)
-    );
-  }
-  return classes;
+function applyFilter() {
+  document.querySelectorAll('.day-block').forEach(block => {
+    const items = block.querySelectorAll('.class-item');
+    let visible = 0;
+    items.forEach(item => {
+      const catMatch  = activeCategories.size === 0  || activeCategories.has(item.dataset.category);
+      const instMatch = activeInstructors.size === 0 || item.dataset.instructorIds.split(',').some(id => activeInstructors.has(id));
+      const show = catMatch && instMatch;
+      item.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    block.classList.toggle('hidden', visible === 0);
+  });
+  document.querySelectorAll('.cal-class-block').forEach(block => {
+    const catMatch  = activeCategories.size === 0  || activeCategories.has(block.dataset.category);
+    const instMatch = activeInstructors.size === 0 || block.dataset.instructorIds.split(',').some(id => activeInstructors.has(id));
+    block.classList.toggle('hidden', !(catMatch && instMatch));
+  });
 }
 
-// ── Render roll call ──────────────────────────────────────────────────────────
-function renderRollCall() {
-  const main = document.getElementById('rollCallMain');
-  const classes = getInstructorClasses(selectedDay);
+// ── List view renderer ─────────────────────────────────────────────────────────
+function renderSchedule(dateWindow) {
+  const container = document.getElementById('schedule');
+  container.innerHTML = '';
 
-  if (classes.length === 0) {
-    main.innerHTML = '<div class="rollcall-empty-state">'
-      + (session.role === 'instructor'
-        ? 'No classes scheduled for you on ' + selectedDay + '.'
-        : 'No classes on ' + selectedDay + '.')
-      + '</div>';
-    return;
-  }
+  dateWindow.forEach(entry => {
+    const dayData = _scheduleByDay[entry.dayName] || { day: entry.dayName, classes: [] };
+    const block = document.createElement('div');
+    block.className = 'day-block';
 
-  const bookings = getBookings();
-  main.innerHTML = '';
-
-  classes.forEach(cls => {
-    const classBookings = bookings.filter(b => b.class_id === cls.id);
-
-    const card = document.createElement('div');
-    card.className = 'rollcall-card';
-
-    // Header
     const header = document.createElement('div');
-    header.className = 'rollcall-header';
+    header.className = 'day-header' + (entry.isToday ? ' day-header--today' : '');
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = entry.isToday ? 'Today' : (DAY_ABBREVS[entry.dayName] || entry.dayName);
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'day-header-date';
+    dateSpan.textContent = entry.isToday
+      ? (DAY_ABBREVS[entry.dayName] || entry.dayName) + ', ' + formatShortDate(entry.date)
+      : formatShortDate(entry.date);
+    header.appendChild(labelSpan);
+    header.appendChild(dateSpan);
+    block.appendChild(header);
 
-    const colorBar = document.createElement('div');
-    colorBar.style.cssText = `width:4px;height:36px;border-radius:2px;background:var(--cls-${cls.color});flex-shrink:0`;
-
-    const titleEl = document.createElement('span');
-    titleEl.className = 'rollcall-title';
-    titleEl.textContent = displayTitle(cls.title);
-
-    const summary = document.createElement('span');
-    summary.className = 'rollcall-summary';
-    const attended = classBookings.filter(b => b.attended === true).length;
-    summary.textContent = classBookings.length + ' booked' + (attended ? ' · ' + attended + ' attended' : '');
-
-    const timeEl = document.createElement('span');
-    timeEl.className = 'rollcall-time';
-    timeEl.textContent = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
-
-    header.appendChild(colorBar);
-    header.appendChild(titleEl);
-    header.appendChild(summary);
-    header.appendChild(timeEl);
-    card.appendChild(header);
-
-    // Attendee list
-    if (classBookings.length === 0) {
+    if (dayData.classes.length === 0) {
       const empty = document.createElement('div');
-      empty.className = 'no-bookings-row';
-      empty.textContent = 'No bookings yet for this class.';
-      card.appendChild(empty);
+      empty.className = 'empty-day';
+      empty.textContent = 'No classes scheduled';
+      block.appendChild(empty);
     } else {
-      classBookings.forEach(booking => {
-        const row = document.createElement('div');
-        row.className = 'attendee-row';
-        row.dataset.bookingId = booking.id;
-        if (booking.attended === true) row.classList.add('attended');
-        else if (booking.status === 'no_show') row.classList.add('no-show');
+      const sorted = [...dayData.classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
+      sorted.forEach(cls => {
+        const cat = typeToCategory[cls.type] || { id: 'unknown', color: 'gray' };
+        const instColor = instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray';
+        const expired   = isClassExpired(cls, entry);
+        const isOwn     = canManageRollCall(cls);
 
-        const nameEl = document.createElement('span');
-        nameEl.className = 'attendee-name';
-        nameEl.textContent = getUserName(booking.user_id);
+        const item = document.createElement('div');
+        item.className = `class-item bg-${cat.color}${expired ? ' past' : ''}`;
+        item.dataset.category      = cat.id;
+        item.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
+        item.dataset.instructorIds = (cls.instructor_ids || []).join(',');
+        item.dataset.classId       = cls.id;
+        item.dataset.dayName       = entry.dayName;
+        if (cls.type) item.dataset.type = cls.type;
 
-        const actions = document.createElement('div');
-        actions.className = 'attendee-actions';
+        const bar = document.createElement('div');
+        bar.className = `color-bar inst-${instColor}`;
 
-        const attendBtn = document.createElement('button');
-        attendBtn.className = 'btn btn-sm btn-outline';
-        attendBtn.dataset.mark = 'attended';
-        attendBtn.textContent = '✓ Attended';
-        attendBtn.style.fontSize = '11px';
-        if (booking.attended === true) attendBtn.style.opacity = '0.4';
+        const body = document.createElement('div');
+        body.className = 'class-body';
 
-        const noShowBtn = document.createElement('button');
-        noShowBtn.className = 'btn btn-sm btn-ghost';
-        noShowBtn.dataset.mark = 'no_show';
-        noShowBtn.textContent = '✗ No Show';
-        noShowBtn.style.fontSize = '11px';
-        if (booking.status === 'no_show') noShowBtn.style.opacity = '0.4';
+        const time = document.createElement('div');
+        time.className = 'class-time';
+        time.textContent = `${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}`;
 
-        actions.appendChild(attendBtn);
-        actions.appendChild(noShowBtn);
-        row.appendChild(nameEl);
-        row.appendChild(actions);
-        card.appendChild(row);
+        const title = document.createElement('div');
+        title.className = 'class-title';
+        title.textContent = displayTitle(cls);
+
+        const instructor = document.createElement('div');
+        instructor.className = 'class-instructor';
+        const names = (cls.instructor_ids || []).map(id => instructorMap[id] || id);
+        instructor.textContent = 'With ' + (names.join(', ') || '—');
+
+        const bookedCount = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled').length;
+        const countEl = document.createElement('div');
+        countEl.className = 'class-booked-count';
+        countEl.textContent = bookedCount === 1 ? '1 booked' : bookedCount + ' booked';
+
+        body.appendChild(time);
+        body.appendChild(title);
+        body.appendChild(instructor);
+        body.appendChild(countEl);
+        item.appendChild(bar);
+        item.appendChild(body);
+
+        if (isOwn) {
+          const badge = document.createElement('span');
+          badge.className = 'rollcall-badge';
+          badge.textContent = 'Roll Call';
+          item.appendChild(badge);
+        }
+
+        block.appendChild(item);
       });
     }
 
-    main.appendChild(card);
+    container.appendChild(block);
   });
 }
 
-// ── Roll call action delegation ───────────────────────────────────────────────
-document.getElementById('rollCallMain').addEventListener('click', e => {
-  const btn = e.target.closest('[data-mark]');
-  if (!btn) return;
+// ── Calendar view renderer ─────────────────────────────────────────────────────
+function assignLanes(classes) {
+  const sorted = [...classes].sort((a, b) => a.time_start.localeCompare(b.time_start));
+  sorted.forEach(c => { c._lane = 0; c._totalLanes = 1; });
+  function overlaps(a, b) { return a.time_start < b.time_end && b.time_start < a.time_end; }
+  const visited = new Set();
+  sorted.forEach((cls, i) => {
+    if (visited.has(i)) return;
+    const group = [i];
+    visited.add(i);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      sorted.forEach((other, j) => {
+        if (visited.has(j)) return;
+        if (group.some(k => overlaps(sorted[k], sorted[j]))) {
+          group.push(j); visited.add(j); changed = true;
+        }
+      });
+    }
+    const laneEnds = [];
+    group.map(k => sorted[k])
+         .sort((a, b) => a.time_start.localeCompare(b.time_start))
+         .forEach(c => {
+           let lane = laneEnds.findIndex(end => c.time_start >= end);
+           if (lane === -1) { lane = laneEnds.length; laneEnds.push(c.time_end); }
+           else laneEnds[lane] = c.time_end;
+           c._lane = lane;
+         });
+    group.forEach(k => { sorted[k]._totalLanes = laneEnds.length; });
+  });
+  return sorted;
+}
 
-  const row = btn.closest('.attendee-row');
+function renderCalendarView(dateWindow) {
+  const headerBar = document.getElementById('calDayHeaderBar');
+  headerBar.querySelectorAll('.cal-day-head').forEach(el => el.remove());
+  dateWindow.forEach(entry => {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day-head' + (entry.isToday ? ' cal-day-head--today' : '');
+    const nameEl = document.createElement('span');
+    nameEl.className = 'cal-head-name';
+    nameEl.textContent = entry.isToday ? 'Today' : (DAY_ABBREVS[entry.dayName] || entry.dayName.slice(0,3));
+    const numEl = document.createElement('span');
+    numEl.className = 'cal-head-num';
+    numEl.textContent = entry.date.getDate();
+    cell.appendChild(nameEl);
+    cell.appendChild(numEl);
+    headerBar.appendChild(cell);
+  });
+
+  const inner = document.getElementById('calInner');
+  inner.innerHTML = '';
+  const totalHeight = TOTAL_HOURS * HOUR_HEIGHT;
+
+  const gutter = document.createElement('div');
+  gutter.className = 'cal-gutter';
+  gutter.style.height = `${totalHeight}px`;
+  for (let h = HOUR_START; h < HOUR_END; h++) {
+    const label = document.createElement('div');
+    label.className = 'cal-time-label';
+    label.style.top = `${(h - HOUR_START) * HOUR_HEIGHT}px`;
+    label.textContent = h === 12 ? '12 PM' : h < 12 ? `${h} AM` : `${h - 12} PM`;
+    gutter.appendChild(label);
+  }
+  inner.appendChild(gutter);
+
+  dateWindow.forEach(entry => {
+    const dayData = _scheduleByDay[entry.dayName] || { day: entry.dayName, classes: [] };
+    const col = document.createElement('div');
+    col.className = 'cal-day-col';
+    col.style.height = `${totalHeight}px`;
+
+    const byLoc = {};
+    dayData.classes.forEach(c => (byLoc[c.location_id] = byLoc[c.location_id] || []).push(c));
+    Object.values(byLoc).forEach(locClasses => assignLanes(locClasses));
+
+    dayData.classes.forEach(cls => {
+      const [sh, sm] = cls.time_start.split(':').map(Number);
+      const [eh, em] = cls.time_end.split(':').map(Number);
+      const startMin = Math.max(0, sh * 60 + sm - HOUR_START * 60);
+      const endMin   = Math.min(TOTAL_HOURS * 60, eh * 60 + em - HOUR_START * 60);
+      if (startMin >= endMin) return;
+
+      const topPx    = (startMin / 60) * HOUR_HEIGHT;
+      const heightPx = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, 22);
+
+      const cat = typeToCategory[cls.type] || { id: 'unknown', color: 'gray' };
+      const instColor = instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray';
+      const expired   = isClassExpired(cls, entry);
+
+      const block = document.createElement('div');
+      block.className = `cal-class-block color-${cat.color} inst-${instColor}${expired ? ' past' : ''}`;
+      block.dataset.category         = cat.id;
+      block.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
+      block.dataset.instructorIds    = (cls.instructor_ids || []).join(',');
+      block.dataset.classId          = cls.id;
+      if (cls.type) block.dataset.type = cls.type;
+      block.style.top    = `${topPx}px`;
+      block.style.height = `${heightPx}px`;
+
+      const gap = 2;
+      const pct = 100 / cls._totalLanes;
+      block.style.left  = `calc(${cls._lane * pct}% + ${gap}px)`;
+      block.style.width = `calc(${pct}% - ${gap * 2}px)`;
+      block.style.right = '';
+
+      const timeEl = document.createElement('div');
+      timeEl.className = 'cal-block-time';
+      timeEl.textContent = formatTime(cls.time_start);
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'cal-block-title';
+      titleEl.textContent = displayTitle(cls);
+
+      const calCount = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled').length;
+      const calCountEl = document.createElement('div');
+      calCountEl.className = 'cal-block-count';
+      calCountEl.textContent = calCount + ' booked';
+
+      block.appendChild(timeEl);
+      block.appendChild(titleEl);
+      block.appendChild(calCountEl);
+
+      if (cls.sub_location === 'upper_gym') {
+        const tag = document.createElement('div');
+        tag.className = 'cal-block-gym-tag';
+        tag.textContent = '↑ Upper';
+        block.appendChild(tag);
+      }
+
+      col.appendChild(block);
+    });
+
+    inner.appendChild(col);
+  });
+}
+
+// ── Class detail modal ─────────────────────────────────────────────────────────
+function openDetailModal(classId) {
+  const cls = getClassById(classId);
+  if (!cls) return;
+  _detailClassId = classId;
+
+  // Populate header
+  document.getElementById('detailTitle').textContent = displayTitle(cls);
+
+  const names = (cls.instructor_ids || []).map(id => instructorMap[id] || id);
+  document.getElementById('detailTime').textContent =
+    formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+  document.getElementById('detailInstructors').textContent =
+    'With ' + (names.join(', ') || '—');
+
+  document.getElementById('detailLocation').textContent =
+    locationMap[cls.location_id] || cls.location_id || '';
+
+  const descEl = document.getElementById('detailDesc');
+  const desc = classDescriptions[cls.type];
+  if (desc && desc.description) {
+    descEl.textContent = desc.description;
+    descEl.style.display = '';
+  } else {
+    descEl.style.display = 'none';
+  }
+
+  // Roll call section
+  renderRollCallSection(cls);
+
+  document.getElementById('classDetailModal').removeAttribute('hidden');
+  document.body.classList.add('modal-open');
+
+  // Start countdown refresh
+  startDetailCountdown(cls);
+}
+
+function closeDetailModal() {
+  document.getElementById('classDetailModal').setAttribute('hidden', '');
+  document.body.classList.remove('modal-open');
+  _detailClassId = null;
+  if (_countdownTimer) { clearInterval(_countdownTimer); _countdownTimer = null; }
+}
+
+function renderRollCallSection(cls) {
+  const section     = document.getElementById('rollcallSection');
+  const summaryEl   = document.getElementById('rollcallSummary');
+  const lockBar     = document.getElementById('rollcallLockBar');
+  const countdownEl = document.getElementById('rollcallCountdown');
+  const iorNote     = document.getElementById('iorNote');
+  const attendeesEl = document.getElementById('rollcallAttendees');
+  const footerEl    = document.getElementById('rollcallFooter');
+
+  // Only show roll call section to admin/owner or the instructor's own classes
+  const canSee = ['admin', 'owner'].includes(session.role) ||
+    (session.role === 'instructor' && (cls.instructor_ids || []).includes(session.instructorId));
+
+  if (!canSee) {
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+
+  const bookings = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled');
+  const attended = bookings.filter(b => b.attended === true).length;
+  summaryEl.textContent = bookings.length + ' booked' + (attended ? ' · ' + attended + ' attended' : '');
+
+  const unlocked = isRollCallUnlocked(cls);
+  const canManage = canManageRollCall(cls);
+
+  // Lock bar (visible only when locked and user can manage)
+  if (!unlocked && canManage) {
+    countdownEl.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls));
+    lockBar.hidden = false;
+  } else {
+    lockBar.hidden = true;
+  }
+
+  // IOR note for non-managing viewers
+  iorNote.hidden = canManage;
+
+  // Attendee list
+  attendeesEl.innerHTML = '';
+  if (bookings.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'no-bookings-row';
+    empty.textContent = 'No bookings yet for this class.';
+    attendeesEl.appendChild(empty);
+  } else {
+    bookings.forEach(booking => {
+      const row = document.createElement('div');
+      row.className = 'attendee-row';
+      row.dataset.bookingId = booking.id;
+      if (booking.attended === true) row.classList.add('attended');
+      else if (booking.status === 'no_show') row.classList.add('no-show');
+
+      const nameWrap = document.createElement('span');
+      nameWrap.style.cssText = 'display:flex;align-items:center;gap:4px';
+      const nameEl = document.createElement('span');
+      nameEl.className = 'attendee-name';
+      nameEl.textContent = getUserName(booking.user_id);
+      nameWrap.appendChild(nameEl);
+      if (booking.added_by_instructor) {
+        const badge = document.createElement('span');
+        badge.className = 'late-badge';
+        badge.textContent = 'LATE';
+        nameWrap.appendChild(badge);
+      }
+      row.appendChild(nameWrap);
+
+      if (unlocked && canManage) {
+        const actions = document.createElement('div');
+        actions.className = 'attendee-actions';
+        const attendBtn = document.createElement('button');
+        attendBtn.className = 'btn btn-sm btn-outline';
+        attendBtn.dataset.mark = 'attended';
+        attendBtn.textContent = '✓';
+        attendBtn.title = 'Mark attended';
+        attendBtn.style.fontSize = '12px';
+        const noShowBtn = document.createElement('button');
+        noShowBtn.className = 'btn btn-sm btn-ghost';
+        noShowBtn.dataset.mark = 'no_show';
+        noShowBtn.textContent = '✗';
+        noShowBtn.title = 'Mark no-show';
+        noShowBtn.style.fontSize = '12px';
+        actions.appendChild(attendBtn);
+        actions.appendChild(noShowBtn);
+        row.appendChild(actions);
+      } else {
+        const statusEl = document.createElement('span');
+        statusEl.className = 'attendee-meta';
+        if (booking.attended === true) statusEl.textContent = '✓';
+        else if (booking.status === 'no_show') statusEl.textContent = '✗';
+        row.appendChild(statusEl);
+      }
+
+      attendeesEl.appendChild(row);
+    });
+  }
+
+  // Add Late Attendee button
+  footerEl.hidden = !(unlocked && canManage);
+}
+
+// ── Attendance mark handler ────────────────────────────────────────────────────
+document.getElementById('rollcallAttendees').addEventListener('click', e => {
+  const markBtn = e.target.closest('[data-mark]');
+  if (!markBtn || !_detailClassId) return;
+  const row = markBtn.closest('.attendee-row');
   if (!row) return;
   const bookingId = row.dataset.bookingId;
-  const mark = btn.dataset.mark;
+  const mark = markBtn.dataset.mark;
 
   const bookings = getBookings();
-  const booking = bookings.find(b => b.id === bookingId);
+  const booking  = bookings.find(b => b.id === bookingId);
   if (!booking) return;
 
   if (mark === 'attended') {
     booking.attended = true;
-    booking.status = 'attended';
-    row.classList.remove('no-show');
-    row.classList.add('attended');
+    booking.status   = 'attended';
     showToast('Marked as attended.', 'success');
   } else {
     booking.attended = false;
-    booking.status = 'no_show';
-    row.classList.remove('attended');
-    row.classList.add('no-show');
+    booking.status   = 'no_show';
     showToast('Marked as no-show.');
   }
-
   saveBookings(bookings);
-  // Refresh summary count
-  renderRollCall();
+
+  const cls = getClassById(_detailClassId);
+  if (cls) renderRollCallSection(cls);
 });
 
-// ── Data load ─────────────────────────────────────────────────────────────────
+document.getElementById('addLateBtn').addEventListener('click', () => {
+  if (_detailClassId) openAddAttendeeModal(_detailClassId);
+});
+
+// ── Countdown refresh while detail modal is open ───────────────────────────────
+function startDetailCountdown(cls) {
+  if (_countdownTimer) clearInterval(_countdownTimer);
+  if (isRollCallUnlocked(cls)) return;
+  _countdownTimer = setInterval(() => {
+    if (!_detailClassId) { clearInterval(_countdownTimer); return; }
+    const el = document.getElementById('rollcallCountdown');
+    if (isRollCallUnlocked(cls)) {
+      clearInterval(_countdownTimer);
+      _countdownTimer = null;
+      renderRollCallSection(cls);
+    } else if (el) {
+      el.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls));
+    }
+  }, 60000);
+}
+
+// ── Detail modal close ─────────────────────────────────────────────────────────
+document.getElementById('detailClose').addEventListener('click', closeDetailModal);
+document.getElementById('classDetailModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('classDetailModal')) closeDetailModal();
+});
+
+// ── Schedule + calendar click → open detail modal ──────────────────────────────
+document.getElementById('schedule').addEventListener('click', e => {
+  const item = e.target.closest('.class-item');
+  if (!item || !item.dataset.classId) return;
+  openDetailModal(item.dataset.classId);
+});
+
+document.getElementById('calView').addEventListener('click', e => {
+  const block = e.target.closest('.cal-class-block');
+  if (!block || !block.dataset.classId) return;
+  openDetailModal(block.dataset.classId);
+});
+
+document.getElementById('calScroll').addEventListener('scroll', function () {
+  document.getElementById('calDayHeaderBar').scrollLeft = this.scrollLeft;
+});
+
+// ── View toggle ────────────────────────────────────────────────────────────────
+let currentView = 'list';
+
+function toggleView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+  document.getElementById('schedule').style.display = view === 'list' ? '' : 'none';
+  document.getElementById('calView').style.display  = view === 'week' ? 'block' : 'none';
+}
+
+document.getElementById('viewToggle').addEventListener('click', e => {
+  const btn = e.target.closest('.view-btn');
+  if (btn) toggleView(btn.dataset.view);
+});
+
+// ── Date nav ───────────────────────────────────────────────────────────────────
+function rerenderViews() {
+  const dateWindow = buildDateWindow(_viewStartDate);
+  updateDateNav(dateWindow);
+  renderSchedule(dateWindow);
+  renderCalendarView(dateWindow);
+  applyFilter();
+}
+
+document.getElementById('prevWeek').addEventListener('click', () => {
+  _viewStartDate = dateAddDays(_viewStartDate, -7);
+  saveViewDate(); rerenderViews();
+});
+document.getElementById('nextWeek').addEventListener('click', () => {
+  _viewStartDate = dateAddDays(_viewStartDate, 7);
+  saveViewDate(); rerenderViews();
+});
+document.getElementById('goToToday').addEventListener('click', () => {
+  _viewStartDate = todayMidnight();
+  saveViewDate(); rerenderViews();
+});
+document.getElementById('datePicker').addEventListener('change', e => {
+  const val = e.target.value;
+  if (!val) return;
+  const [y, mo, d] = val.split('-').map(Number);
+  _viewStartDate = new Date(y, mo - 1, d);
+  _viewStartDate.setHours(0, 0, 0, 0);
+  saveViewDate(); rerenderViews();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetailModal();
+});
+
+// ── Add Late Attendee modal ────────────────────────────────────────────────────
+let _addForClassId  = null;
+let _selectedUserId = null;
+
+function openAddAttendeeModal(classId) {
+  _addForClassId  = classId;
+  _selectedUserId = null;
+  const cls = getClassById(classId);
+  document.getElementById('addAttendeeClassLabel').textContent = cls ? displayTitle(cls) : classId;
+  document.getElementById('addAttendeeError').style.display  = 'none';
+  document.getElementById('addAttendeeConfirm').disabled     = true;
+  document.getElementById('attendeeSearch').value            = '';
+  buildPickList('');
+  document.getElementById('addAttendeeModal').removeAttribute('hidden');
+  document.getElementById('attendeeSearch').focus();
+}
+
+function closeAddAttendeeModal() {
+  document.getElementById('addAttendeeModal').setAttribute('hidden', '');
+  _addForClassId  = null;
+  _selectedUserId = null;
+}
+
+function buildPickList(query) {
+  const list = document.getElementById('attendeePickList');
+  list.innerHTML = '';
+  if (!usersData || !_addForClassId) return;
+  const cls = getClassById(_addForClassId);
+  const bookings = getBookings();
+  const alreadyBooked = new Set(
+    bookings.filter(b => b.class_id === _addForClassId && b.status !== 'cancelled').map(b => b.user_id)
+  );
+  const q = query.toLowerCase().trim();
+  const members = usersData.users.filter(u =>
+    u.role === 'member' && u.active && !alreadyBooked.has(u.id) &&
+    (!q || u.display_name.toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q))
+  );
+  if (members.length === 0) {
+    list.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No eligible members found.</div>';
+    return;
+  }
+  members.forEach(user => {
+    const elig = cls ? checkEligibility(user, cls) : { eligible: false };
+    const row = document.createElement('div');
+    row.className = 'attendee-pick-row' + (user.id === _selectedUserId ? ' selected' : '');
+    row.dataset.userId = user.id;
+    const nameEl = document.createElement('div');
+    nameEl.className = 'pick-name';
+    nameEl.textContent = user.display_name;
+    const eligEl = document.createElement('div');
+    eligEl.className = 'pick-eligibility ' + (elig.eligible ? 'eligible' : 'ineligible');
+    eligEl.textContent = elig.eligible
+      ? (elig.pipeline === 'credits' ? `${user.credits} credit${user.credits !== 1 ? 's' : ''}` : 'Unlimited package')
+      : 'No credits or active package';
+    row.appendChild(nameEl);
+    row.appendChild(eligEl);
+    list.appendChild(row);
+    row.addEventListener('click', () => {
+      if (!elig.eligible) {
+        document.getElementById('addAttendeeError').textContent = user.display_name + ' has no active credits or eligible package.';
+        document.getElementById('addAttendeeError').style.display = 'block';
+        document.getElementById('addAttendeeConfirm').disabled = true;
+        _selectedUserId = null;
+        list.querySelectorAll('.attendee-pick-row').forEach(r => r.classList.remove('selected'));
+        return;
+      }
+      document.getElementById('addAttendeeError').style.display = 'none';
+      _selectedUserId = user.id;
+      list.querySelectorAll('.attendee-pick-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+      document.getElementById('addAttendeeConfirm').disabled = false;
+    });
+  });
+}
+
+document.getElementById('attendeeSearch').addEventListener('input', e => {
+  _selectedUserId = null;
+  document.getElementById('addAttendeeConfirm').disabled = true;
+  buildPickList(e.target.value);
+});
+document.getElementById('addAttendeeClose').addEventListener('click', closeAddAttendeeModal);
+document.getElementById('addAttendeeCancel').addEventListener('click', closeAddAttendeeModal);
+document.getElementById('addAttendeeModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('addAttendeeModal')) closeAddAttendeeModal();
+});
+
+document.getElementById('addAttendeeConfirm').addEventListener('click', () => {
+  if (!_selectedUserId || !_addForClassId) return;
+  const cls = getClassById(_addForClassId);
+  if (!cls) return;
+  const user = usersData.users.find(u => u.id === _selectedUserId);
+  if (!user) return;
+  const elig = checkEligibility(user, cls);
+  if (!elig.eligible) return;
+
+  const booking = {
+    id:                  'bkg_' + Date.now() + '_' + user.id,
+    user_id:             user.id,
+    class_id:            cls.id,
+    class_title:         cls.title,
+    location_id:         cls.location_id || '',
+    booked_at:           Date.now(),
+    status:              'attended',
+    attended:            true,
+    pipeline:            elig.pipeline,
+    credits_spent:       elig.pipeline === 'credits' ? 1 : 0,
+    added_by_instructor: session.userId,
+    booking_type:        'individual',
+    team_booking_id:     null,
+    invoice_ref:         null
+  };
+  const bookings = getBookings();
+  bookings.push(booking);
+  saveBookings(bookings);
+
+  if (elig.pipeline === 'credits') {
+    user.credits = Math.max(0, (user.credits || 0) - 1);
+  }
+
+  closeAddAttendeeModal();
+  showToast(user.display_name + ' added to class.', 'success');
+
+  // Refresh the roll call section in the still-open detail modal
+  const openCls = getClassById(_detailClassId || _addForClassId);
+  if (openCls) renderRollCallSection(openCls);
+});
+
+// ── Page init ──────────────────────────────────────────────────────────────────
 Promise.all([
   fetch('pci_schedule.json').then(r => r.json()),
-  fetch('data/users.json').then(r => r.json())
-]).then(([sched, users]) => {
-  scheduleData = sched;
-  usersData    = users;
+  fetch('data/class_types.json').then(r => r.json()),
+  fetch('data/instructors.json').then(r => r.json()),
+  fetch('data/categories.json').then(r => r.json()),
+  fetch('data/users.json').then(r => r.json()),
+  fetch('data/settings.json').then(r => r.json()).catch(() => ({ roll_call_unlock_minutes: 10 })),
+  fetch('data/locations.json').then(r => r.json()).catch(() => ({ locations: [] }))
+]).then(([sched, classTypesData, instructorsData, cats, users, settings, locs]) => {
+  scheduleData   = sched;
+  usersData      = users;
+  categoriesData = cats;
+  settingsData   = settings;
+  UNLOCK_MINUTES = settings.roll_call_unlock_minutes ?? 10;
 
-  // Default to today
-  const todayIndex = new Date().getDay();
-  selectedDay = DAYS[todayIndex];
+  instructorsData.instructors.forEach(i => {
+    instructorMap[i.id]       = i.display_name;
+    instructorColorMap[i.id]  = i.color;
+  });
+  classTypesData.class_types.forEach(ct => {
+    classDescriptions[ct.id] = { name: ct.name, description: ct.description };
+  });
+  cats.categories.forEach(cat => {
+    cat.type_ids.forEach(tid => { typeToCategory[tid] = cat; });
+  });
+  (locs.locations || []).forEach(l => { locationMap[l.id] = l.display_name; });
 
-  buildDaySelector();
-  renderRollCall();
+  sched.schedule.forEach(day => {
+    _scheduleByDay[day.day] = day;
+    day.classes.forEach(cls => _allClasses.push(cls));
+  });
+
+  initViewDate();
+  buildCategoryFilter(cats);
+  buildInstructorFilter(instructorsData.instructors);
+
+  // Pre-filter to this instructor's classes
+  if (session.role === 'instructor' && session.instructorId) {
+    activeInstructors.add(session.instructorId);
+    const pill = document.querySelector(`.filter-pill[data-instructor="${session.instructorId}"]`);
+    if (pill) pill.classList.add('active');
+    _syncAllPill();
+  }
+
+  const dateWindow = buildDateWindow(_viewStartDate);
+  updateDateNav(dateWindow);
+  renderSchedule(dateWindow);
+  renderCalendarView(dateWindow);
+  applyFilter();
+
+  // Auto-open class from URL param (navigated from schedule.html)
+  if (_focusClassId) openDetailModal(_focusClassId);
 }).catch(err => {
-  document.getElementById('rollCallMain').innerHTML =
-    '<div class="rollcall-empty-state">Failed to load data.</div>';
+  document.getElementById('schedule').textContent = 'Failed to load schedule.';
   console.error(err);
 });
 </script>

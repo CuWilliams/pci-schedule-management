@@ -498,6 +498,7 @@
       <button class="tab-btn" data-tab="packages">Packages</button>
       <button class="tab-btn" data-tab="members">Members</button>
       <button class="tab-btn" data-tab="bookings">Bookings</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
     </nav>
     <div class="topbar-actions">
       <span class="dirty-dot" id="dirtyDot" title="Unsaved changes"></span>
@@ -539,6 +540,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Bookings
     </button>
+    <button class="nav-drawer-item" data-nav-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      App Settings
+    </button>
     <div class="nav-drawer-divider"></div>
     <span class="nav-drawer-label">Locations</span>
     <a class="nav-drawer-item" href="stjohns.html">
@@ -568,6 +573,7 @@
   <div class="tab-panel" id="tab-packages"></div>
   <div class="tab-panel" id="tab-members"></div>
   <div class="tab-panel" id="tab-bookings"></div>
+  <div class="tab-panel" id="tab-settings"></div>
 </div>
 
 <!-- ── Class Editor Modal ─────────────────────────────────────────────────── -->
@@ -800,6 +806,8 @@ const state = {
   packages:        [],
   users:           [],
   categories:      [],
+  settingsData:    null,
+  settingsDirty:   false,
   dirty:           false
 };
 
@@ -855,6 +863,7 @@ function suggestColor(locationId, isOnline, typeId) {
 // ── Dirty / unsaved state ────────────────────────────────────────────────────
 function markDirty(dirty) {
   state.dirty = dirty;
+  if (!dirty) state.settingsDirty = false;
   document.getElementById('dirtyDot').classList.toggle('visible', dirty);
   document.getElementById('publishBtn').disabled = !dirty;
   document.getElementById('discardBtn').disabled = !dirty;
@@ -896,14 +905,15 @@ async function validateToken(token) {
 
 // ── Data Loading ─────────────────────────────────────────────────────────────
 async function loadData() {
-  const [scheduleData, classTypesData, instructorsData, locationsData, packagesData, usersData, categoriesData] = await Promise.all([
+  const [scheduleData, classTypesData, instructorsData, locationsData, packagesData, usersData, categoriesData, settingsData] = await Promise.all([
     fetch('pci_schedule.json').then(r => r.json()),
     fetch('data/class_types.json').then(r => r.json()),
     fetch('data/instructors.json').then(r => r.json()),
     fetch('data/locations.json').then(r => r.json()),
     fetch('data/packages.json').then(r => r.json()),
     fetch('data/users.json').then(r => r.json()),
-    fetch('data/categories.json').then(r => r.json())
+    fetch('data/categories.json').then(r => r.json()),
+    fetch('data/settings.json').then(r => r.json()).catch(() => ({ version: '1.0', roll_call_unlock_minutes: 10 }))
   ]);
 
   state.scheduleData    = scheduleData;
@@ -914,6 +924,7 @@ async function loadData() {
   state.packages        = packagesData.packages;
   state.users           = usersData.users;
   state.categories      = categoriesData.categories;
+  state.settingsData    = settingsData;
 }
 
 // ── GitHub Publish ───────────────────────────────────────────────────────────
@@ -967,6 +978,9 @@ async function publishChanges() {
       'data/packages.json':     JSON.stringify({ packages: state.packages }, null, 2) + '\n',
       'data/users.json':        JSON.stringify({ users: state.users }, null, 2) + '\n'
     };
+    if (state.settingsDirty && state.settingsData) {
+      files['data/settings.json'] = JSON.stringify(state.settingsData, null, 2) + '\n';
+    }
 
     for (const [path, content] of Object.entries(files)) {
       setLoading(`Updating ${path}…`);
@@ -999,6 +1013,7 @@ function switchTab(tabId) {
   if (tabId === 'bookings') renderBookings();
   if (tabId === 'members')  renderMembers();
   if (tabId === 'packages') renderPackages();
+  if (tabId === 'settings') renderSettings();
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1788,6 +1803,41 @@ async function renderBookings() {
   });
 }
 
+function renderSettings() {
+  const panel = document.getElementById('tab-settings');
+  if (!panel) return;
+  const s = state.settingsData || {};
+
+  panel.innerHTML = `
+    <div style="max-width:480px">
+      <h2 style="font-size:14px;font-weight:700;color:var(--text);margin:0 0 4px">App Settings</h2>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 20px">Global settings published to <code>data/settings.json</code>.</p>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px" for="settingUnlockMins">
+            Roll Call Unlock Window (minutes)
+          </label>
+          <p style="font-size:11px;color:var(--muted);margin:0 0 8px">
+            How many minutes before a class starts the instructor can begin managing attendance. Default: 10.
+          </p>
+          <input type="number" id="settingUnlockMins" min="0" max="120" step="1"
+            value="${s.roll_call_unlock_minutes ?? 10}"
+            style="width:100px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text);font-size:13px">
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('settingUnlockMins').addEventListener('change', e => {
+    const val = parseInt(e.target.value, 10);
+    if (isNaN(val) || val < 0) return;
+    state.settingsData = Object.assign({}, state.settingsData, { roll_call_unlock_minutes: val });
+    state.settingsDirty = true;
+    markDirty(true);
+  });
+}
+
 function renderAll() {
   renderSchedule();
   renderInstructors();
@@ -1795,6 +1845,7 @@ function renderAll() {
   renderPackages();
   renderMembers();
   renderBookings();
+  renderSettings();
 }
 
 // ── Init App ──────────────────────────────────────────────────────────────────

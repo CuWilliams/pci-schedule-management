@@ -174,6 +174,14 @@
     .cal-class-block.past { opacity: 0.45; }
     .cal-class-block.past:hover { opacity: 0.45; }
 
+    .rollcall-cta {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 4px 8px;
+      letter-spacing: 0.02em;
+    }
+
     /* ── Modal ────────────────────────────────────────────── */
     .modal-header {
       display: flex;
@@ -728,6 +736,9 @@ document.addEventListener('DOMContentLoaded', () => {
         items.push({ type: 'btn', id: 'menuMyBookings', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', label: 'My Bookings' });
         items.push({ type: 'link', href: 'buy-credits.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'My Packages' });
       }
+      if (session.role === 'instructor') {
+        items.push({ type: 'link', href: 'instructor.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>', label: 'My Classes' });
+      }
       items.push({ type: 'link', href: 'profile.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', label: 'Profile' });
       items.push({ type: 'link', href: 'settings.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', label: 'Settings' });
       items.push({ type: 'divider' });
@@ -839,7 +850,13 @@ function buildBookingCTA(cls) {
       }
     }
   }
-  // Instructor/admin/owner: no booking CTA
+  // Instructor: show Roll Call affordance for own classes (not inside .class-actions so click reaches the item handler)
+  if (session.role === 'instructor' && (cls.instructor_ids || []).includes(session.instructorId)) {
+    const badge = document.createElement('div');
+    badge.className = 'rollcall-cta';
+    badge.textContent = 'Roll Call →';
+    return badge;
+  }
 
   return wrapper;
 }
@@ -1545,6 +1562,7 @@ function renderSchedule(dateWindow) {
         item.appendChild(bar);
         item.appendChild(body);
         item.dataset.classId = cls.id;
+        item.dataset.dayName = entry.dayName;
         if (!expired) item.appendChild(buildBookingCTA(cls));
         block.appendChild(item);
       });
@@ -1572,9 +1590,14 @@ document.getElementById('schedule').addEventListener('click', e => {
   // Booking CTA area — don't open description modal
   if (e.target.closest('.class-actions')) return;
 
-  // Class description modal
+  // Class description modal (or roll call for instructor's own class)
   const item = e.target.closest('.class-item[data-type]');
   if (!item) return;
+  const s = PciAuth.getSession();
+  if (s && s.role === 'instructor' && item.dataset.primaryInstructor === s.instructorId) {
+    window.location.href = `instructor.html?classId=${encodeURIComponent(item.dataset.classId)}&day=${encodeURIComponent(item.dataset.dayName)}`;
+    return;
+  }
   const titleEl = item.querySelector('.class-title');
   openModal(item.dataset.type, titleEl ? titleEl.textContent : '');
 });
@@ -1690,6 +1713,8 @@ function renderCalendarView(dateWindow) {
       block.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
       block.dataset.location = cls.location_id;
       if (cls.type) block.dataset.type = cls.type;
+      block.dataset.classId = cls.id;
+      block.dataset.dayName = entry.dayName;
       block.style.top    = `${topPx}px`;
       block.style.height = `${heightPx}px`;
 
@@ -1727,6 +1752,11 @@ function renderCalendarView(dateWindow) {
 document.getElementById('calView').addEventListener('click', e => {
   const block = e.target.closest('.cal-class-block[data-type]');
   if (!block) return;
+  const s = PciAuth.getSession();
+  if (s && s.role === 'instructor' && block.dataset.primaryInstructor === s.instructorId) {
+    window.location.href = `instructor.html?classId=${encodeURIComponent(block.dataset.classId)}&day=${encodeURIComponent(block.dataset.dayName)}`;
+    return;
+  }
   const titleEl = block.querySelector('.cal-block-title');
   openModal(block.dataset.type, titleEl ? titleEl.textContent : '');
 });
