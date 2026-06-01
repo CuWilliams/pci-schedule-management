@@ -472,9 +472,6 @@
 
     .cal-class-block.hidden { display: none; }
 
-    /* In mobile sim, hide ← Home — user chip replaces the left slot */
-    body.dev-mobile .topbar-back { display: none; }
-
     /* ── My Bookings view ───────────────────────────────── */
     #myBookings {
       max-width: 600px;
@@ -560,19 +557,14 @@
 <div id="phoneViewport">
 
 <header class="topbar">
-  <a href="index.html" class="topbar-back">← Home</a>
+  <a href="index.html" class="topbar-home" aria-label="Home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+  </a>
   <div class="topbar-logo">Power Conditioning Inc.</div>
   <div class="topbar-actions">
-    <button class="user-chip" id="userChip" style="display:none" aria-haspopup="dialog" aria-controls="memberMenuModal">
-      <span class="user-avatar" id="userAvatar"></span>
-      <span id="userChipName"></span>
-      <span class="user-caret" aria-hidden="true">▾</span>
-    </button>
-    <button class="nav-menu-btn" id="navMenuBtn" aria-label="Open navigation">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
     <div class="view-toggle" id="viewToggle">
       <button class="view-btn active" data-view="list">List</button>
       <button class="view-btn" data-view="week">Week</button>
@@ -589,7 +581,17 @@
       Admin
       <span class="status-dot" id="adminDot" style="display:none"></span>
     </a>
+    <button class="nav-menu-btn" id="navMenuBtn" aria-label="Open navigation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
   </div>
+  <button class="user-chip" id="userChip" style="display:none" aria-haspopup="dialog" aria-controls="memberMenuModal">
+    <span class="user-avatar" id="userAvatar"></span>
+    <span id="userChipName"></span>
+    <span class="user-caret" aria-hidden="true">▾</span>
+  </button>
   <div id="navDrawer" class="nav-drawer">
     <span class="nav-drawer-label">View</span>
     <button class="nav-drawer-item active" data-nav-view="list">
@@ -703,19 +705,6 @@ document.addEventListener('DOMContentLoaded', () => {
       link.title = 'Admin (signed in)';
       if (dot) dot.style.display = '';
     }
-  }
-
-  // Credit badge for members
-  if (session && session.role === 'member') {
-    const credits = session.credits != null ? session.credits : 0;
-    const cls = credits === 0 ? 'empty' : credits <= 2 ? 'low' : '';
-    const badge = document.createElement('span');
-    badge.id = 'creditBadge';
-    badge.className = 'credit-badge' + (cls ? ' ' + cls : '');
-    badge.title = 'Your class credits';
-    badge.textContent = credits + ' credit' + (credits !== 1 ? 's' : '');
-    const actions = document.querySelector('.topbar-actions');
-    if (actions) actions.insertBefore(badge, actions.firstChild);
   }
 
   // User chip — shown for any signed-in user
@@ -924,13 +913,6 @@ document.getElementById('cancelModalConfirm').addEventListener('click', () => {
   saveBookings(bookings);
   PciAuth.updateCredits(+1);
 
-  const newCredits = PciAuth.getSession().credits;
-  const badge = document.getElementById('creditBadge');
-  if (badge) {
-    badge.textContent = newCredits + ' credit' + (newCredits !== 1 ? 's' : '');
-    badge.className = 'credit-badge' + (newCredits === 0 ? ' empty' : newCredits <= 2 ? ' low' : '');
-  }
-
   closeCancelModal();
   showToast('Booking cancelled. 1 credit restored.', 'success');
   refreshBookingCTAs();
@@ -982,14 +964,7 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
   closeBookModal();
   showToast('Booked! Enjoy your class.', 'success');
 
-  // Update all CTAs and credit badge to reflect new balance
   refreshBookingCTAs();
-  const newCredits = PciAuth.getSession().credits;
-  const badge = document.getElementById('creditBadge');
-  if (badge) {
-    badge.textContent = newCredits + ' credit' + (newCredits !== 1 ? 's' : '');
-    badge.className = 'credit-badge' + (newCredits === 0 ? ' empty' : newCredits <= 2 ? ' low' : '');
-  }
 });
 
 // Re-render all booking CTAs after a booking (credit count changed)
@@ -1112,13 +1087,6 @@ function cancelBooking(bookingId, cardEl) {
   saveBookings(bookings);
 
   try { PciAuth.updateCredits(+1); } catch (e) {}
-
-  const newCredits = PciAuth.getSession()?.credits;
-  const badge = document.getElementById('creditBadge');
-  if (badge && newCredits != null) {
-    badge.textContent = newCredits + ' credit' + (newCredits !== 1 ? 's' : '');
-    badge.className = 'credit-badge' + (newCredits === 0 ? ' empty' : newCredits <= 2 ? ' low' : '');
-  }
 
   cardEl.remove();
   const container = document.getElementById('myBookings');

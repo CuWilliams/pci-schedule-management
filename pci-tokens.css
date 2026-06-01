@@ -344,6 +344,22 @@ body {
 }
 .topbar-back:hover { background: var(--on-dark-surface); color: var(--pci-white); }
 
+.topbar-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  color: var(--on-dark-secondary);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.topbar-home:hover { background: var(--on-dark-surface); color: var(--pci-white); }
+.topbar-home svg { width: 18px; height: 18px; }
+
 .topbar-logo {
   font-size: 12px;
   font-weight: 700;
@@ -358,6 +374,7 @@ body {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* ── Dev Mode: Phone Viewport Simulator ────────────────────────────────────── */
@@ -605,25 +622,6 @@ body.dev-mobile .nav-drawer.open { display: block; }
   opacity: 0.3;
   pointer-events: none;
 }
-
-/* ── Credit balance badge ─────────────────────────────────────────────────── */
-.credit-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-1);
-  padding: 3px 10px;
-  border-radius: var(--radius-pill);
-  background: var(--on-dark-surface);
-  border: 1px solid var(--on-dark-border);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--on-dark-primary);
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  cursor: default;
-}
-.credit-badge.low   { border-color: var(--warn);   color: var(--warn);   }
-.credit-badge.empty { border-color: var(--danger);  color: var(--danger); }
 
 /* ── Role badge ───────────────────────────────────────────────────────────── */
 .role-badge {
