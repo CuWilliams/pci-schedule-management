@@ -72,14 +72,16 @@
       throw new Error('This account is inactive. Contact your administrator.');
     }
     const session = {
-      userId:        user.id,
-      email:         user.email,
-      displayName:   user.display_name,
-      role:          user.role,
-      locationId:    user.location_id || null,
-      credits:       user.credits !== undefined ? user.credits : null,
-      instructorId:  user.instructor_id || null,
-      loginTime:     Date.now()
+      userId:              user.id,
+      email:               user.email,
+      displayName:         user.display_name,
+      role:                user.role,
+      locationId:          user.location_id || null,
+      credits:             user.credits !== undefined ? user.credits : null,
+      instructorId:        user.instructor_id || null,
+      eligible_categories: user.eligible_categories || [],
+      active_packages:     user.active_packages || [],
+      loginTime:           Date.now()
     };
     saveSession(session);
     return session;
@@ -113,6 +115,24 @@
     return s;
   }
 
+  // Replaces session.eligible_categories and persists.
+  function setEligibleCategories(categories) {
+    const s = getSession();
+    if (!s) throw new Error('Not logged in.');
+    s.eligible_categories = categories;
+    saveSession(s);
+    return s;
+  }
+
+  // Replaces session.active_packages and persists.
+  function setActivePackages(pkgsArray) {
+    const s = getSession();
+    if (!s) throw new Error('Not logged in.');
+    s.active_packages = pkgsArray;
+    saveSession(s);
+    return s;
+  }
+
   window.PciAuth = {
     SESSION_KEY,
     ROLE_HIERARCHY,
@@ -124,6 +144,8 @@
     login,
     logout,
     updateCredits,
-    patchSession
+    patchSession,
+    setEligibleCategories,
+    setActivePackages
   };
 })();

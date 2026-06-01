@@ -495,6 +495,7 @@
       <button class="tab-btn active" data-tab="schedule">Schedule</button>
       <button class="tab-btn" data-tab="instructors">Instructors</button>
       <button class="tab-btn" data-tab="classtypes">Class Types</button>
+      <button class="tab-btn" data-tab="packages">Packages</button>
       <button class="tab-btn" data-tab="members">Members</button>
       <button class="tab-btn" data-tab="bookings">Bookings</button>
     </nav>
@@ -525,6 +526,10 @@
     <button class="nav-drawer-item" data-nav-tab="classtypes">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
       Class Types
+    </button>
+    <button class="nav-drawer-item" data-nav-tab="packages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      Packages
     </button>
     <button class="nav-drawer-item" data-nav-tab="members">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
@@ -560,6 +565,7 @@
   <div class="tab-panel active" id="tab-schedule"></div>
   <div class="tab-panel" id="tab-instructors"></div>
   <div class="tab-panel" id="tab-classtypes"></div>
+  <div class="tab-panel" id="tab-packages"></div>
   <div class="tab-panel" id="tab-members"></div>
   <div class="tab-panel" id="tab-bookings"></div>
 </div>
@@ -691,6 +697,51 @@
   </div>
 </div>
 
+<!-- ── Package Eligibility Modal ─────────────────────────────────────────── -->
+<div class="modal-overlay modal-overlay--center" id="packageModal" hidden>
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <h2 id="packageModalTitle">Edit Package</h2>
+      <button class="btn-icon" id="packageModalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div id="packageModalInfo" style="margin-bottom:16px;padding:12px;background:var(--bg);border-radius:var(--radius-md);font-size:13px;color:var(--muted)"></div>
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">Eligible Class Categories</p>
+      <div id="packageCategoryChecks" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="packageModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="packageModalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Grant Package Modal ────────────────────────────────────────────────── -->
+<div class="modal-overlay modal-overlay--center" id="grantModal" hidden>
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <h2>Grant Package</h2>
+      <button class="btn-icon" id="grantModalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <p id="grantModalMember" style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px"></p>
+      <div class="form-group">
+        <label class="form-label">Package</label>
+        <select class="form-input" id="grantPackageSelect"></select>
+      </div>
+      <div id="grantStartDateGroup" class="form-group" style="display:none">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-input" id="grantStartDate">
+        <p id="grantEndDatePreview" style="font-size:11px;color:var(--muted);margin-top:4px"></p>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="grantModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="grantModalConfirm">Grant</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Toast ─────────────────────────────────────────────────────────────── -->
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -746,6 +797,9 @@ const state = {
   locations:       [],
   classTypes:      [],
   classCategories: {},
+  packages:        [],
+  users:           [],
+  categories:      [],
   dirty:           false
 };
 
@@ -842,11 +896,14 @@ async function validateToken(token) {
 
 // ── Data Loading ─────────────────────────────────────────────────────────────
 async function loadData() {
-  const [scheduleData, classTypesData, instructorsData, locationsData] = await Promise.all([
+  const [scheduleData, classTypesData, instructorsData, locationsData, packagesData, usersData, categoriesData] = await Promise.all([
     fetch('pci_schedule.json').then(r => r.json()),
     fetch('data/class_types.json').then(r => r.json()),
     fetch('data/instructors.json').then(r => r.json()),
-    fetch('data/locations.json').then(r => r.json())
+    fetch('data/locations.json').then(r => r.json()),
+    fetch('data/packages.json').then(r => r.json()),
+    fetch('data/users.json').then(r => r.json()),
+    fetch('data/categories.json').then(r => r.json())
   ]);
 
   state.scheduleData    = scheduleData;
@@ -854,6 +911,9 @@ async function loadData() {
   state.locations       = locationsData.locations;
   state.classTypes      = classTypesData.class_types;
   state.classCategories = classTypesData.class_categories;
+  state.packages        = packagesData.packages;
+  state.users           = usersData.users;
+  state.categories      = categoriesData.categories;
 }
 
 // ── GitHub Publish ───────────────────────────────────────────────────────────
@@ -903,7 +963,9 @@ async function publishChanges() {
   try {
     const files = {
       'pci_schedule.json':      JSON.stringify(state.scheduleData, null, 2) + '\n',
-      'data/instructors.json':  JSON.stringify({ instructors: state.instructors }, null, 2) + '\n'
+      'data/instructors.json':  JSON.stringify({ instructors: state.instructors }, null, 2) + '\n',
+      'data/packages.json':     JSON.stringify({ packages: state.packages }, null, 2) + '\n',
+      'data/users.json':        JSON.stringify({ users: state.users }, null, 2) + '\n'
     };
 
     for (const [path, content] of Object.entries(files)) {
@@ -936,6 +998,7 @@ function switchTab(tabId) {
   // Refresh live-data tabs on each visit
   if (tabId === 'bookings') renderBookings();
   if (tabId === 'members')  renderMembers();
+  if (tabId === 'packages') renderPackages();
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1308,19 +1371,8 @@ function closeConfirm() {
 
 // ── Render All ────────────────────────────────────────────────────────────────
 // ── Members Tab ───────────────────────────────────────────────────────────────
-async function renderMembers() {
+function renderMembers() {
   const container = document.getElementById('tab-members');
-  container.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:8px 0">Loading…</p>';
-
-  let usersData;
-  try {
-    const res = await fetch('data/users.json');
-    usersData = await res.json();
-  } catch {
-    container.innerHTML = '<p style="color:var(--danger);font-size:13px">Failed to load members.</p>';
-    return;
-  }
-
   container.innerHTML = '';
 
   const notice = document.createElement('div');
@@ -1330,10 +1382,10 @@ async function renderMembers() {
 
   const heading = document.createElement('p');
   heading.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:12px';
-  heading.textContent = usersData.users.length + ' Users';
+  heading.textContent = state.users.length + ' Users';
   container.appendChild(heading);
 
-  usersData.users.forEach(user => {
+  state.users.forEach(user => {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border-radius:var(--radius-md);margin-bottom:8px;box-shadow:var(--shadow-sm);border:1px solid var(--border)';
 
@@ -1356,13 +1408,23 @@ async function renderMembers() {
     info.appendChild(nameEl);
     info.appendChild(emailEl);
 
+    if (user.role === 'member' && Array.isArray(user.active_packages) && user.active_packages.length > 0) {
+      const today = new Date().toISOString().split('T')[0];
+      const active = user.active_packages.filter(p => today <= p.end_date);
+      if (active.length > 0) {
+        const pkgLine = document.createElement('div');
+        pkgLine.style.cssText = 'font-size:11px;color:var(--accent);margin-top:2px';
+        pkgLine.textContent = active.length + ' active unlimited pass' + (active.length !== 1 ? 'es' : '');
+        info.appendChild(pkgLine);
+      }
+    }
+
     const meta = document.createElement('div');
     meta.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0';
 
     const badge = document.createElement('span');
     badge.className = `role-badge role-${user.role}`;
     badge.textContent = user.role;
-
     meta.appendChild(badge);
 
     if (user.role === 'member' && user.credits != null) {
@@ -1370,6 +1432,15 @@ async function renderMembers() {
       credits.style.cssText = 'font-size:11px;color:var(--muted)';
       credits.textContent = user.credits + ' credit' + (user.credits !== 1 ? 's' : '');
       meta.appendChild(credits);
+    }
+
+    if (user.role === 'member') {
+      const grantBtn = document.createElement('button');
+      grantBtn.className = 'btn btn-outline btn-sm';
+      grantBtn.style.cssText = 'font-size:11px;padding:3px 8px;margin-top:2px';
+      grantBtn.textContent = 'Grant Package';
+      grantBtn.dataset.userId = user.id;
+      meta.appendChild(grantBtn);
     }
 
     if (!user.active) {
@@ -1385,6 +1456,262 @@ async function renderMembers() {
     container.appendChild(row);
   });
 }
+
+// ── Packages Tab ─────────────────────────────────────────────────────────────
+function renderPackages() {
+  const container = document.getElementById('tab-packages');
+  container.innerHTML = '';
+
+  const heading = document.createElement('p');
+  heading.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:12px';
+  heading.textContent = state.packages.length + ' Packages';
+  container.appendChild(heading);
+
+  const CAT_COLORS = {};
+  (state.categories || []).forEach(c => { CAT_COLORS[c.id] = c.color; });
+
+  state.packages.forEach(pkg => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--surface);border-radius:var(--radius-md);margin-bottom:8px;box-shadow:var(--shadow-sm);border:1px solid var(--border);cursor:pointer';
+    row.title = 'Edit eligible categories';
+
+    const info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0';
+
+    const nameLine = document.createElement('div');
+    nameLine.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap';
+
+    const nameEl = document.createElement('span');
+    nameEl.style.cssText = 'font-size:13px;font-weight:600;color:var(--text)';
+    nameEl.textContent = pkg.name;
+
+    const typeBadge = document.createElement('span');
+    typeBadge.style.cssText = `font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:2px 7px;border-radius:var(--radius-pill);background:${pkg.type === 'unlimited' ? 'var(--accent)' : 'var(--gray-200)'};color:${pkg.type === 'unlimited' ? 'var(--on-dark-primary)' : 'var(--gray-700)'}`;
+    typeBadge.textContent = pkg.type === 'unlimited' ? 'Unlimited' : pkg.credits + ' credit' + (pkg.credits !== 1 ? 's' : '');
+
+    nameLine.appendChild(nameEl);
+    nameLine.appendChild(typeBadge);
+    info.appendChild(nameLine);
+
+    const catLine = document.createElement('div');
+    catLine.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;margin-top:6px';
+
+    if (pkg.eligible_categories && pkg.eligible_categories.length > 0) {
+      pkg.eligible_categories.forEach(catId => {
+        const cat = (state.categories || []).find(c => c.id === catId);
+        const pill = document.createElement('span');
+        pill.style.cssText = `font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-pill);background:var(--cls-${cat ? cat.color : 'gray'}-tint, var(--gray-100));color:var(--text)`;
+        pill.textContent = cat ? cat.name : catId;
+        catLine.appendChild(pill);
+      });
+    } else {
+      const pill = document.createElement('span');
+      pill.style.cssText = 'font-size:10px;color:var(--muted);font-style:italic';
+      pill.textContent = 'No categories set';
+      catLine.appendChild(pill);
+    }
+
+    info.appendChild(catLine);
+
+    const meta = document.createElement('div');
+    meta.style.cssText = 'flex-shrink:0;text-align:right';
+    const priceEl = document.createElement('div');
+    priceEl.style.cssText = 'font-size:13px;font-weight:700;color:var(--text)';
+    priceEl.textContent = pkg.price;
+    const durEl = document.createElement('div');
+    durEl.style.cssText = 'font-size:11px;color:var(--muted);margin-top:2px';
+    durEl.textContent = formatDuration(pkg);
+    meta.appendChild(priceEl);
+    meta.appendChild(durEl);
+
+    row.appendChild(info);
+    row.appendChild(meta);
+    container.appendChild(row);
+
+    row.addEventListener('click', () => openPackageModal(pkg.id));
+  });
+}
+
+function formatDuration(pkg) {
+  if (pkg.type === 'unlimited') {
+    if (pkg.duration_days <= 14) return 'Valid for ' + pkg.duration_days + ' days';
+    if (pkg.duration_days <= 31) return 'Valid for 1 month';
+    if (pkg.duration_days <= 92) return 'Valid for 3 months';
+  }
+  if (pkg.duration_days >= 365) return 'Valid for 12 months';
+  return 'Valid for ' + pkg.duration_days + ' days';
+}
+
+// ── Package Eligibility Modal ─────────────────────────────────────────────────
+let _packageEditId = null;
+
+function openPackageModal(pkgId) {
+  const pkg = state.packages.find(p => p.id === pkgId);
+  if (!pkg) return;
+  _packageEditId = pkgId;
+
+  document.getElementById('packageModalTitle').textContent = pkg.name;
+
+  const info = document.getElementById('packageModalInfo');
+  info.innerHTML = `
+    <span style="font-weight:600">${pkg.type === 'unlimited' ? 'Unlimited' : pkg.credits + ' credit' + (pkg.credits !== 1 ? 's' : '')}</span>
+    &nbsp;·&nbsp;${pkg.price}&nbsp;·&nbsp;${formatDuration(pkg)}
+  `;
+
+  const checksContainer = document.getElementById('packageCategoryChecks');
+  checksContainer.innerHTML = '';
+  (state.categories || []).forEach(cat => {
+    const label = document.createElement('label');
+    label.style.cssText = 'display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg)';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.value = cat.id;
+    cb.checked = pkg.eligible_categories.includes(cat.id);
+    cb.style.cssText = 'width:16px;height:16px;cursor:pointer;accent-color:var(--brand)';
+    const dot = document.createElement('span');
+    dot.className = 'pill-dot color-' + cat.color;
+    const nameSpan = document.createElement('span');
+    nameSpan.style.cssText = 'font-size:13px;color:var(--text)';
+    nameSpan.textContent = cat.name;
+    label.appendChild(cb);
+    label.appendChild(dot);
+    label.appendChild(nameSpan);
+    checksContainer.appendChild(label);
+  });
+
+  document.getElementById('packageModal').removeAttribute('hidden');
+}
+
+function closePackageModal() {
+  document.getElementById('packageModal').setAttribute('hidden', '');
+  _packageEditId = null;
+}
+
+document.getElementById('packageModalClose').addEventListener('click', closePackageModal);
+document.getElementById('packageModalCancel').addEventListener('click', closePackageModal);
+document.getElementById('packageModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closePackageModal();
+});
+
+document.getElementById('packageModalSave').addEventListener('click', () => {
+  if (!_packageEditId) return;
+  const pkg = state.packages.find(p => p.id === _packageEditId);
+  if (!pkg) return;
+  const checked = [...document.querySelectorAll('#packageCategoryChecks input[type=checkbox]:checked')].map(cb => cb.value);
+  pkg.eligible_categories = checked;
+  markDirty(true);
+  closePackageModal();
+  renderPackages();
+  showToast('Package updated. Publish to save.', 'success');
+});
+
+// ── Grant Package Modal ───────────────────────────────────────────────────────
+// Single delegated listener on the members panel for Grant Package buttons
+document.getElementById('tab-members').addEventListener('click', e => {
+  const btn = e.target.closest('[data-user-id]');
+  if (btn) openGrantModal(btn.dataset.userId);
+});
+
+let _grantUserId = null;
+
+function openGrantModal(userId) {
+  const user = state.users.find(u => u.id === userId);
+  if (!user) return;
+  _grantUserId = userId;
+
+  document.getElementById('grantModalMember').textContent = user.display_name + ' (' + user.email + ')';
+
+  const select = document.getElementById('grantPackageSelect');
+  select.innerHTML = '';
+  state.packages.filter(p => p.active).forEach(pkg => {
+    const opt = document.createElement('option');
+    opt.value = pkg.id;
+    opt.textContent = pkg.name + ' — ' + pkg.price;
+    opt.dataset.type = pkg.type;
+    opt.dataset.durationDays = pkg.duration_days;
+    select.appendChild(opt);
+  });
+
+  updateGrantDateVisibility();
+  document.getElementById('grantStartDate').value = new Date().toISOString().split('T')[0];
+  updateGrantEndPreview();
+  document.getElementById('grantModal').removeAttribute('hidden');
+}
+
+function updateGrantDateVisibility() {
+  const select = document.getElementById('grantPackageSelect');
+  const chosen = select.options[select.selectedIndex];
+  const isUnlimited = chosen && chosen.dataset.type === 'unlimited';
+  document.getElementById('grantStartDateGroup').style.display = isUnlimited ? '' : 'none';
+}
+
+function updateGrantEndPreview() {
+  const select = document.getElementById('grantPackageSelect');
+  const chosen = select.options[select.selectedIndex];
+  if (!chosen || chosen.dataset.type !== 'unlimited') return;
+  const startVal = document.getElementById('grantStartDate').value;
+  if (!startVal) return;
+  const end = new Date(startVal);
+  end.setDate(end.getDate() + parseInt(chosen.dataset.durationDays, 10));
+  document.getElementById('grantEndDatePreview').textContent =
+    'Expires: ' + end.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+document.getElementById('grantPackageSelect').addEventListener('change', () => {
+  updateGrantDateVisibility();
+  updateGrantEndPreview();
+});
+document.getElementById('grantStartDate').addEventListener('change', updateGrantEndPreview);
+
+function closeGrantModal() {
+  document.getElementById('grantModal').setAttribute('hidden', '');
+  _grantUserId = null;
+}
+
+document.getElementById('grantModalClose').addEventListener('click', closeGrantModal);
+document.getElementById('grantModalCancel').addEventListener('click', closeGrantModal);
+document.getElementById('grantModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeGrantModal();
+});
+
+document.getElementById('grantModalConfirm').addEventListener('click', () => {
+  if (!_grantUserId) return;
+  const user = state.users.find(u => u.id === _grantUserId);
+  if (!user) return;
+
+  const select = document.getElementById('grantPackageSelect');
+  const pkgId = select.value;
+  const pkg = state.packages.find(p => p.id === pkgId);
+  if (!pkg) return;
+
+  if (pkg.type === 'unlimited') {
+    const startDate = document.getElementById('grantStartDate').value;
+    if (!startDate) { showToast('Please select a start date.', 'error'); return; }
+    const end = new Date(startDate);
+    end.setDate(end.getDate() + pkg.duration_days);
+    const endDate = end.toISOString().split('T')[0];
+
+    if (!Array.isArray(user.active_packages)) user.active_packages = [];
+    user.active_packages.push({
+      package_id:          pkg.id,
+      start_date:          startDate,
+      end_date:            endDate,
+      eligible_categories: [...pkg.eligible_categories]
+    });
+  } else {
+    // Credit package: add credits and merge eligible categories
+    user.credits = (user.credits || 0) + pkg.credits;
+    if (!Array.isArray(user.eligible_categories)) user.eligible_categories = [];
+    pkg.eligible_categories.forEach(catId => {
+      if (!user.eligible_categories.includes(catId)) user.eligible_categories.push(catId);
+    });
+  }
+
+  markDirty(true);
+  closeGrantModal();
+  renderMembers();
+  showToast('Package granted. Publish to save.', 'success');
+});
 
 // ── Bookings Tab ──────────────────────────────────────────────────────────────
 async function renderBookings() {
@@ -1465,6 +1792,7 @@ function renderAll() {
   renderSchedule();
   renderInstructors();
   renderClassTypes();
+  renderPackages();
   renderMembers();
   renderBookings();
 }

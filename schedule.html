@@ -835,13 +835,33 @@ function buildBookingCTA(cls) {
       wrapper.appendChild(btn);
     } else {
       const credits = session.credits != null ? session.credits : 0;
-      if (credits > 0) {
+      const unlimitedOk = isEligibleViaUnlimited(cls, session);
+      const creditsOk   = isEligibleViaCredits(cls, session);
+
+      if (unlimitedOk) {
         const btn = document.createElement('button');
         btn.className = 'btn btn-primary btn-sm book-btn';
-        btn.dataset.classId = cls.id;
+        btn.dataset.classId    = cls.id;
         btn.dataset.classTitle = displayTitle(cls);
-        btn.dataset.classTime = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+        btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+        btn.dataset.pipeline   = 'unlimited';
         btn.textContent = 'Book';
+        wrapper.appendChild(btn);
+      } else if (credits > 0 && creditsOk) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-primary btn-sm book-btn';
+        btn.dataset.classId    = cls.id;
+        btn.dataset.classTitle = displayTitle(cls);
+        btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+        btn.dataset.pipeline   = 'credits';
+        btn.textContent = 'Book';
+        wrapper.appendChild(btn);
+      } else if (credits > 0 && !creditsOk) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline btn-sm';
+        btn.disabled = true;
+        btn.title = 'Your package doesn\'t cover this class type';
+        btn.textContent = 'Not Covered';
         wrapper.appendChild(btn);
       } else {
         const a = document.createElement('a');
@@ -860,8 +880,8 @@ function buildBookingCTA(cls) {
 // ── Booking modal state ──────────────────────────────────────────────────────
 let _pendingBooking = null;
 
-function openBookModal(classId, classTitle, classTime) {
-  _pendingBooking = { classId, classTitle, classTime };
+function openBookModal(classId, classTitle, classTime, pipeline) {
+  _pendingBooking = { classId, classTitle, classTime, pipeline: pipeline || 'credits' };
   document.getElementById('bookModalClass').textContent = classTitle;
   document.getElementById('bookModalTime').textContent = classTime;
   document.getElementById('bookModal').removeAttribute('hidden');
@@ -909,12 +929,15 @@ document.getElementById('cancelModalConfirm').addEventListener('click', () => {
     b => b.class_id === _pendingCancelClassId && b.user_id === session.userId && b.status === 'booked'
   );
   if (idx === -1) { closeCancelModal(); return; }
+  const cancelled = bookings[idx];
   bookings.splice(idx, 1);
   saveBookings(bookings);
-  PciAuth.updateCredits(+1);
+
+  const wasCredits = cancelled.pipeline !== 'unlimited';
+  if (wasCredits) PciAuth.updateCredits(+1);
 
   closeCancelModal();
-  showToast('Booking cancelled. 1 credit restored.', 'success');
+  showToast(wasCredits ? 'Booking cancelled. 1 credit restored.' : 'Booking cancelled.', 'success');
   refreshBookingCTAs();
 });
 
@@ -923,11 +946,28 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
   const session = PciAuth.getSession();
   if (!session) { closeBookModal(); return; }
 
-  const currentCredits = session.credits != null ? session.credits : 0;
-  if (currentCredits <= 0) {
-    showToast('Not enough credits.', 'error');
-    closeBookModal();
-    return;
+  const pipeline = _pendingBooking.pipeline || 'credits';
+  const cls = _allClasses.find(c => c.id === _pendingBooking.classId);
+
+  // Re-check eligibility as guard before committing
+  if (pipeline === 'unlimited') {
+    if (!cls || !isEligibleViaUnlimited(cls, session)) {
+      showToast('Your package no longer covers this class.', 'error');
+      closeBookModal();
+      return;
+    }
+  } else {
+    const currentCredits = session.credits != null ? session.credits : 0;
+    if (currentCredits <= 0) {
+      showToast('Not enough credits.', 'error');
+      closeBookModal();
+      return;
+    }
+    if (cls && !isEligibleViaCredits(cls, session)) {
+      showToast('Your package doesn\'t cover this class type.', 'error');
+      closeBookModal();
+      return;
+    }
   }
 
   // Check for duplicate booking
@@ -938,32 +978,34 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
     return;
   }
 
-  // Deduct credit and save booking
-  try {
-    PciAuth.updateCredits(-1);
-  } catch (e) {
-    showToast(e.message, 'error');
-    closeBookModal();
-    return;
+  // Deduct one credit (credits pipeline only)
+  if (pipeline !== 'unlimited') {
+    try {
+      PciAuth.updateCredits(-1);
+    } catch (e) {
+      showToast(e.message, 'error');
+      closeBookModal();
+      return;
+    }
   }
 
   const record = {
-    id:              'bkg_' + Date.now() + '_' + session.userId,
-    user_id:         session.userId,
-    class_id:        _pendingBooking.classId,
-    class_title:     _pendingBooking.classTitle,
-    location_id:     session.locationId || '',
-    booked_at:       Date.now(),
-    status:          'booked',
-    attended:        null,
-    credits_spent:   1
+    id:            'bkg_' + Date.now() + '_' + session.userId,
+    user_id:       session.userId,
+    class_id:      _pendingBooking.classId,
+    class_title:   _pendingBooking.classTitle,
+    location_id:   session.locationId || '',
+    booked_at:     Date.now(),
+    status:        'booked',
+    attended:      null,
+    pipeline:      pipeline,
+    credits_spent: pipeline === 'unlimited' ? 0 : 1
   };
   bookings.push(record);
   saveBookings(bookings);
 
   closeBookModal();
   showToast('Booked! Enjoy your class.', 'success');
-
   refreshBookingCTAs();
 });
 
@@ -1102,6 +1144,34 @@ function cancelBooking(bookingId, cardEl) {
 
 // Cache of all class objects for CTA refresh (populated in data load)
 let _allClasses = [];
+
+// ── Package eligibility helpers ──────────────────────────────────────────────
+// Uses typeToCategory map (populated during data load, declared at line ~1316)
+
+function getClassCategoryId(cls) {
+  const cat = typeToCategory[cls.type];
+  return cat ? cat.id : null;
+}
+
+// Empty eligible_categories means no restriction (backward-compatible with old sessions)
+function isEligibleViaCredits(cls, session) {
+  if (!session.eligible_categories || session.eligible_categories.length === 0) return true;
+  const catId = getClassCategoryId(cls);
+  return catId !== null && session.eligible_categories.includes(catId);
+}
+
+function isEligibleViaUnlimited(cls, session) {
+  if (!session.active_packages || !session.active_packages.length) return false;
+  const today = new Date().toISOString().split('T')[0];
+  const catId = getClassCategoryId(cls);
+  if (!catId) return false;
+  return session.active_packages.some(p =>
+    Array.isArray(p.eligible_categories) &&
+    p.eligible_categories.includes(catId) &&
+    today >= p.start_date &&
+    today <= p.end_date
+  );
+}
 
 // Pre-select location from URL param (?loc=stjohns | ?loc=clarenville)
 const _urlLoc = new URLSearchParams(location.search).get('loc');
@@ -1511,7 +1581,7 @@ document.getElementById('schedule').addEventListener('click', e => {
   const bookBtn = e.target.closest('.book-btn');
   if (bookBtn) {
     e.stopPropagation();
-    openBookModal(bookBtn.dataset.classId, bookBtn.dataset.classTitle, bookBtn.dataset.classTime);
+    openBookModal(bookBtn.dataset.classId, bookBtn.dataset.classTitle, bookBtn.dataset.classTime, bookBtn.dataset.pipeline);
     return;
   }
   // Booked button — open cancel confirmation modal

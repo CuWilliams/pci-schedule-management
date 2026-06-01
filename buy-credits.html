@@ -164,21 +164,27 @@ function showToast(msg, type) {
 }
 
 // ── Packages ─────────────────────────────────────────────────────────────────
-fetch('data/packages.json')
-  .then(r => r.json())
-  .then(data => {
+Promise.all([
+  fetch('data/packages.json').then(r => r.json()),
+  fetch('data/categories.json').then(r => r.json())
+])
+  .then(([pkgData, catData]) => {
+    const catMap = {};
+    catData.categories.forEach(c => { catMap[c.id] = c; });
+
     const list = document.getElementById('packageList');
     list.innerHTML = '';
-    data.packages
+    pkgData.packages
       .filter(p => p.active)
       .forEach(pkg => {
-        const dollars = (pkg.price_cents / 100).toFixed(2);
-
         const card = document.createElement('div');
         card.className = 'package-card';
 
         const info = document.createElement('div');
         info.className = 'package-info';
+
+        const nameLine = document.createElement('div');
+        nameLine.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px';
 
         const name = document.createElement('div');
         name.className = 'package-name';
@@ -186,15 +192,28 @@ fetch('data/packages.json')
 
         const pill = document.createElement('span');
         pill.className = 'package-credits-pill';
-        pill.textContent = pkg.credits + ' credits';
+        pill.textContent = pkg.type === 'unlimited' ? 'Unlimited' : pkg.credits + ' credit' + (pkg.credits !== 1 ? 's' : '');
+
+        nameLine.appendChild(name);
+        nameLine.appendChild(pill);
+        info.appendChild(nameLine);
+
+        if (pkg.eligible_categories && pkg.eligible_categories.length > 0) {
+          const catRow = document.createElement('div');
+          catRow.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px';
+          pkg.eligible_categories.forEach(catId => {
+            const cat = catMap[catId];
+            const catPill = document.createElement('span');
+            catPill.style.cssText = `font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-pill);background:var(--cls-${cat ? cat.color : 'gray'}-tint,var(--gray-100));color:var(--text)`;
+            catPill.textContent = cat ? cat.name : catId;
+            catRow.appendChild(catPill);
+          });
+          info.appendChild(catRow);
+        }
 
         const desc = document.createElement('div');
         desc.className = 'package-desc';
         desc.textContent = pkg.description;
-
-        info.appendChild(name);
-        info.appendChild(document.createTextNode(' '));
-        info.appendChild(pill);
         info.appendChild(desc);
 
         const right = document.createElement('div');
@@ -202,7 +221,16 @@ fetch('data/packages.json')
 
         const price = document.createElement('div');
         price.className = 'package-price';
-        price.textContent = '$' + dollars;
+        price.textContent = pkg.price;
+
+        const dur = document.createElement('div');
+        dur.style.cssText = 'font-size:11px;color:var(--muted)';
+        if (pkg.type === 'unlimited') {
+          dur.textContent = pkg.duration_days <= 14 ? 'Valid for ' + pkg.duration_days + ' days'
+            : pkg.duration_days <= 31 ? 'Valid for 1 month' : 'Valid for 3 months';
+        } else {
+          dur.textContent = pkg.duration_days >= 365 ? 'Valid for 12 months' : 'Valid for ' + pkg.duration_days + ' days';
+        }
 
         const btn = document.createElement('button');
         btn.className = 'btn btn-primary btn-sm';
@@ -213,6 +241,7 @@ fetch('data/packages.json')
         btn.addEventListener('click', () => showToast('Payment integration coming soon.', ''));
 
         right.appendChild(price);
+        right.appendChild(dur);
         right.appendChild(btn);
 
         card.appendChild(info);
