@@ -169,6 +169,10 @@
     .day-block.hidden   { display: none; }
     .class-item[data-type] { cursor: pointer; }
     .class-item[data-type]:hover .class-body { background: rgba(0,0,0,0.02); }
+    .class-item.past { opacity: 0.45; }
+    .class-item.past[data-type]:hover .class-body { background: transparent; }
+    .cal-class-block.past { opacity: 0.45; }
+    .cal-class-block.past:hover { opacity: 0.45; }
 
     /* ── Modal ────────────────────────────────────────────── */
     .modal-header {
@@ -1161,6 +1165,16 @@ function todayMidnight() {
   return d;
 }
 
+function isClassExpired(cls, entry) {
+  const today = todayMidnight();
+  if (entry.date < today) return true;
+  if (entry.date > today) return false;
+  const [eh, em] = cls.time_end.split(':').map(Number);
+  const classEnd = new Date(today);
+  classEnd.setHours(eh, em, 0, 0);
+  return new Date() >= classEnd;
+}
+
 function dateAddDays(base, n) {
   const d = new Date(base);
   d.setDate(d.getDate() + n);
@@ -1495,9 +1509,10 @@ function renderSchedule(dateWindow) {
       sorted.forEach(cls => {
         const cat = typeToCategory[cls.type] || { id: 'unknown', color: 'gray' };
         const instColor = instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray';
+        const expired = isClassExpired(cls, entry);
 
         const item = document.createElement('div');
-        item.className = `class-item bg-${cat.color}`;
+        item.className = `class-item bg-${cat.color}${expired ? ' past' : ''}`;
         item.dataset.category = cat.id;
         item.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
         item.dataset.location = cls.location_id;
@@ -1530,7 +1545,7 @@ function renderSchedule(dateWindow) {
         item.appendChild(bar);
         item.appendChild(body);
         item.dataset.classId = cls.id;
-        item.appendChild(buildBookingCTA(cls));
+        if (!expired) item.appendChild(buildBookingCTA(cls));
         block.appendChild(item);
       });
     }
@@ -1667,9 +1682,10 @@ function renderCalendarView(dateWindow) {
 
       const cat = typeToCategory[cls.type] || { id: 'unknown', color: 'gray' };
       const instColor = instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray';
+      const expired = isClassExpired(cls, entry);
 
       const block = document.createElement('div');
-      block.className = `cal-class-block color-${cat.color} inst-${instColor}`;
+      block.className = `cal-class-block color-${cat.color} inst-${instColor}${expired ? ' past' : ''}`;
       block.dataset.category = cat.id;
       block.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
       block.dataset.location = cls.location_id;
