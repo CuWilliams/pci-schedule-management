@@ -471,6 +471,30 @@
     }
 
     .cal-class-block.hidden { display: none; }
+
+    /* In mobile sim, hide ← Home — user chip replaces the left slot */
+    body.dev-mobile .topbar-back { display: none; }
+
+    /* ── My Bookings view ───────────────────────────────── */
+    #myBookings {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 12px 10px 40px;
+    }
+    .my-bookings-heading {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-700);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--sp-4);
+    }
+    .my-bookings-empty {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -481,6 +505,11 @@
   <a href="index.html" class="topbar-back">← Home</a>
   <div class="topbar-logo">Power Conditioning Inc.</div>
   <div class="topbar-actions">
+    <button class="user-chip" id="userChip" style="display:none" aria-haspopup="dialog" aria-controls="memberMenuModal">
+      <span class="user-avatar" id="userAvatar"></span>
+      <span id="userChipName"></span>
+      <span class="user-caret" aria-hidden="true">▾</span>
+    </button>
     <button class="nav-menu-btn" id="navMenuBtn" aria-label="Open navigation">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -565,6 +594,8 @@
   </div>
 </div>
 
+<div id="myBookings" style="display:none"></div>
+
 <footer>Power Conditioning Inc.</footer>
 
 <div id="descModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
@@ -593,6 +624,20 @@
         <button class="btn btn-ghost" id="bookModalCancel">Cancel</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ── Member menu bottom sheet ───────────────────────────────────────────── -->
+<div id="memberMenuModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+  <div class="modal-sheet" style="padding:0;overflow:hidden">
+    <div class="member-menu-title">
+      <div>
+        <div class="member-menu-name" id="menuUserName"></div>
+        <div class="member-menu-email" id="menuUserEmail"></div>
+      </div>
+      <button class="modal-close" id="memberMenuClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="member-menu-list" id="memberMenuList"></div>
   </div>
 </div>
 
@@ -658,6 +703,87 @@ document.addEventListener('DOMContentLoaded', () => {
     badge.textContent = credits + ' credit' + (credits !== 1 ? 's' : '');
     const actions = document.querySelector('.topbar-actions');
     if (actions) actions.insertBefore(badge, actions.firstChild);
+  }
+
+  // User chip — shown for any signed-in user
+  if (session) {
+    const chip     = document.getElementById('userChip');
+    const avatar   = document.getElementById('userAvatar');
+    const chipName = document.getElementById('userChipName');
+    if (chip) {
+      const initials = session.displayName
+        .split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      avatar.textContent = initials;
+      avatar.classList.add('role-' + session.role);
+      chipName.textContent = session.displayName.split(' ')[0]; // first name only
+      chip.style.display = '';
+    }
+
+    // Bookings view toggle — members only
+    if (session.role === 'member') {
+      const toggle = document.getElementById('viewToggle');
+      if (toggle) {
+        const btn = document.createElement('button');
+        btn.className = 'view-btn';
+        btn.dataset.view = 'bookings';
+        btn.textContent = 'Bookings';
+        toggle.appendChild(btn);
+      }
+      // Also add nav drawer entry for bookings
+      const drawer = document.getElementById('navDrawer');
+      if (drawer) {
+        const bookingsNavBtn = document.createElement('button');
+        bookingsNavBtn.className = 'nav-drawer-item';
+        bookingsNavBtn.dataset.navView = 'bookings';
+        bookingsNavBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          My Bookings`;
+        // Insert after Week button (before Locations divider)
+        const weekBtn = drawer.querySelector('[data-nav-view="week"]');
+        if (weekBtn && weekBtn.nextSibling) {
+          drawer.insertBefore(bookingsNavBtn, weekBtn.nextSibling);
+        }
+      }
+    }
+
+    // Populate member menu
+    const nameEl  = document.getElementById('menuUserName');
+    const emailEl = document.getElementById('menuUserEmail');
+    if (nameEl)  nameEl.textContent  = session.displayName;
+    if (emailEl) emailEl.textContent = session.email;
+
+    const menuList = document.getElementById('memberMenuList');
+    if (menuList) {
+      const items = [];
+      if (session.role === 'member') {
+        items.push({ type: 'btn', id: 'menuMyBookings', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', label: 'My Bookings' });
+        items.push({ type: 'link', href: 'buy-credits.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'My Packages' });
+      }
+      items.push({ type: 'link', href: 'profile.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', label: 'Profile' });
+      items.push({ type: 'link', href: 'settings.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', label: 'Settings' });
+      items.push({ type: 'divider' });
+      items.push({ type: 'btn', id: 'menuSignOut', cls: 'danger', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>', label: 'Sign Out' });
+
+      items.forEach(item => {
+        if (item.type === 'divider') {
+          const hr = document.createElement('div');
+          hr.className = 'member-menu-divider';
+          menuList.appendChild(hr);
+        } else if (item.type === 'link') {
+          const a = document.createElement('a');
+          a.href = item.href;
+          a.className = 'member-menu-item' + (item.cls ? ' ' + item.cls : '');
+          a.innerHTML = item.icon + '<span>' + item.label + '</span>';
+          menuList.appendChild(a);
+        } else {
+          const btn = document.createElement('button');
+          if (item.id) btn.id = item.id;
+          btn.className = 'member-menu-item' + (item.cls ? ' ' + item.cls : '');
+          btn.innerHTML = item.icon + '<span>' + item.label + '</span>';
+          menuList.appendChild(btn);
+        }
+      });
+    }
   }
 })();
 
@@ -809,6 +935,131 @@ function refreshBookingCTAs() {
   });
 }
 
+// ── Member menu ──────────────────────────────────────────────────────────────
+const memberMenuModal = document.getElementById('memberMenuModal');
+
+function openMemberMenu() {
+  if (memberMenuModal) memberMenuModal.removeAttribute('hidden');
+}
+function closeMemberMenu() {
+  if (memberMenuModal) memberMenuModal.setAttribute('hidden', '');
+}
+
+document.getElementById('userChip')?.addEventListener('click', openMemberMenu);
+document.getElementById('memberMenuClose')?.addEventListener('click', closeMemberMenu);
+memberMenuModal?.addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeMemberMenu();
+});
+
+// My Bookings item switches view and closes menu
+memberMenuModal?.addEventListener('click', e => {
+  const btn = e.target.closest('#menuMyBookings');
+  if (btn) { closeMemberMenu(); toggleView('bookings'); }
+  const signOut = e.target.closest('#menuSignOut');
+  if (signOut) PciAuth.logout();
+});
+
+// ── My Bookings renderer ─────────────────────────────────────────────────────
+const DAY_FROM_PREFIX = {
+  sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday',
+  thu: 'Thursday', fri: 'Friday', sat: 'Saturday'
+};
+
+function renderMyBookings() {
+  const container = document.getElementById('myBookings');
+  container.innerHTML = '';
+
+  const session = PciAuth.getSession();
+  if (!session) {
+    const msg = document.createElement('div');
+    msg.className = 'my-bookings-empty';
+    msg.textContent = 'Sign in to see your bookings.';
+    container.appendChild(msg);
+    return;
+  }
+
+  const heading = document.createElement('div');
+  heading.className = 'my-bookings-heading';
+  heading.textContent = 'My Bookings';
+  container.appendChild(heading);
+
+  const userBookings = getBookings().filter(b => b.user_id === session.userId && b.status === 'booked');
+  if (userBookings.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'my-bookings-empty';
+    empty.textContent = "You haven't booked any classes yet.";
+    container.appendChild(empty);
+    return;
+  }
+
+  userBookings.forEach(booking => {
+    const cls = _allClasses.find(c => c.id === booking.class_id);
+    const card = document.createElement('div');
+    card.className = 'booking-card';
+
+    const bar = document.createElement('div');
+    bar.className = 'booking-card-bar color-' + (cls ? cls.color : 'gray');
+
+    const body = document.createElement('div');
+    body.className = 'booking-card-body';
+
+    const title = document.createElement('div');
+    title.className = 'booking-card-title';
+    title.textContent = booking.class_title;
+
+    const meta = document.createElement('div');
+    meta.className = 'booking-card-meta';
+    const prefix  = booking.class_id ? booking.class_id.split('_')[0] : '';
+    const dayName = DAY_FROM_PREFIX[prefix] || '';
+    const timeStr = cls ? formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end) : '';
+    meta.textContent = [dayName, timeStr].filter(Boolean).join(' · ');
+
+    body.appendChild(title);
+    body.appendChild(meta);
+
+    const actions = document.createElement('div');
+    actions.className = 'booking-card-actions';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-outline btn-sm';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', () => cancelBooking(booking.id, card));
+    actions.appendChild(cancelBtn);
+
+    card.appendChild(bar);
+    card.appendChild(body);
+    card.appendChild(actions);
+    container.appendChild(card);
+  });
+}
+
+function cancelBooking(bookingId, cardEl) {
+  const bookings = getBookings();
+  const idx = bookings.findIndex(b => b.id === bookingId);
+  if (idx === -1) return;
+  bookings.splice(idx, 1);
+  saveBookings(bookings);
+
+  try { PciAuth.updateCredits(+1); } catch (e) {}
+
+  const newCredits = PciAuth.getSession()?.credits;
+  const badge = document.getElementById('creditBadge');
+  if (badge && newCredits != null) {
+    badge.textContent = newCredits + ' credit' + (newCredits !== 1 ? 's' : '');
+    badge.className = 'credit-badge' + (newCredits === 0 ? ' empty' : newCredits <= 2 ? ' low' : '');
+  }
+
+  cardEl.remove();
+  const container = document.getElementById('myBookings');
+  if (!container.querySelector('.booking-card')) {
+    const empty = document.createElement('div');
+    empty.className = 'my-bookings-empty';
+    empty.textContent = "You haven't booked any classes yet.";
+    container.appendChild(empty);
+  }
+
+  showToast('Booking cancelled. 1 credit restored.', 'success');
+}
+
 // Cache of all class objects for CTA refresh (populated in data load)
 let _allClasses = [];
 
@@ -936,7 +1187,7 @@ document.getElementById('descModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeModal();
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeModal(); closeBookModal(); }
+  if (e.key === 'Escape') { closeModal(); closeBookModal(); closeMemberMenu(); }
 });
 
 // ── View toggle ──────────────────────────────────────────
@@ -951,8 +1202,10 @@ function toggleView(view) {
   document.querySelectorAll('[data-nav-view]').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.navView === view);
   });
-  document.getElementById('schedule').style.display = view === 'list' ? '' : 'none';
-  document.getElementById('calView').style.display  = view === 'week' ? 'block' : 'none';
+  document.getElementById('schedule').style.display   = view === 'list'     ? '' : 'none';
+  document.getElementById('calView').style.display    = view === 'week'     ? 'block' : 'none';
+  document.getElementById('myBookings').style.display = view === 'bookings' ? '' : 'none';
+  if (view === 'bookings') renderMyBookings();
 }
 
 document.getElementById('viewToggle').addEventListener('click', e => {

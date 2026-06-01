@@ -777,3 +777,99 @@ body.dev-mobile .nav-drawer.open { display: block; }
   transition: border-color 0.15s, background 0.15s;
 }
 .header-signin:hover { border-color: var(--on-dark-primary); background: rgba(255,255,255,0.07); }
+
+/* ── User chip (topbar member identity) ───────────────────────────────────── */
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 3px 8px 3px 3px;
+  border: 1px solid var(--on-dark-border);
+  border-radius: var(--radius-pill);
+  background: var(--on-dark-surface);
+  color: var(--on-dark-primary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+  line-height: 1;
+}
+.user-chip:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.32); }
+
+.user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cls-purple);
+  color: var(--pci-white);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.user-avatar.role-owner      { background: var(--danger); }
+.user-avatar.role-admin      { background: var(--accent); }
+.user-avatar.role-instructor { background: var(--cls-green); }
+.user-avatar.role-member     { background: var(--cls-purple); }
+
+.user-caret { opacity: 0.55; font-size: 9px; }
+
+/* ── Member menu (bottom sheet) ────────────────────────────────────────────── */
+.member-menu-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-5) var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+.member-menu-name  { font-size: 16px; font-weight: 700; color: var(--text); }
+.member-menu-email { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.member-menu-list { padding: var(--sp-2) 0 var(--sp-4); }
+
+.member-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: 14px var(--sp-5);
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s;
+  text-align: left;
+  box-sizing: border-box;
+}
+.member-menu-item:hover { background: var(--gray-100); }
+.member-menu-item.danger { color: var(--danger); }
+.member-menu-item svg { width: 18px; height: 18px; opacity: 0.5; flex-shrink: 0; }
+.member-menu-item.danger svg { opacity: 0.85; }
+.member-menu-divider { height: 1px; background: var(--border); margin: var(--sp-2) var(--sp-5); }
+
+/* ── My Bookings view ──────────────────────────────────────────────────────── */
+.booking-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  margin-bottom: var(--sp-3);
+  display: flex;
+  align-items: stretch;
+}
+.booking-card-bar   { width: 5px; flex-shrink: 0; }
+.booking-card-body  { flex: 1; padding: var(--sp-3) var(--sp-4); min-width: 0; }
+.booking-card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.booking-card-meta  { font-size: 12px; color: var(--muted); }
+.booking-card-actions { display: flex; align-items: center; padding: var(--sp-3); flex-shrink: 0; }

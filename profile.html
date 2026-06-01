@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Conditioning Inc. — My Profile</title>
+  <link rel="stylesheet" href="pci-tokens.css">
+  <style>
+    body { background: var(--bg); }
+
+    /* ── Topbar (schedule-specific overrides; base in pci-tokens.css) ────── */
+    .topbar-logo { flex: 1; text-align: center; font-weight: 900; letter-spacing: 0.10em; }
+
+    .profile-page {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 0 60px;
+    }
+
+    /* ── Hero ───────────────────────────────────────────────── */
+    .profile-hero {
+      background: var(--pci-black);
+      padding: 32px 20px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+
+    .profile-avatar-lg {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--cls-purple);
+      color: var(--pci-white);
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0;
+      flex-shrink: 0;
+    }
+    .profile-avatar-lg.role-owner      { background: var(--danger); }
+    .profile-avatar-lg.role-admin      { background: var(--accent); }
+    .profile-avatar-lg.role-instructor { background: var(--cls-green); }
+    .profile-avatar-lg.role-member     { background: var(--cls-purple); }
+
+    .profile-display-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--on-dark-primary);
+      text-align: center;
+    }
+
+    /* ── Sections ────────────────────────────────────────────── */
+    .profile-section {
+      background: var(--surface);
+      margin: 12px 12px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .profile-section-title {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--gray-050);
+    }
+
+    .profile-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-field:last-child { border-bottom: none; }
+
+    .profile-field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-600);
+      flex-shrink: 0;
+    }
+
+    .profile-field-value {
+      font-size: 13px;
+      color: var(--text);
+      text-align: right;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-field-value.muted { color: var(--muted); font-style: italic; }
+
+    .profile-placeholder {
+      padding: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── Waiver item ─────────────────────────────────────────── */
+    .profile-waiver {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .profile-waiver:last-child { border-bottom: none; }
+    .profile-waiver-name { font-size: 13px; color: var(--text); }
+    .profile-waiver-status {
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .profile-waiver-status.signed { color: var(--success); }
+
+    /* ── Footer action ───────────────────────────────────────── */
+    .profile-footer {
+      padding: 20px 12px 0;
+    }
+    .profile-footer .btn { width: 100%; justify-content: center; }
+  </style>
+</head>
+<body>
+<div id="phoneFrame">
+<div id="phoneViewport">
+
+<header class="topbar">
+  <a href="schedule.html" class="topbar-back">← Schedule</a>
+  <div class="topbar-logo">Power Conditioning Inc.</div>
+  <div class="topbar-actions"></div>
+</header>
+
+<div class="profile-page">
+
+  <div class="profile-hero">
+    <div class="profile-avatar-lg" id="profileAvatar"></div>
+    <div class="profile-display-name" id="profileName"></div>
+    <span class="role-badge" id="profileRoleBadge"></span>
+  </div>
+
+  <div class="profile-section">
+    <div class="profile-section-title">Bio</div>
+    <p class="profile-placeholder">No bio added yet.</p>
+  </div>
+
+  <div class="profile-section">
+    <div class="profile-section-title">Contact Info</div>
+    <div class="profile-field">
+      <span class="profile-field-label">Email</span>
+      <span class="profile-field-value" id="profileEmail"></span>
+    </div>
+    <div class="profile-field">
+      <span class="profile-field-label">Phone</span>
+      <span class="profile-field-value muted">Not set</span>
+    </div>
+  </div>
+
+  <div class="profile-section" id="profileCreditsSection" style="display:none">
+    <div class="profile-section-title">Credits</div>
+    <div class="profile-field">
+      <span class="profile-field-label">Balance</span>
+      <span class="profile-field-value" id="profileCredits"></span>
+    </div>
+    <div class="profile-field">
+      <span class="profile-field-label">Location</span>
+      <span class="profile-field-value" id="profileLocation"></span>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <div class="profile-section-title">Waivers</div>
+    <div class="profile-waiver">
+      <span class="profile-waiver-name">General Liability Waiver</span>
+      <span class="profile-waiver-status signed">Signed ✓</span>
+    </div>
+    <div class="profile-waiver">
+      <span class="profile-waiver-name">Photo &amp; Video Release</span>
+      <span class="profile-waiver-status muted" style="color:var(--muted);font-style:italic;font-size:12px">Pending</span>
+    </div>
+  </div>
+
+  <div class="profile-footer">
+    <a href="settings.html" class="btn btn-outline">Edit Account Settings →</a>
+  </div>
+
+</div><!-- /profile-page -->
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+</div><!-- /phoneViewport -->
+<div id="phoneHomeBar"></div>
+<div id="devBadge">DEV | 390</div>
+</div><!-- /phoneFrame -->
+
+<script src="pci-auth.js"></script>
+<script>
+// ── Auth gate ─────────────────────────────────────────────────────────────────
+const session = PciAuth.getSession();
+if (!session) {
+  location.href = 'login.html?redirect=' + encodeURIComponent(location.href);
+}
+
+// ── Dev mode ──────────────────────────────────────────────────────────────────
+document.body.classList.toggle('dev-mobile', localStorage.getItem('pci_dev_mobile') === '1');
+
+if (session) {
+  // Avatar
+  const initials = session.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const avatarEl = document.getElementById('profileAvatar');
+  avatarEl.textContent = initials;
+  avatarEl.classList.add('role-' + session.role);
+
+  // Name
+  document.getElementById('profileName').textContent = session.displayName;
+
+  // Role badge
+  const badge = document.getElementById('profileRoleBadge');
+  badge.textContent = session.role.charAt(0).toUpperCase() + session.role.slice(1);
+  badge.className = 'role-badge role-' + session.role;
+
+  // Email
+  document.getElementById('profileEmail').textContent = session.email;
+
+  // Credits section — members only
+  if (session.role === 'member' && session.credits != null) {
+    document.getElementById('profileCreditsSection').style.display = '';
+    const c = session.credits;
+    document.getElementById('profileCredits').textContent = c + ' credit' + (c !== 1 ? 's' : '');
+    document.getElementById('profileLocation').textContent =
+      session.locationId === 'clarenville' ? 'Clarenville' : "St. John's";
+  }
+}
+</script>
+</body>
+</html>

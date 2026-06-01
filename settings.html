@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power Conditioning Inc. — Settings</title>
+  <link rel="stylesheet" href="pci-tokens.css">
+  <style>
+    body { background: var(--bg); }
+
+    /* ── Topbar (schedule-specific overrides; base in pci-tokens.css) ────── */
+    .topbar-logo { flex: 1; text-align: center; font-weight: 900; letter-spacing: 0.10em; }
+
+    .settings-page {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px 12px 60px;
+    }
+
+    /* ── Section card ────────────────────────────────────────── */
+    .settings-section {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .settings-section-title {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--gray-050);
+    }
+
+    /* ── Form fields ─────────────────────────────────────────── */
+    .settings-field {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-field:last-child { border-bottom: none; }
+
+    .settings-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: var(--sp-1);
+    }
+
+    .settings-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text);
+      font-family: var(--font-body);
+      background: var(--surface);
+      transition: border-color 0.15s;
+    }
+    .settings-input:focus { outline: none; border-color: var(--brand); }
+
+    /* ── Notification rows ───────────────────────────────────── */
+    .notif-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-row:last-child { border-bottom: none; }
+
+    .notif-label {
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+      flex: 1;
+    }
+    .notif-label-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Toggle switch ───────────────────────────────────────── */
+    .toggle-wrap {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .toggle-wrap input[type="checkbox"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      margin: 0;
+    }
+    .toggle-track {
+      display: block;
+      width: 44px;
+      height: 26px;
+      border-radius: 13px;
+      background: var(--gray-300);
+      pointer-events: none;
+      transition: background 0.2s;
+      position: relative;
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--pci-white);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .toggle-wrap input:checked ~ .toggle-track { background: var(--success); }
+    .toggle-wrap input:checked ~ .toggle-track::after { transform: translateX(18px); }
+
+    /* ── Save bar ────────────────────────────────────────────── */
+    .settings-save-bar {
+      margin-top: 8px;
+    }
+    .settings-save-bar .btn { width: 100%; justify-content: center; }
+  </style>
+</head>
+<body>
+<div id="phoneFrame">
+<div id="phoneViewport">
+
+<header class="topbar">
+  <a href="schedule.html" class="topbar-back">← Schedule</a>
+  <div class="topbar-logo">Settings</div>
+  <div class="topbar-actions">
+    <a href="profile.html" class="topbar-back" style="font-size:11px">Profile</a>
+  </div>
+</header>
+
+<div class="settings-page">
+
+  <!-- Account -->
+  <div class="settings-section">
+    <div class="settings-section-title">Account</div>
+    <div class="settings-field">
+      <div class="settings-label">Display Name</div>
+      <input type="text" id="fieldName" class="settings-input" autocomplete="name" placeholder="Your name">
+    </div>
+    <div class="settings-field">
+      <div class="settings-label">Email</div>
+      <input type="email" id="fieldEmail" class="settings-input" autocomplete="email" placeholder="your@email.com">
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="settings-section">
+    <div class="settings-section-title">Security</div>
+    <div class="settings-field">
+      <div class="settings-label">Current Password</div>
+      <input type="password" id="fieldCurrentPw" class="settings-input"
+        autocomplete="current-password" placeholder="Enter current password">
+    </div>
+    <div class="settings-field">
+      <div class="settings-label">New Password</div>
+      <input type="password" id="fieldNewPw" class="settings-input"
+        autocomplete="new-password" placeholder="Leave blank to keep unchanged">
+    </div>
+    <div class="settings-field">
+      <div class="settings-label">Confirm New Password</div>
+      <input type="password" id="fieldConfirmPw" class="settings-input"
+        autocomplete="new-password" placeholder="Repeat new password">
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="settings-section">
+    <div class="settings-section-title">Contact</div>
+    <div class="settings-field">
+      <div class="settings-label">Phone</div>
+      <input type="tel" id="fieldPhone" class="settings-input"
+        autocomplete="tel" placeholder="Not set">
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="settings-section">
+    <div class="settings-section-title">Notifications</div>
+
+    <label class="notif-row">
+      <div>
+        <div class="notif-label">Class reminders</div>
+        <div class="notif-label-sub">Get reminded 1 hour before class</div>
+      </div>
+      <div class="toggle-wrap">
+        <input type="checkbox" id="notifReminders">
+        <span class="toggle-track"></span>
+      </div>
+    </label>
+
+    <label class="notif-row">
+      <div>
+        <div class="notif-label">Booking confirmations</div>
+        <div class="notif-label-sub">Confirm when a class is booked or cancelled</div>
+      </div>
+      <div class="toggle-wrap">
+        <input type="checkbox" id="notifBookings" checked>
+        <span class="toggle-track"></span>
+      </div>
+    </label>
+
+    <label class="notif-row">
+      <div>
+        <div class="notif-label">Promotions</div>
+        <div class="notif-label-sub">Credit deals and membership offers</div>
+      </div>
+      <div class="toggle-wrap">
+        <input type="checkbox" id="notifPromos">
+        <span class="toggle-track"></span>
+      </div>
+    </label>
+  </div>
+
+  <div class="settings-save-bar">
+    <button class="btn btn-primary" id="saveBtn">Save Changes</button>
+  </div>
+
+</div><!-- /settings-page -->
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+</div><!-- /phoneViewport -->
+<div id="phoneHomeBar"></div>
+<div id="devBadge">DEV | 390</div>
+</div><!-- /phoneFrame -->
+
+<script src="pci-auth.js"></script>
+<script>
+const SETTINGS_KEY = 'pci_settings';
+
+// ── Auth gate ─────────────────────────────────────────────────────────────────
+const _session = PciAuth.getSession();
+if (!_session) {
+  location.href = 'login.html?redirect=' + encodeURIComponent(location.href);
+}
+
+// ── Dev mode ──────────────────────────────────────────────────────────────────
+document.body.classList.toggle('dev-mobile', localStorage.getItem('pci_dev_mobile') === '1');
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = ('show' + (type ? ' ' + type : '')).trim();
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 3200);
+}
+
+// ── Populate fields from session + stored settings ────────────────────────────
+if (_session) {
+  document.getElementById('fieldName').value  = _session.displayName || '';
+  document.getElementById('fieldEmail').value = _session.email || '';
+
+  try {
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+    const notif  = (stored[_session.userId] || {}).notifications || {};
+    document.getElementById('notifReminders').checked = notif.reminders ?? false;
+    document.getElementById('notifBookings').checked  = notif.bookings  ?? true;
+    document.getElementById('notifPromos').checked    = notif.promos    ?? false;
+    if (notif.phone) document.getElementById('fieldPhone').value = notif.phone;
+  } catch (e) {}
+}
+
+// ── Save ──────────────────────────────────────────────────────────────────────
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const session = PciAuth.getSession();
+  if (!session) return;
+
+  const newName  = document.getElementById('fieldName').value.trim();
+  const newEmail = document.getElementById('fieldEmail').value.trim();
+
+  if (!newName)  { showToast('Display name cannot be empty.', 'error'); return; }
+  if (!newEmail) { showToast('Email cannot be empty.', 'error'); return; }
+
+  const newPw     = document.getElementById('fieldNewPw').value;
+  const confirmPw = document.getElementById('fieldConfirmPw').value;
+  if (newPw && newPw !== confirmPw) {
+    showToast('New passwords do not match.', 'error');
+    return;
+  }
+
+  // Persist name + email in the session
+  PciAuth.patchSession({ displayName: newName, email: newEmail });
+
+  // Persist notification preferences + phone under per-user settings key
+  try {
+    const allSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+    if (!allSettings[session.userId]) allSettings[session.userId] = {};
+    allSettings[session.userId].notifications = {
+      reminders: document.getElementById('notifReminders').checked,
+      bookings:  document.getElementById('notifBookings').checked,
+      promos:    document.getElementById('notifPromos').checked
+    };
+    const phone = document.getElementById('fieldPhone').value.trim();
+    if (phone) allSettings[session.userId].phone = phone;
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(allSettings));
+  } catch (e) {}
+
+  // Clear password fields
+  document.getElementById('fieldCurrentPw').value = '';
+  document.getElementById('fieldNewPw').value     = '';
+  document.getElementById('fieldConfirmPw').value = '';
+
+  showToast('Settings saved!', 'success');
+});
+</script>
+</body>
+</html>
