@@ -311,6 +311,43 @@ body {
   padding: var(--sp-4);
 }
 
+.modal-sheet {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  max-width: 480px;
+  width: calc(100% - 32px);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 600px) {
+  .modal-sheet {
+    width: 100%;
+    max-width: none;
+    border-radius: 16px 16px 0 0;
+    animation: slideUp 0.22s ease-out;
+  }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--gray-500);
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--gray-800); }
+
 /* ── Topbar (shared: schedule + admin) ─────────────────────────────────────── */
 .topbar {
   background: var(--pci-black);
@@ -476,6 +513,9 @@ body.dev-mobile .modal-overlay,
 body.dev-mobile #loadingOverlay {
   position: absolute;
 }
+
+body.modal-open { overflow: hidden; }
+body.dev-mobile.modal-open #phoneViewport { overflow: hidden; }
 
 body.dev-mobile #toast {
   position: absolute;

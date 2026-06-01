@@ -287,12 +287,31 @@
 <div id="phoneFrame">
 <div id="phoneViewport">
 
+  <!-- Member menu bottom sheet -->
+  <div id="memberMenuModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+    <div class="modal-sheet" style="padding:0;overflow:hidden">
+      <div class="member-menu-title">
+        <div>
+          <div class="member-menu-name" id="menuUserName"></div>
+          <div class="member-menu-email" id="menuUserEmail"></div>
+        </div>
+        <button class="modal-close" id="memberMenuClose" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="member-menu-list" id="memberMenuList"></div>
+    </div>
+  </div>
+
   <header class="site-header">
     <span class="site-wordmark">PCI <span>Bookings</span> App</span>
     <div style="display:flex;align-items:center;gap:8px">
       <button class="dev-mode-btn" id="devModeBtn" aria-label="Toggle mobile view" title="Toggle phone viewport simulation">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
         Mobile
+      </button>
+      <button class="user-chip" id="userChip" style="display:none" aria-haspopup="dialog" aria-controls="memberMenuModal">
+        <span class="user-avatar" id="userAvatar"></span>
+        <span id="userChipName"></span>
+        <span class="user-caret" aria-hidden="true">▾</span>
       </button>
       <div id="headerNav" class="header-auth"></div>
     </div>
@@ -407,13 +426,62 @@
       }
 
       const role = session.role;
-      let html = '<span class="header-auth-name">' + session.displayName + '</span>';
 
       if (role === 'member') {
-        const credits = session.credits != null ? session.credits : 0;
-        const cls = credits === 0 ? 'empty' : credits <= 2 ? 'low' : '';
-        html += '<span class="credit-badge' + (cls ? ' ' + cls : '') + '">' + credits + ' credit' + (credits !== 1 ? 's' : '') + '</span>';
-      } else if (role === 'instructor') {
+        // Show the user-chip pill; leave #headerNav empty
+        const chip     = document.getElementById('userChip');
+        const avatar   = document.getElementById('userAvatar');
+        const chipName = document.getElementById('userChipName');
+        if (chip) {
+          const initials = session.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+          avatar.textContent = initials;
+          avatar.classList.add('role-member');
+          chipName.textContent = session.displayName.split(' ')[0];
+          chip.style.display = '';
+        }
+
+        // Populate menu header
+        const nameEl  = document.getElementById('menuUserName');
+        const emailEl = document.getElementById('menuUserEmail');
+        if (nameEl)  nameEl.textContent  = session.displayName;
+        if (emailEl) emailEl.textContent = session.email;
+
+        // Build menu items
+        const menuList = document.getElementById('memberMenuList');
+        if (menuList) {
+          const items = [
+            { type: 'link', href: 'schedule.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', label: 'Schedule' },
+            { type: 'link', href: 'buy-credits.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'My Packages' },
+            { type: 'link', href: 'profile.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>', label: 'Profile' },
+            { type: 'link', href: 'settings.html', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', label: 'Settings' },
+            { type: 'divider' },
+            { type: 'btn', id: 'menuSignOut', cls: 'danger', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>', label: 'Sign Out' },
+          ];
+          items.forEach(item => {
+            if (item.type === 'divider') {
+              const hr = document.createElement('div');
+              hr.className = 'member-menu-divider';
+              menuList.appendChild(hr);
+            } else if (item.type === 'link') {
+              const a = document.createElement('a');
+              a.href = item.href;
+              a.className = 'member-menu-item' + (item.cls ? ' ' + item.cls : '');
+              a.innerHTML = item.icon + '<span>' + item.label + '</span>';
+              menuList.appendChild(a);
+            } else {
+              const btn = document.createElement('button');
+              if (item.id) btn.id = item.id;
+              btn.className = 'member-menu-item' + (item.cls ? ' ' + item.cls : '');
+              btn.innerHTML = item.icon + '<span>' + item.label + '</span>';
+              menuList.appendChild(btn);
+            }
+          });
+        }
+        return;
+      }
+
+      let html = '<span class="header-auth-name">' + session.displayName + '</span>';
+      if (role === 'instructor') {
         html += '<a href="instructor.html" class="header-signin" style="text-decoration:none">Dashboard</a>';
       } else if (role === 'admin' || role === 'owner') {
         const hasPat = !!localStorage.getItem('pci_admin_pat');
@@ -421,11 +489,26 @@
               + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
               + 'Admin<span class="admin-dot"' + (hasPat ? ' style="display:block"' : '') + '></span></a>';
       }
-
       html += '<button class="header-signout" id="headerSignout">Sign Out</button>';
       nav.innerHTML = html;
 
       document.getElementById('headerSignout')?.addEventListener('click', () => PciAuth.logout());
+    })();
+
+    // Member menu open/close
+    (function () {
+      const modal = document.getElementById('memberMenuModal');
+      const chip  = document.getElementById('userChip');
+      const close = document.getElementById('memberMenuClose');
+      if (!modal || !chip) return;
+      function openMenu()  { modal.removeAttribute('hidden'); document.body.classList.add('modal-open'); }
+      function closeMenu() { modal.setAttribute('hidden', ''); document.body.classList.remove('modal-open'); }
+      chip.addEventListener('click', openMenu);
+      close?.addEventListener('click', closeMenu);
+      modal.addEventListener('click', e => { if (e.target === e.currentTarget) closeMenu(); });
+      modal.addEventListener('click', e => {
+        if (e.target.closest('#menuSignOut')) PciAuth.logout();
+      });
     })();
 
     // Show unauthorized message if redirected here

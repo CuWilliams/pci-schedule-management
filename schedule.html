@@ -171,17 +171,6 @@
     .class-item[data-type]:hover .class-body { background: rgba(0,0,0,0.02); }
 
     /* ── Modal ────────────────────────────────────────────── */
-    .modal-sheet {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      max-width: 480px;
-      width: calc(100% - 32px);
-      max-height: 80vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-    }
-
     .modal-header {
       display: flex;
       align-items: flex-start;
@@ -197,36 +186,10 @@
       line-height: 1.4;
     }
 
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 16px;
-      color: var(--gray-500);
-      cursor: pointer;
-      padding: 0 2px;
-      flex-shrink: 0;
-      line-height: 1;
-    }
-    .modal-close:hover { color: var(--gray-800); }
-
     .modal-desc {
       font-size: 13px;
       line-height: 1.6;
       color: var(--gray-600);
-    }
-
-    @media (max-width: 600px) {
-      .modal-sheet {
-        width: 100%;
-        max-width: none;
-        border-radius: 16px 16px 0 0;
-        animation: slideUp 0.22s ease-out;
-      }
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(60px); opacity: 0; }
-      to   { transform: translateY(0);   opacity: 1; }
     }
 
     /* ── Date navigation bar ─────────────────────────────── */
