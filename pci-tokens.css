@@ -457,6 +457,11 @@ body.dev-mobile #loadingOverlay {
   position: absolute;
 }
 
+body.dev-mobile #toast {
+  position: absolute;
+  bottom: 58px; /* 34px home bar + 24px gap */
+}
+
 body.dev-mobile #authGate { min-height: 600px; }
 
 .dev-mode-btn {
