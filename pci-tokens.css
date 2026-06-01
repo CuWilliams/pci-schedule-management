@@ -133,6 +133,9 @@ body {
 .btn-danger { background: var(--danger); color: var(--pci-white); }
 .btn-danger:not(:disabled):hover { background: #c44040; }
 
+.btn-booked { background: var(--success); color: var(--pci-white); }
+.btn-booked:not(:disabled):hover { filter: brightness(0.9); }
+
 .btn-outline { background: var(--surface); color: var(--gray-700); border: 1.5px solid var(--border); }
 .btn-outline:not(:disabled):hover { background: var(--gray-100); }
 
