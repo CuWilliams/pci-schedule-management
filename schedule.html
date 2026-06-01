@@ -467,6 +467,15 @@
       color: var(--muted);
       font-size: 14px;
     }
+    .my-bookings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--sp-4);
+    }
+    #mbCalDayHeaderBar {
+      position: static; /* override sticky from .cal-day-header-bar */
+    }
   </style>
 </head>
 <body>
@@ -1033,10 +1042,13 @@ memberMenuModal?.addEventListener('click', e => {
 });
 
 // ── My Bookings renderer ─────────────────────────────────────────────────────
-const DAY_FROM_PREFIX = {
-  sun: 'Sunday', mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday',
-  thu: 'Thursday', fri: 'Friday', sat: 'Saturday'
-};
+
+let _myBookingsView = 'list';
+
+function toggleMyBookingsView(view) {
+  _myBookingsView = view;
+  renderMyBookings();
+}
 
 function renderMyBookings() {
   const container = document.getElementById('myBookings');
@@ -1051,78 +1063,263 @@ function renderMyBookings() {
     return;
   }
 
+  const header = document.createElement('div');
+  header.className = 'my-bookings-header';
+
   const heading = document.createElement('div');
   heading.className = 'my-bookings-heading';
   heading.textContent = 'My Bookings';
-  container.appendChild(heading);
+
+  const subToggle = document.createElement('div');
+  subToggle.className = 'view-toggle';
+  ['list', 'week'].forEach(v => {
+    const btn = document.createElement('button');
+    btn.className = 'view-btn' + (_myBookingsView === v ? ' active' : '');
+    btn.textContent = v === 'list' ? 'List' : 'Week';
+    btn.addEventListener('click', () => toggleMyBookingsView(v));
+    subToggle.appendChild(btn);
+  });
+
+  header.appendChild(heading);
+  header.appendChild(subToggle);
+  container.appendChild(header);
 
   const userBookings = getBookings().filter(b => b.user_id === session.userId && b.status === 'booked');
-  if (userBookings.length === 0) {
+  const classById = {};
+  _allClasses.forEach(c => { classById[c.id] = c; });
+  const dateWindow = buildDateWindow(_viewStartDate);
+
+  if (_myBookingsView === 'week') {
+    renderMyBookingsCalendar(container, dateWindow, userBookings, classById);
+  } else {
+    renderMyBookingsList(container, dateWindow, userBookings, classById);
+  }
+}
+
+function renderMyBookingsList(container, dateWindow, userBookings, classById) {
+  let hasAny = false;
+
+  dateWindow.forEach(entry => {
+    const dayPrefix = entry.dayName.slice(0, 3).toLowerCase();
+    const dayBookings = userBookings
+      .filter(b => b.class_id && b.class_id.startsWith(dayPrefix + '_'))
+      .sort((a, b) => {
+        const ca = classById[a.class_id], cb = classById[b.class_id];
+        return (ca ? ca.time_start : '').localeCompare(cb ? cb.time_start : '');
+      });
+    if (dayBookings.length === 0) return;
+    hasAny = true;
+
+    const block = document.createElement('div');
+    block.className = 'day-block';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'day-header' + (entry.isToday ? ' day-header--today' : '');
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = entry.isToday ? 'Today' : (DAY_ABBREVS[entry.dayName] || entry.dayName);
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'day-header-date';
+    dateSpan.textContent = entry.isToday
+      ? (DAY_ABBREVS[entry.dayName] || entry.dayName) + ', ' + formatShortDate(entry.date)
+      : formatShortDate(entry.date);
+    hdr.appendChild(labelSpan);
+    hdr.appendChild(dateSpan);
+    block.appendChild(hdr);
+
+    dayBookings.forEach(booking => {
+      const cls = classById[booking.class_id];
+      const cat = cls ? (typeToCategory[cls.type] || { id: 'unknown', color: 'gray' }) : { id: 'unknown', color: 'gray' };
+      const instColor = cls ? (instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray') : 'gray';
+      const expired = cls ? isClassExpired(cls, entry) : false;
+
+      const item = document.createElement('div');
+      item.className = `class-item bg-${cat.color}${expired ? ' past' : ''}`;
+
+      const bar = document.createElement('div');
+      bar.className = `color-bar inst-${instColor}`;
+
+      const body = document.createElement('div');
+      body.className = 'class-body';
+
+      const time = document.createElement('div');
+      time.className = 'class-time';
+      time.textContent = cls ? `${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}` : '';
+
+      const title = document.createElement('div');
+      title.className = 'class-title';
+      title.textContent = cls ? displayTitle(cls) : booking.class_title;
+
+      body.appendChild(time);
+      body.appendChild(title);
+
+      if (cls) {
+        const instructor = document.createElement('div');
+        instructor.className = 'class-instructor';
+        const names = cls.instructor_ids
+          ? cls.instructor_ids.map(id => instructorMap[id] || id)
+          : (cls.instructors || []);
+        instructor.textContent = 'With ' + names.join(', ');
+        body.appendChild(instructor);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'class-actions';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn btn-outline btn-sm';
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.addEventListener('click', e => { e.stopPropagation(); cancelBooking(booking.id); });
+      actions.appendChild(cancelBtn);
+
+      item.appendChild(bar);
+      item.appendChild(body);
+      item.appendChild(actions);
+      block.appendChild(item);
+    });
+
+    container.appendChild(block);
+  });
+
+  if (!hasAny) {
     const empty = document.createElement('div');
     empty.className = 'my-bookings-empty';
     empty.textContent = "You haven't booked any classes yet.";
     container.appendChild(empty);
-    return;
   }
-
-  userBookings.forEach(booking => {
-    const cls = _allClasses.find(c => c.id === booking.class_id);
-    const card = document.createElement('div');
-    card.className = 'booking-card';
-
-    const bar = document.createElement('div');
-    bar.className = 'booking-card-bar color-' + (cls ? cls.color : 'gray');
-
-    const body = document.createElement('div');
-    body.className = 'booking-card-body';
-
-    const title = document.createElement('div');
-    title.className = 'booking-card-title';
-    title.textContent = booking.class_title;
-
-    const meta = document.createElement('div');
-    meta.className = 'booking-card-meta';
-    const prefix  = booking.class_id ? booking.class_id.split('_')[0] : '';
-    const dayName = DAY_FROM_PREFIX[prefix] || '';
-    const timeStr = cls ? formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end) : '';
-    meta.textContent = [dayName, timeStr].filter(Boolean).join(' · ');
-
-    body.appendChild(title);
-    body.appendChild(meta);
-
-    const actions = document.createElement('div');
-    actions.className = 'booking-card-actions';
-    const cancelBtn = document.createElement('button');
-    cancelBtn.className = 'btn btn-outline btn-sm';
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.addEventListener('click', () => cancelBooking(booking.id, card));
-    actions.appendChild(cancelBtn);
-
-    card.appendChild(bar);
-    card.appendChild(body);
-    card.appendChild(actions);
-    container.appendChild(card);
-  });
 }
 
-function cancelBooking(bookingId, cardEl) {
+function renderMyBookingsCalendar(container, dateWindow, userBookings, classById) {
+  const headerBar = document.createElement('div');
+  headerBar.className = 'cal-day-header-bar';
+  headerBar.id = 'mbCalDayHeaderBar';
+
+  const gutterCell = document.createElement('div');
+  gutterCell.className = 'cal-gutter-cell';
+  headerBar.appendChild(gutterCell);
+
+  dateWindow.forEach(entry => {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day-head' + (entry.isToday ? ' cal-day-head--today' : '');
+    const nameEl = document.createElement('span');
+    nameEl.className = 'cal-head-name';
+    nameEl.textContent = entry.isToday ? 'Today' : (DAY_ABBREVS[entry.dayName] || entry.dayName.slice(0, 3));
+    const numEl = document.createElement('span');
+    numEl.className = 'cal-head-num';
+    numEl.textContent = entry.date.getDate();
+    cell.appendChild(nameEl);
+    cell.appendChild(numEl);
+    headerBar.appendChild(cell);
+  });
+  container.appendChild(headerBar);
+
+  const scroll = document.createElement('div');
+  scroll.className = 'cal-scroll';
+  scroll.id = 'mbCalScroll';
+
+  const inner = document.createElement('div');
+  inner.className = 'cal-inner';
+
+  const totalHeight = TOTAL_HOURS * HOUR_HEIGHT;
+
+  const gutter = document.createElement('div');
+  gutter.className = 'cal-gutter';
+  gutter.style.height = `${totalHeight}px`;
+  for (let h = HOUR_START; h < HOUR_END; h++) {
+    const label = document.createElement('div');
+    label.className = 'cal-time-label';
+    label.style.top = `${(h - HOUR_START) * HOUR_HEIGHT}px`;
+    if (h === 12)    label.textContent = '12 PM';
+    else if (h < 12) label.textContent = `${h} AM`;
+    else             label.textContent = `${h - 12} PM`;
+    gutter.appendChild(label);
+  }
+  inner.appendChild(gutter);
+
+  dateWindow.forEach(entry => {
+    const dayPrefix = entry.dayName.slice(0, 3).toLowerCase();
+    const dayBookings = userBookings.filter(b => b.class_id && b.class_id.startsWith(dayPrefix + '_'));
+    const dayClasses = dayBookings.map(b => classById[b.class_id]).filter(Boolean);
+
+    const col = document.createElement('div');
+    col.className = 'cal-day-col';
+    col.style.height = `${totalHeight}px`;
+
+    const byLoc = {};
+    dayClasses.forEach(c => (byLoc[c.location_id] = byLoc[c.location_id] || []).push(c));
+    Object.values(byLoc).forEach(locClasses => assignLanes(locClasses));
+
+    dayBookings.forEach(booking => {
+      const cls = classById[booking.class_id];
+      if (!cls) return;
+
+      const [sh, sm] = cls.time_start.split(':').map(Number);
+      const [eh, em] = cls.time_end.split(':').map(Number);
+      const startMin = Math.max(0, sh * 60 + sm - HOUR_START * 60);
+      const endMin   = Math.min(TOTAL_HOURS * 60, eh * 60 + em - HOUR_START * 60);
+      if (startMin >= endMin) return;
+
+      const topPx    = (startMin / 60) * HOUR_HEIGHT;
+      const heightPx = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, 22);
+
+      const cat = typeToCategory[cls.type] || { id: 'unknown', color: 'gray' };
+      const instColor = instructorColorMap[(cls.instructor_ids || [])[0]] || 'gray';
+
+      const block = document.createElement('div');
+      block.className = `cal-class-block color-${cat.color} inst-${instColor}`;
+      block.dataset.type = cls.type || '';
+      block.dataset.classId = cls.id;
+      block.dataset.dayName = entry.dayName;
+      block.style.top    = `${topPx}px`;
+      block.style.height = `${heightPx}px`;
+
+      const pct = 100 / (cls._totalLanes || 1);
+      block.style.left  = `calc(${(cls._lane || 0) * pct}% + 2px)`;
+      block.style.width = `calc(${pct}% - 4px)`;
+      block.style.right = '';
+
+      const timeEl = document.createElement('div');
+      timeEl.className = 'cal-block-time';
+      timeEl.textContent = formatTime(cls.time_start);
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'cal-block-title';
+      titleEl.textContent = displayTitle(cls);
+
+      block.appendChild(timeEl);
+      block.appendChild(titleEl);
+
+      if (cls.sub_location === 'upper_gym') {
+        const tag = document.createElement('div');
+        tag.className = 'cal-block-gym-tag';
+        tag.textContent = '↑ Upper';
+        block.appendChild(tag);
+      }
+
+      col.appendChild(block);
+    });
+
+    inner.appendChild(col);
+  });
+
+  scroll.appendChild(inner);
+  container.appendChild(scroll);
+
+  scroll.addEventListener('scroll', function () { headerBar.scrollLeft = this.scrollLeft; });
+}
+
+document.getElementById('myBookings').addEventListener('click', e => {
+  const block = e.target.closest('.cal-class-block[data-type]');
+  if (!block) return;
+  openModal(block.dataset.type, block.querySelector('.cal-block-title')?.textContent || '');
+});
+
+function cancelBooking(bookingId) {
   const bookings = getBookings();
   const idx = bookings.findIndex(b => b.id === bookingId);
   if (idx === -1) return;
   bookings.splice(idx, 1);
   saveBookings(bookings);
-
   try { PciAuth.updateCredits(+1); } catch (e) {}
-
-  cardEl.remove();
-  const container = document.getElementById('myBookings');
-  if (!container.querySelector('.booking-card')) {
-    const empty = document.createElement('div');
-    empty.className = 'my-bookings-empty';
-    empty.textContent = "You haven't booked any classes yet.";
-    container.appendChild(empty);
-  }
-
+  renderMyBookings();
   showToast('Booking cancelled. 1 credit restored.', 'success');
 }
 
@@ -1772,6 +1969,7 @@ function rerenderViews() {
   updateDateNav(dateWindow);
   renderSchedule(dateWindow);
   renderCalendarView(dateWindow);
+  if (currentView === 'bookings') renderMyBookings();
   applyFilter();
 }
 
