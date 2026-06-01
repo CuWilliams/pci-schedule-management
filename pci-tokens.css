@@ -491,6 +491,12 @@ body.dev-mobile #authGate { min-height: 600px; }
   height: 12px;
   flex-shrink: 0;
 }
+body.dev-mobile .dev-mode-btn {
+  position: fixed;
+  top: 16px;
+  right: 24px;
+  z-index: 10000;
+}
 
 /* ── Dev Mode: topbar clean-up at 390px ─────────────────────────────────────── */
 body.dev-mobile .topbar .view-toggle,

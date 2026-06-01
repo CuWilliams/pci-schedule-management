@@ -605,7 +605,18 @@ const DEV_MODE_KEY = 'pci_dev_mobile';
 function applyDevMode(enabled) {
   document.body.classList.toggle('dev-mobile', enabled);
   const btn = document.getElementById('devModeBtn');
-  if (btn) btn.classList.toggle('active', enabled);
+  if (btn) {
+    btn.classList.toggle('active', enabled);
+    if (enabled && btn.closest('#phoneFrame')) {
+      btn._devPrevParent = btn.parentNode;
+      btn._devPrevNext = btn.nextSibling;
+      document.body.appendChild(btn);
+    } else if (!enabled && btn._devPrevParent) {
+      btn._devPrevParent.insertBefore(btn, btn._devPrevNext || null);
+      btn._devPrevParent = null;
+      btn._devPrevNext = null;
+    }
+  }
   enabled
     ? localStorage.setItem(DEV_MODE_KEY, '1')
     : localStorage.removeItem(DEV_MODE_KEY);
