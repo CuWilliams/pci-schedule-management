@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Static GitHub Pages site that manages the weekly class schedule for Power Conditioning Inc. (two locations: St. John's and Clarenville). It serves as a change-management staging layer — Ryan reviews schedule changes at the live URL before they are applied in Studio Bookings.
+Static GitHub Pages site that manages the weekly class schedule for Power Conditioning Inc. (three locations: St. John's, Clarenville, and the Ascend studio in St. John's). It serves as a change-management staging layer — Ryan reviews schedule changes at the live URL before they are applied in Studio Bookings.
 
 **Live URL:** https://CuWilliams.github.io/pci-schedule-management
 
@@ -29,9 +29,10 @@ This is a **zero-dependency static site** — no framework, no bundler, no npm. 
 
 | File | Purpose |
 |---|---|
-| `index.html` | Landing page — location selector (St. John's vs Clarenville) |
+| `index.html` | Landing page — location selector (St. John's, Clarenville, Ascend) |
 | `schedule.html` | Public schedule viewer — list + week calendar views |
 | `admin.html` | Auth-gated admin UI — full CRUD + GitHub publish |
+| `stjohns.html`, `clarenville.html`, `ascend.html` | Per-location center pages — map, About, Gallery. Identical templates differing only in name/address strings; all three share the same nav drawer |
 | `pci-tokens.css` | Shared design tokens + component CSS (edit directly and commit; not published via admin) |
 | `pci-shared.js` | Shared JS constants that mirror CSS tokens (e.g. `COLOR_HEX`) — loaded before inline scripts in schedule.html and admin.html |
 | `pci_schedule.json` | Canonical schedule data (v2.0 schema) |
@@ -41,9 +42,11 @@ This is a **zero-dependency static site** — no framework, no bundler, no npm. 
 
 ### Navigation
 
-The site uses a 3-page structure with plain `<a href>` navigation:
+The site uses plain `<a href>` navigation:
 
-- `index.html` → `schedule.html?loc=stjohns` or `schedule.html?loc=clarenville`
+- `index.html` → `schedule.html?loc=stjohns`, `?loc=clarenville`, or `?loc=ascend`
+- `index.html` → `stjohns.html`, `clarenville.html`, `ascend.html` (View Center CTA)
+- Adding a location means touching all of: `data/locations.json`, the `loc-tab` row + `_initialLocation` + `locationCategories`/`locationInstructors` + `displayTitle()` in `schedule.html`, `displayTitle()` in `instructor.html`, `suggestColor()` in `admin.html`, an `index.html` card, a new center page, and the nav drawer in every page that has one
 - `schedule.html` reads the `loc` URL param on load to pre-select the active location tab (`stjohns` default)
 - `schedule.html` → `admin.html` (Admin link in topbar)
 - `admin.html` → `schedule.html` (← Schedule back-link in topbar)
@@ -84,8 +87,9 @@ Color is derived from `location_id` + `is_online` + whether the class type is at
 |---|---|---|---|
 | stjohns | purple | green | blue |
 | clarenville | gray | orange | yellow |
+| ascend | purple | red | blue |
 
-`red` is reserved for new St. John's Athletic classes. The mapping is declared in `data/class_types.json` under `class_categories`.
+`red` is reserved for new St. John's Athletic classes — Ascend (a St. John's-area studio) uses it for all its in-studio athletic classes. There are only 7 class color tokens and all are in use, so Ascend shares the St. John's palette rather than introducing an 8th. The mapping is declared in `data/class_types.json` under `class_categories`.
 
 ### Title Display
 

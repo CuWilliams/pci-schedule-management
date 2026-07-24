@@ -163,14 +163,16 @@
       margin-bottom: 20px;
     }
 
+    /* Stacked at every width. Three side-by-side columns cramped the address
+       text, and the 600px media query can't see the dev-mode phone frame, so
+       the simulator kept rendering 3 columns at 390px. */
     .location-cards {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 20px;
     }
 
     @media (max-width: 600px) {
-      .location-cards { grid-template-columns: 1fr; }
       .hero { padding: 48px 20px 40px; }
       .logo-band img { width: 130px; }
     }
@@ -182,10 +184,9 @@
       border-radius: var(--radius-lg);
       border-left: 5px solid var(--brand);
       box-shadow: var(--shadow-sm);
-      padding: 28px 28px 24px;
+      padding: var(--sp-6);
       text-decoration: none;
       color: var(--text);
-      min-height: 200px;
       transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s;
       cursor: pointer;
       position: relative;
@@ -239,13 +240,15 @@
     .card-divider {
       height: 1px;
       background: var(--border);
-      margin: 20px 0;
+      margin: var(--sp-4) 0;
     }
 
+    /* Row, not column — the cards are wide and short now that they stack */
     .card-cta-group {
       display: flex;
-      flex-direction: column;
-      gap: var(--sp-2);
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--sp-2) var(--sp-6);
       margin-top: auto;
     }
 
@@ -324,7 +327,7 @@
   <section class="hero">
     <p class="hero-eyebrow">Power Conditioning Inc. &mdash; Performance Centers</p>
     <h1 class="hero-headline">Strength.<br><em>Movement.</em><br>Balance.</h1>
-    <p class="hero-sub">Two Performance Centers. One standard of excellence.</p>
+    <p class="hero-sub">Three locations. One standard of excellence.</p>
   </section>
 
   <section class="location-select">
@@ -369,6 +372,29 @@
               </svg>
             </a>
             <a class="card-cta" href="schedule.html?loc=clarenville">
+              View Schedule
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="location-card">
+          <p class="card-eyebrow">St. John's, NL</p>
+          <div class="card-label">516A Topsail Road</div>
+          <div class="card-sub">Ascend Studio</div>
+          <div class="card-divider"></div>
+          <div class="card-cta-group">
+            <a class="card-cta" href="ascend.html">
+              View Center
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+            <a class="card-cta" href="schedule.html?loc=ascend">
               View Schedule
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"/>

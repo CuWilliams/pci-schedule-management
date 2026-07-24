@@ -251,6 +251,8 @@ body {
   text-transform: uppercase;
   transition: color 0.15s, border-color 0.15s;
   margin-bottom: -2px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .loc-tab:hover { color: var(--gray-800); }
 .loc-tab.active { color: var(--brand); border-bottom-color: var(--brand); }

@@ -77,6 +77,15 @@
       z-index: 9;
       display: flex;
       gap: 0;
+      /* Scroll rather than wrap — the filter-bar/date-nav sticky offsets below
+         assume this strip stays a single ~38px row. */
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .location-tabs::-webkit-scrollbar { display: none; }
+
+    @media (max-width: 600px) {
+      .location-tabs .loc-tab { padding-left: var(--sp-3); padding-right: var(--sp-3); }
     }
 
     /* ── Filter bar ───────────────────────────────────────── */
@@ -596,6 +605,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
       Clarenville Center
     </a>
+    <a class="nav-drawer-item" href="ascend.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Ascend Studio
+    </a>
     <div class="nav-drawer-divider"></div>
     <a class="nav-drawer-item" href="admin.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -607,6 +620,7 @@
 <div class="location-tabs" id="locationTabs">
   <button class="loc-tab active" data-loc="stjohns">St. John's</button>
   <button class="loc-tab" data-loc="clarenville">Clarenville</button>
+  <button class="loc-tab" data-loc="ascend">Ascend</button>
 </div>
 
 <div class="filter-bar" id="filterBar">
@@ -1354,9 +1368,9 @@ function isEligibleViaUnlimited(cls, session) {
   );
 }
 
-// Pre-select location from URL param (?loc=stjohns | ?loc=clarenville)
+// Pre-select location from URL param (?loc=stjohns | ?loc=clarenville | ?loc=ascend)
 const _urlLoc = new URLSearchParams(location.search).get('loc');
-const _initialLocation = (_urlLoc === 'clarenville') ? 'clarenville' : 'stjohns';
+const _initialLocation = ['clarenville', 'ascend'].includes(_urlLoc) ? _urlLoc : 'stjohns';
 
 let classDescriptions = {};
 let instructorMap = {};
@@ -1468,7 +1482,8 @@ function formatTime(t) {
 function displayTitle(cls) {
   return cls.title
     .replace(/^St\.\s*John's\s+/i, '')
-    .replace(/^Clarenville\s+/i, '');
+    .replace(/^Clarenville\s+/i, '')
+    .replace(/^Ascend\s+/i, '');
 }
 
 function openModal(typeKey, classTitle) {
@@ -1540,8 +1555,8 @@ document.addEventListener('click', e => {
 // ── Location tabs ─────────────────────────────────────────
 
 let activeLocation = 'stjohns';
-const locationCategories  = { stjohns: new Set(), clarenville: new Set() };
-const locationInstructors = { stjohns: new Set(), clarenville: new Set() };
+const locationCategories  = { stjohns: new Set(), clarenville: new Set(), ascend: new Set() };
+const locationInstructors = { stjohns: new Set(), clarenville: new Set(), ascend: new Set() };
 
 function setLocation(loc) {
   activeLocation = loc;

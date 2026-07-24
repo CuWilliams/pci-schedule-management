@@ -1,6 +1,7 @@
 {
   "locations": [
     { "id": "stjohns",     "display_name": "St. John's",  "address": null, "photo_url": null, "google_maps_url": null },
-    { "id": "clarenville", "display_name": "Clarenville", "address": null, "photo_url": null, "google_maps_url": null }
+    { "id": "clarenville", "display_name": "Clarenville", "address": null, "photo_url": null, "google_maps_url": null },
+    { "id": "ascend",      "display_name": "Ascend",      "address": "516A Topsail Rd, St. John's, NL A1E 2C5", "photo_url": null, "google_maps_url": null }
   ]
 }
