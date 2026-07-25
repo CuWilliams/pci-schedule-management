@@ -17,7 +17,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "sun_002",
@@ -29,7 +30,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "yellow",
-          "type": "functional_hiit_online"
+          "type": "functional_hiit_online",
+          "capacity": 18
         },
         {
           "id": "sun_003",
@@ -41,7 +43,8 @@
           "instructors": ["Liam Bridger"],
           "instructor_ids": ["liam_bridger"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "sun_004",
@@ -53,7 +56,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "orange",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 16
         },
         {
           "id": "sun_005",
@@ -65,7 +69,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "blue",
-          "type": "athletic_online"
+          "type": "athletic_online",
+          "capacity": 18
         }
       ]
     },
@@ -82,7 +87,8 @@
           "instructors": ["Ryan Power", "Natasha Cobb"],
           "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "mon_002",
@@ -94,7 +100,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "mon_003",
@@ -106,7 +113,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "mon_004",
@@ -118,7 +126,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "pro"
+          "type": "pro",
+          "capacity": 18
         },
         {
           "id": "mon_017",
@@ -130,7 +139,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 10
         },
         {
           "id": "mon_005",
@@ -142,7 +152,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_006",
@@ -154,7 +165,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_018",
@@ -166,7 +178,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_007",
@@ -178,7 +191,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_008",
@@ -190,7 +204,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "blue",
-          "type": "athletic_online"
+          "type": "athletic_online",
+          "capacity": 18
         },
         {
           "id": "mon_009",
@@ -202,7 +217,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_010",
@@ -215,7 +231,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_011",
@@ -227,7 +244,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "blue",
-          "type": "athletic_online"
+          "type": "athletic_online",
+          "capacity": 20
         },
         {
           "id": "mon_012",
@@ -239,7 +257,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_013",
@@ -251,7 +270,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "mon_014",
@@ -263,7 +283,8 @@
           "instructors": ["Rhonda Parsons"],
           "instructor_ids": ["rhonda_parsons"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "mon_015",
@@ -275,7 +296,8 @@
           "instructors": ["Rhonda Parsons"],
           "instructor_ids": ["rhonda_parsons"],
           "color": "yellow",
-          "type": "functional_hiit_online"
+          "type": "functional_hiit_online",
+          "capacity": 18
         },
         {
           "id": "mon_016",
@@ -287,7 +309,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         }
       ]
     },
@@ -304,7 +327,8 @@
           "instructors": ["Ryan Power", "Natasha Cobb"],
           "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "tue_002",
@@ -316,7 +340,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "tue_003",
@@ -328,7 +353,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "yellow",
-          "type": "functional_hiit_online"
+          "type": "functional_hiit_online",
+          "capacity": 18
         },
         {
           "id": "tue_004",
@@ -340,7 +366,8 @@
           "instructors": ["Ryan Power", "Rhonda Parsons"],
           "instructor_ids": ["ryan_power", "rhonda_parsons"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "tue_016",
@@ -352,7 +379,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_017",
@@ -364,7 +392,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_018",
@@ -376,7 +405,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_005",
@@ -388,7 +418,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_006",
@@ -400,7 +431,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_007",
@@ -412,7 +444,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_008",
@@ -425,7 +458,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_009",
@@ -437,7 +471,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "tue_010",
@@ -449,7 +484,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "orange",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 16
         },
         {
           "id": "tue_011",
@@ -461,7 +497,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "orange",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 16
         },
         {
           "id": "tue_012",
@@ -473,7 +510,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "tue_013",
@@ -485,7 +523,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "gray",
-          "type": "flexibility_mobility"
+          "type": "flexibility_mobility",
+          "capacity": 18
         },
         {
           "id": "tue_014",
@@ -497,7 +536,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "yellow",
-          "type": "flexibility_mobility_online"
+          "type": "flexibility_mobility_online",
+          "capacity": 18
         },
         {
           "id": "tue_015",
@@ -509,7 +549,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 24
         }
       ]
     },
@@ -526,7 +567,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "wed_002",
@@ -538,7 +580,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "wed_003",
@@ -550,7 +593,8 @@
           "instructors": ["Rhonda Parsons"],
           "instructor_ids": ["rhonda_parsons"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "wed_004",
@@ -562,7 +606,8 @@
           "instructors": ["Rhonda Parsons"],
           "instructor_ids": ["rhonda_parsons"],
           "color": "yellow",
-          "type": "functional_hiit_online"
+          "type": "functional_hiit_online",
+          "capacity": 18
         },
         {
           "id": "wed_005",
@@ -574,7 +619,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "pro"
+          "type": "pro",
+          "capacity": 18
         },
         {
           "id": "wed_006",
@@ -586,7 +632,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "wed_007",
@@ -598,7 +645,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "wed_015",
@@ -610,7 +658,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "wed_008",
@@ -622,7 +671,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "blue",
-          "type": "athletic_online"
+          "type": "athletic_online",
+          "capacity": 18
         },
         {
           "id": "wed_009",
@@ -634,7 +684,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "wed_010",
@@ -646,7 +697,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "blue",
-          "type": "athletic_online"
+          "type": "athletic_online",
+          "capacity": 18
         },
         {
           "id": "wed_011",
@@ -658,7 +710,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "wed_012",
@@ -670,7 +723,8 @@
           "instructors": ["Greg Pittman"],
           "instructor_ids": ["greg_pittman"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "wed_013",
@@ -682,7 +736,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "wed_014",
@@ -694,7 +749,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         }
       ]
     },
@@ -711,7 +767,8 @@
           "instructors": ["Ryan Power", "Natasha Cobb"],
           "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "thu_002",
@@ -723,7 +780,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "thu_003",
@@ -735,7 +793,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "pro"
+          "type": "pro",
+          "capacity": 18
         },
         {
           "id": "thu_014",
@@ -747,7 +806,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_015",
@@ -759,7 +819,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_017",
@@ -771,7 +832,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_016",
@@ -783,7 +845,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_004",
@@ -795,7 +858,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_005",
@@ -807,7 +871,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_006",
@@ -819,7 +884,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "orange",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 16
         },
         {
           "id": "thu_007",
@@ -831,7 +897,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_008",
@@ -843,7 +910,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "orange",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 16
         },
         {
           "id": "thu_009",
@@ -855,7 +923,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "thu_010",
@@ -867,7 +936,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "blue",
-          "type": "athletic_online"
+          "type": "athletic_online",
+          "capacity": 18
         },
         {
           "id": "thu_011",
@@ -879,7 +949,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "thu_012",
@@ -891,7 +962,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "gray",
-          "type": "cardio_core"
+          "type": "cardio_core",
+          "capacity": 18
         },
         {
           "id": "thu_013",
@@ -903,7 +975,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "yellow",
-          "type": "cardio_core_online"
+          "type": "cardio_core_online",
+          "capacity": 18
         }
       ]
     },
@@ -920,7 +993,8 @@
           "instructors": ["Ryan Power", "Natasha Cobb"],
           "instructor_ids": ["ryan_power", "natasha_cobb"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "fri_002",
@@ -932,7 +1006,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "fri_003",
@@ -944,7 +1019,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         },
         {
           "id": "fri_004",
@@ -956,7 +1032,8 @@
           "instructors": ["Rhonda Parsons"],
           "instructor_ids": ["rhonda_parsons"],
           "color": "gray",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 18
         },
         {
           "id": "fri_005",
@@ -968,7 +1045,8 @@
           "instructors": ["Rhonda Parsons"],
           "instructor_ids": ["rhonda_parsons"],
           "color": "yellow",
-          "type": "functional_hiit_online"
+          "type": "functional_hiit_online",
+          "capacity": 18
         },
         {
           "id": "fri_006",
@@ -980,7 +1058,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "pro"
+          "type": "pro",
+          "capacity": 18
         },
         {
           "id": "fri_011",
@@ -992,7 +1071,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 10
         },
         {
           "id": "fri_012",
@@ -1004,7 +1084,8 @@
           "instructors": ["Jon Reid"],
           "instructor_ids": ["jon_reid"],
           "color": "red",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 10
         },
         {
           "id": "fri_007",
@@ -1016,7 +1097,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "fri_008",
@@ -1028,7 +1110,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "green",
-          "type": "athletic"
+          "type": "athletic",
+          "capacity": 18
         },
         {
           "id": "fri_009",
@@ -1040,7 +1123,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "blue",
-          "type": "athletic_online"
+          "type": "athletic_online",
+          "capacity": 18
         },
         {
           "id": "fri_010",
@@ -1052,7 +1136,8 @@
           "instructors": ["Ryan Power"],
           "instructor_ids": ["ryan_power"],
           "color": "purple",
-          "type": "functional_hiit"
+          "type": "functional_hiit",
+          "capacity": 24
         }
       ]
     },

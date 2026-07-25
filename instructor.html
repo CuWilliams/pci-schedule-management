@@ -667,7 +667,9 @@ function renderSchedule(dateWindow) {
         const bookedCount = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled').length;
         const countEl = document.createElement('div');
         countEl.className = 'class-booked-count';
-        countEl.textContent = bookedCount === 1 ? '1 booked' : bookedCount + ' booked';
+        countEl.textContent = cls.capacity != null
+          ? bookedCount + '/' + cls.capacity + ' booked'
+          : (bookedCount === 1 ? '1 booked' : bookedCount + ' booked');
 
         body.appendChild(time);
         body.appendChild(title);
@@ -894,7 +896,8 @@ function renderRollCallSection(cls) {
 
   const bookings = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled');
   const attended = bookings.filter(b => b.attended === true).length;
-  summaryEl.textContent = bookings.length + ' booked' + (attended ? ' · ' + attended + ' attended' : '');
+  const bookedLabel = cls.capacity != null ? bookings.length + '/' + cls.capacity : bookings.length;
+  summaryEl.textContent = bookedLabel + ' booked' + (attended ? ' · ' + attended + ' attended' : '');
 
   const unlocked = isRollCallUnlocked(cls);
   const canManage = canManageRollCall(cls);

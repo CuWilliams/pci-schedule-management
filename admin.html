@@ -666,6 +666,13 @@
 
       <div class="form-row">
         <div class="form-group">
+          <label class="form-label" for="fieldCapacity">Capacity</label>
+          <input type="number" class="form-control" id="fieldCapacity" min="1" step="1" placeholder="e.g. 18">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
           <label class="form-label" for="fieldLocation">Location</label>
           <select class="form-control" id="fieldLocation"></select>
         </div>
@@ -1093,7 +1100,7 @@ function renderSchedule() {
           <div class="class-card-info">
             <div class="class-card-time">${formatTime(cls.time_start)} – ${formatTime(cls.time_end)}</div>
             <div class="class-card-title">${cls.title}${cls.sub_location === 'upper_gym' ? ' <span style="font-size:10px;font-weight:700;color:#888;letter-spacing:0.04em">↑ UPPER</span>' : ''}</div>
-            <div class="class-card-meta">${resolveInstructorNames(cls.instructor_ids)}</div>
+            <div class="class-card-meta">${resolveInstructorNames(cls.instructor_ids)} · Cap ${cls.capacity}</div>
           </div>
           <div class="class-card-actions">
             <button class="btn-icon" title="Edit" data-action="edit" data-id="${cls.id}" data-day="${dayIndex}">&#9998;</button>
@@ -1187,6 +1194,7 @@ function openClassModal(mode, dayIndex, classId) {
   document.getElementById('fieldDay').value         = String(dayIndex);
   document.getElementById('fieldTimeStart').value   = cls?.time_start || '09:00';
   document.getElementById('fieldTimeEnd').value     = cls?.time_end   || '10:00';
+  document.getElementById('fieldCapacity').value    = cls?.capacity ?? '';
   document.getElementById('fieldLocation').value    = cls?.location_id || activeAdminLocation || state.locations[0]?.id || '';
   document.getElementById('fieldOnline').checked    = cls?.is_online   || false;
   document.getElementById('fieldUpperGym').checked  = cls?.sub_location === 'upper_gym';
@@ -1238,6 +1246,9 @@ function saveClass() {
   const title = document.getElementById('fieldTitle').value.trim();
   if (!title) { alert('Class title is required.'); return; }
 
+  const capacity = parseInt(document.getElementById('fieldCapacity').value, 10);
+  if (!Number.isInteger(capacity) || capacity < 1) { alert('Capacity must be a positive whole number.'); return; }
+
   const newDayIndex    = parseInt(document.getElementById('fieldDay').value, 10);
   const locationId     = document.getElementById('fieldLocation').value;
   const isOnline       = document.getElementById('fieldOnline').checked;
@@ -1261,7 +1272,8 @@ function saveClass() {
     instructors:    instructorNames,
     instructor_ids: instructorIds,
     color,
-    type:           typeId
+    type:           typeId,
+    capacity
   };
 
   if (mode === 'edit') {

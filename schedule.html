@@ -167,6 +167,14 @@
       font-style: italic;
     }
 
+    .spots-left {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 4px;
+    }
+    .spots-left--low { color: var(--warn); font-weight: 600; }
+
     footer {
       text-align: center;
       font-size: 11px;
@@ -806,6 +814,10 @@ function getBookings() {
 function saveBookings(arr) {
   localStorage.setItem(BOOKINGS_KEY, JSON.stringify(arr));
 }
+function spotsRemaining(cls) {
+  const booked = getBookings().filter(b => b.class_id === cls.id && b.status === 'booked').length;
+  return cls.capacity - booked;
+}
 
 // ── Booking CTA builder ──────────────────────────────────────────────────────
 function buildBookingCTA(cls) {
@@ -835,41 +847,56 @@ function buildBookingCTA(cls) {
       btn.textContent = 'Booked';
       wrapper.appendChild(btn);
     } else {
-      const credits = session.credits != null ? session.credits : 0;
-      const unlimitedOk = isEligibleViaUnlimited(cls, session);
-      const creditsOk   = isEligibleViaCredits(cls, session);
-
-      if (unlimitedOk) {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-primary btn-sm book-btn';
-        btn.dataset.classId    = cls.id;
-        btn.dataset.classTitle = displayTitle(cls);
-        btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
-        btn.dataset.pipeline   = 'unlimited';
-        btn.textContent = 'Book';
-        wrapper.appendChild(btn);
-      } else if (credits > 0 && creditsOk) {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-primary btn-sm book-btn';
-        btn.dataset.classId    = cls.id;
-        btn.dataset.classTitle = displayTitle(cls);
-        btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
-        btn.dataset.pipeline   = 'credits';
-        btn.textContent = 'Book';
-        wrapper.appendChild(btn);
-      } else if (credits > 0 && !creditsOk) {
+      const remaining = spotsRemaining(cls);
+      if (remaining <= 0) {
         const btn = document.createElement('button');
         btn.className = 'btn btn-outline btn-sm';
         btn.disabled = true;
-        btn.title = 'Your package doesn\'t cover this class type';
-        btn.textContent = 'Not Covered';
+        btn.title = 'This class is full';
+        btn.textContent = 'Full';
         wrapper.appendChild(btn);
       } else {
-        const a = document.createElement('a');
-        a.href = 'buy-credits.html';
-        a.className = 'btn btn-outline btn-sm';
-        a.textContent = 'Buy Credits';
-        wrapper.appendChild(a);
+        const credits = session.credits != null ? session.credits : 0;
+        const unlimitedOk = isEligibleViaUnlimited(cls, session);
+        const creditsOk   = isEligibleViaCredits(cls, session);
+
+        if (unlimitedOk) {
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-primary btn-sm book-btn';
+          btn.dataset.classId    = cls.id;
+          btn.dataset.classTitle = displayTitle(cls);
+          btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+          btn.dataset.pipeline   = 'unlimited';
+          btn.textContent = 'Book';
+          wrapper.appendChild(btn);
+        } else if (credits > 0 && creditsOk) {
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-primary btn-sm book-btn';
+          btn.dataset.classId    = cls.id;
+          btn.dataset.classTitle = displayTitle(cls);
+          btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
+          btn.dataset.pipeline   = 'credits';
+          btn.textContent = 'Book';
+          wrapper.appendChild(btn);
+        } else if (credits > 0 && !creditsOk) {
+          const btn = document.createElement('button');
+          btn.className = 'btn btn-outline btn-sm';
+          btn.disabled = true;
+          btn.title = 'Your package doesn\'t cover this class type';
+          btn.textContent = 'Not Covered';
+          wrapper.appendChild(btn);
+        } else {
+          const a = document.createElement('a');
+          a.href = 'buy-credits.html';
+          a.className = 'btn btn-outline btn-sm';
+          a.textContent = 'Buy Credits';
+          wrapper.appendChild(a);
+        }
+
+        const spotsLabel = document.createElement('div');
+        spotsLabel.className = 'spots-left' + (remaining <= 3 ? ' spots-left--low' : '');
+        spotsLabel.textContent = remaining + (remaining === 1 ? ' spot left' : ' spots left');
+        wrapper.appendChild(spotsLabel);
       }
     }
   }
@@ -955,6 +982,13 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
 
   const pipeline = _pendingBooking.pipeline || 'credits';
   const cls = _allClasses.find(c => c.id === _pendingBooking.classId);
+
+  // Re-check capacity as guard before committing
+  if (cls && spotsRemaining(cls) <= 0) {
+    showToast('This class just filled up.', 'error');
+    closeBookModal();
+    return;
+  }
 
   // Re-check eligibility as guard before committing
   if (pipeline === 'unlimited') {
