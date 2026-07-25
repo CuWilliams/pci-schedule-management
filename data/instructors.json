@@ -1,11 +1,11 @@
 {
   "instructors": [
-    { "id": "ryan_power",       "display_name": "Ryan Power",       "color": "emerald", "bio": null, "photo_url": null },
-    { "id": "natasha_cobb",     "display_name": "Natasha Cobb",     "color": "pink",    "bio": null, "photo_url": null },
-    { "id": "brendan_mccarthy", "display_name": "Brendan McCarthy", "color": "indigo",  "bio": null, "photo_url": null },
-    { "id": "jon_reid",         "display_name": "Jon Reid",         "color": "amber",   "bio": null, "photo_url": null },
-    { "id": "rhonda_parsons",   "display_name": "Rhonda Parsons",   "color": "teal",    "bio": null, "photo_url": null },
-    { "id": "greg_pittman",     "display_name": "Greg Pittman",     "color": "violet",  "bio": null, "photo_url": null },
-    { "id": "liam_bridger",     "display_name": "Liam Bridger",     "color": "cyan",    "bio": null, "photo_url": null }
+    { "id": "ryan_power",       "display_name": "Ryan Power",       "color": "emerald", "active": true,  "bio": null, "photo_url": null },
+    { "id": "natasha_cobb",     "display_name": "Natasha Cobb",     "color": "pink",    "active": true,  "bio": null, "photo_url": null },
+    { "id": "brendan_mccarthy", "display_name": "Brendan McCarthy", "color": "indigo",  "active": false, "bio": null, "photo_url": null },
+    { "id": "jon_reid",         "display_name": "Jon Reid",         "color": "amber",   "active": true,  "bio": null, "photo_url": null },
+    { "id": "rhonda_parsons",   "display_name": "Rhonda Parsons",   "color": "teal",    "active": true,  "bio": null, "photo_url": null },
+    { "id": "greg_pittman",     "display_name": "Greg Pittman",     "color": "violet",  "active": true,  "bio": null, "photo_url": null },
+    { "id": "liam_bridger",     "display_name": "Liam Bridger",     "color": "cyan",    "active": true,  "bio": null, "photo_url": null }
   ]
 }

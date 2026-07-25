@@ -247,6 +247,8 @@
     .instructor-name { font-weight: 600; font-size: 14px; }
     .instructor-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
+    .instructor-row--inactive { opacity: 0.6; }
+
     .phase2-badge {
       font-size: 10px;
       background: var(--gray-100);
@@ -254,6 +256,23 @@
       border-radius: var(--radius-sm);
       padding: 2px 6px;
       font-weight: 600;
+    }
+
+    .inactive-badge {
+      font-size: 10px;
+      background: var(--warn);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      padding: 2px 6px;
+      font-weight: 600;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .instructor-check-row .inactive-tag {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 11px;
     }
 
     .add-instructor-form {
@@ -1117,7 +1136,7 @@ function confirmDeleteClass(dayIndex, classId) {
 }
 
 // ── Class Editor Modal ────────────────────────────────────────────────────────
-function buildClassModalStatics() {
+function buildClassModalStatics(assignedInstructorIds = []) {
   // Location options
   document.getElementById('fieldLocation').innerHTML =
     state.locations.map(l => `<option value="${l.id}">${l.display_name}</option>`).join('');
@@ -1135,19 +1154,21 @@ function buildClassModalStatics() {
     </label>`
   ).join('');
 
-  // Instructor checkboxes
+  // Instructor checkboxes — active instructors, plus anyone already assigned
+  // to this class even if since marked inactive (so history isn't silently dropped).
   document.getElementById('fieldInstructors').innerHTML =
-    state.instructors.map(i => `
-      <label class="instructor-check-row">
-        <input type="checkbox" name="classInstructor" value="${i.id}">
-        ${i.display_name}
-      </label>`
-    ).join('');
+    state.instructors
+      .filter(i => i.active !== false || assignedInstructorIds.includes(i.id))
+      .map(i => `
+        <label class="instructor-check-row">
+          <input type="checkbox" name="classInstructor" value="${i.id}">
+          ${i.display_name}${i.active === false ? ' <span class="inactive-tag">(inactive)</span>' : ''}
+        </label>`
+      ).join('');
 }
 
 function openClassModal(mode, dayIndex, classId) {
   classEditCtx = { mode, dayIndex, origDayIndex: dayIndex, classId };
-  buildClassModalStatics();
 
   let cls = null;
   if (mode === 'edit') {
@@ -1159,6 +1180,8 @@ function openClassModal(mode, dayIndex, classId) {
   } else {
     document.getElementById('classModalTitle').textContent = 'Add Class';
   }
+
+  buildClassModalStatics(cls?.instructor_ids || []);
 
   document.getElementById('fieldTitle').value       = cls?.title || '';
   document.getElementById('fieldDay').value         = String(dayIndex);
@@ -1264,12 +1287,14 @@ function renderInstructors() {
     const refCount = classesRefCount(inst.id);
     const initials = inst.display_name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
 
+    const isActive = inst.active !== false;
+
     const row = document.createElement('div');
-    row.className = 'instructor-row';
+    row.className = 'instructor-row' + (isActive ? '' : ' instructor-row--inactive');
     row.innerHTML = `
       <div class="instructor-avatar">${initials}</div>
       <div style="flex:1;min-width:0">
-        <div class="instructor-name">${inst.display_name}</div>
+        <div class="instructor-name">${inst.display_name}${isActive ? '' : ' <span class="inactive-badge">Inactive</span>'}</div>
         <div class="instructor-meta">
           ${refCount} class${refCount !== 1 ? 'es' : ''}
           &ensp;<span class="phase2-badge">Bio: Phase 2</span>
@@ -1277,6 +1302,8 @@ function renderInstructors() {
         </div>
       </div>
       <div style="display:flex;gap:4px;flex-shrink:0">
+        <button class="btn-icon" data-inst-action="toggle" data-inst-id="${inst.id}"
+          title="${isActive ? 'Mark inactive (e.g. on a work term, no longer teaching)' : 'Reactivate'}">${isActive ? '&#9211;' : '&#9679;'}</button>
         <button class="btn-icon" data-inst-action="edit" data-inst-id="${inst.id}" title="Edit name">&#9998;</button>
         <button class="btn-icon danger" data-inst-action="delete" data-inst-id="${inst.id}"
           ${refCount > 0 ? 'disabled title="Cannot delete — instructor has active classes"' : 'title="Delete"'}>&#x1F5D1;</button>
@@ -1326,7 +1353,7 @@ function saveInstructor() {
     if (state.instructors.find(i => i.id === newId)) {
       alert('An instructor with a similar name already exists.'); return;
     }
-    state.instructors.push({ id: newId, display_name: name, bio: null, photo_url: null });
+    state.instructors.push({ id: newId, display_name: name, active: true, bio: null, photo_url: null });
   } else {
     const inst = state.instructors.find(i => i.id === id);
     if (inst) {
@@ -1346,6 +1373,15 @@ function saveInstructor() {
   document.getElementById('newInstructorName').value = '';
   renderInstructors();
   showToast(mode === 'add' ? 'Instructor added.' : 'Instructor updated.');
+}
+
+function toggleInstructorActive(id) {
+  const inst = state.instructors.find(i => i.id === id);
+  if (!inst) return;
+  inst.active = inst.active === false ? true : false;
+  markDirty(true);
+  renderInstructors();
+  showToast(inst.active ? `${inst.display_name} reactivated.` : `${inst.display_name} marked inactive.`);
 }
 
 function confirmDeleteInstructor(id) {
@@ -2011,6 +2047,7 @@ document.getElementById('tab-instructors').addEventListener('click', e => {
   const id     = btn.dataset.instId;
   if (action === 'edit')   openInstructorModal('edit', id);
   if (action === 'delete') confirmDeleteInstructor(id);
+  if (action === 'toggle') toggleInstructorActive(id);
 });
 
 document.getElementById('tab-instructors').addEventListener('keydown', e => {
