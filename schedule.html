@@ -199,6 +199,14 @@
       letter-spacing: 0.02em;
     }
 
+    .team-cta-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--brand);
+      padding: 4px 8px;
+      letter-spacing: 0.02em;
+    }
+
     /* ── Modal ────────────────────────────────────────────── */
     .modal-header {
       display: flex;
@@ -824,6 +832,17 @@ function buildBookingCTA(cls) {
   const session = PciAuth.getSession();
   const wrapper = document.createElement('div');
   wrapper.className = 'class-actions';
+
+  // Team-booked slots (e.g. a sports team's block reservation) aren't open to individual
+  // booking — but an instructor of record still gets the Roll Call affordance below.
+  const isOwnInstructor = session && session.role === 'instructor' &&
+    (cls.instructor_ids || []).includes(session.instructorId);
+  if (cls.booking_mode === 'team' && !isOwnInstructor) {
+    const label = document.createElement('div');
+    label.className = 'team-cta-label';
+    label.textContent = 'Team Booking' + (cls.team_name ? ' — ' + cls.team_name : '');
+    return label;
+  }
 
   if (!session) {
     const a = document.createElement('a');

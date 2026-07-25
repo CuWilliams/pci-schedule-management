@@ -104,6 +104,24 @@
     .rollcall-footer { padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--border); }
     .late-badge { font-size: 10px; font-weight: 700; color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); border-radius: var(--radius-sm); padding: 1px 5px; letter-spacing: 0.04em; }
 
+    /* ── Capacity dots (Tier 1 at-a-glance indicator) ──────────
+       8px/3px are new geometry primitives for dot density, not
+       spacing-token values — deliberate token-system exception. */
+    .capacity-dots { display:flex; flex-wrap:wrap; gap:3px; align-items:center; margin-top:3px; }
+    .capacity-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .capacity-dot--filled { background: var(--brand); }
+    .capacity-dot--open   { background: transparent; border: 1.5px solid var(--border); }
+    .capacity-dot--over   { background: var(--danger); }
+    .capacity-dot-overflow-label { font-size:10px; font-weight:700; color:var(--danger); margin-left:2px; }
+
+    /* ── Team booking badge + roll-call panel ──────────────────── */
+    .class-team-badge { font-size:11px; font-weight:600; color:var(--brand); margin-top:3px; }
+    .team-headcount-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .team-headcount-value { font-size:20px; font-weight:700; color:var(--text); min-width:28px; text-align:center; }
+    .team-headcount-label { font-size:11px; color:var(--muted); }
+    .team-invoice-preview { font-size:12px; color:var(--gray-700); background:var(--gray-050); border-radius:var(--radius-md); padding:var(--sp-3); margin-bottom:10px; line-height:1.6; }
+    .team-invoice-status { font-size:11px; color:var(--success); margin-top:8px; }
+
     /* ── Add Attendee modal ─────────────────────────────────── */
     .attendee-search { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font-size: 13px; margin-bottom: 10px; box-sizing: border-box; }
     .attendee-search:focus { outline: none; border-color: var(--accent); }
@@ -159,6 +177,17 @@
       <div id="rollcallAttendees"></div>
       <div class="rollcall-footer" id="rollcallFooter" hidden>
         <button class="btn btn-outline btn-sm" id="addLateBtn">+ Add Late Attendee</button>
+      </div>
+      <div class="rollcall-team-panel" id="rollcallTeamPanel" hidden>
+        <div class="team-headcount-row">
+          <button class="btn btn-outline btn-sm" id="headcountMinus" aria-label="Decrease headcount">−</button>
+          <span class="team-headcount-value" id="headcountValue">0</span>
+          <button class="btn btn-outline btn-sm" id="headcountPlus" aria-label="Increase headcount">+</button>
+          <span class="team-headcount-label">attended</span>
+        </div>
+        <div class="team-invoice-preview" id="teamInvoicePreview" hidden></div>
+        <button class="btn btn-primary btn-sm" id="confirmInvoiceBtn">Generate Invoice Draft</button>
+        <div class="team-invoice-status" id="teamInvoiceStatus" hidden></div>
       </div>
     </div>
   </div>
@@ -319,6 +348,24 @@ function saveBookings(arr) {
   localStorage.setItem(BOOKINGS_KEY, JSON.stringify(arr));
 }
 
+// ── Invoices store (team-booking headcount drafts) ──────────────────────────────
+function getInvoices() {
+  try { return JSON.parse(localStorage.getItem(INVOICES_KEY)) || []; } catch { return []; }
+}
+function saveInvoices(arr) {
+  localStorage.setItem(INVOICES_KEY, JSON.stringify(arr));
+}
+function invoiceIdFor(classId, dateStr) {
+  return 'inv_' + classId + '_' + dateStr;
+}
+function upsertInvoice(invoice) {
+  const invoices = getInvoices();
+  const idx = invoices.findIndex(i => i.id === invoice.id);
+  if (idx === -1) invoices.push(invoice);
+  else invoices[idx] = invoice;
+  saveInvoices(invoices);
+}
+
 // ── Constants / state ──────────────────────────────────────────────────────────
 const DAY_NAMES_FULL  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const DAY_ABBREVS     = { Sunday:'Sun', Monday:'Mon', Tuesday:'Tue', Wednesday:'Wed', Thursday:'Thu', Friday:'Fri', Saturday:'Sat' };
@@ -353,7 +400,9 @@ const _params       = new URLSearchParams(location.search);
 const _focusClassId = _params.get('classId') || null;
 
 // Currently open class in detail modal
-let _detailClassId  = null;
+let _detailClassId   = null;
+let _detailClassDate = null;   // yyyy-mm-dd occurrence date, needed for per-date invoice drafts
+let _teamHeadcount   = 0;      // in-progress headcount tally for the open team-mode class
 
 // ── Date helpers ───────────────────────────────────────────────────────────────
 function todayMidnight() {
@@ -370,6 +419,13 @@ function dateAddDays(base, n) {
 
 function formatShortDate(d) {
   return MONTH_ABBREVS[d.getMonth()] + ' ' + d.getDate();
+}
+
+function toISODateLocal(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 function buildDateWindow(startDate) {
@@ -411,10 +467,7 @@ function initViewDate() {
 
 function saveViewDate() {
   try {
-    const y = _viewStartDate.getFullYear();
-    const m = String(_viewStartDate.getMonth() + 1).padStart(2, '0');
-    const day = String(_viewStartDate.getDate()).padStart(2, '0');
-    sessionStorage.setItem(WEEK_DATE_KEY, `${y}-${m}-${day}`);
+    sessionStorage.setItem(WEEK_DATE_KEY, toISODateLocal(_viewStartDate));
   } catch(e) {}
 }
 
@@ -461,6 +514,67 @@ function getCategoryForType(type) {
 
 function getClassById(classId) {
   return _allClasses.find(c => c.id === classId) || null;
+}
+
+// Fallback for deep-links (schedule.html → ?classId=) with no occurrence date in context —
+// finds the next calendar date matching the class's recurring day-of-week.
+function resolveNextOccurrenceDate(cls) {
+  const dayName = Object.keys(_scheduleByDay).find(dn =>
+    (_scheduleByDay[dn].classes || []).some(c => c.id === cls.id));
+  const today = todayMidnight();
+  if (!dayName) return toISODateLocal(today);
+  const targetDow = DAY_NAMES_FULL.indexOf(dayName);
+  const diff = (targetDow - today.getDay() + 7) % 7;
+  const d = new Date(today);
+  d.setDate(d.getDate() + diff);
+  return toISODateLocal(d);
+}
+
+// ── Capacity indicator (Tier 1 at-a-glance) ──────────────────────────────────────
+const MAX_DOTS_CAPACITY = 24; // beyond this, dots get unreadable — fall back to text
+
+function renderCapacityIndicator(bookedCount, capacity) {
+  if (capacity == null || capacity > MAX_DOTS_CAPACITY) {
+    const el = document.createElement('div');
+    el.className = 'class-booked-count';
+    el.textContent = capacity != null
+      ? bookedCount + '/' + capacity + ' booked'
+      : (bookedCount === 1 ? '1 booked' : bookedCount + ' booked');
+    return el;
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'capacity-dots';
+  const filled = Math.min(bookedCount, capacity);
+  const over   = Math.max(0, bookedCount - capacity);
+  for (let i = 0; i < filled; i++) {
+    const d = document.createElement('span');
+    d.className = 'capacity-dot capacity-dot--filled';
+    wrap.appendChild(d);
+  }
+  for (let i = 0; i < capacity - filled; i++) {
+    const d = document.createElement('span');
+    d.className = 'capacity-dot capacity-dot--open';
+    wrap.appendChild(d);
+  }
+  if (over > 0) {
+    for (let i = 0; i < over; i++) {
+      const d = document.createElement('span');
+      d.className = 'capacity-dot capacity-dot--over';
+      wrap.appendChild(d);
+    }
+    const label = document.createElement('span');
+    label.className = 'capacity-dot-overflow-label';
+    label.textContent = '+' + over + ' over';
+    wrap.appendChild(label);
+  }
+  return wrap;
+}
+
+function renderTeamBadge(cls) {
+  const el = document.createElement('div');
+  el.className = 'class-team-badge';
+  el.textContent = 'Team: ' + (cls.team_name || 'Unnamed');
+  return el;
 }
 
 // ── Access control ─────────────────────────────────────────────────────────────
@@ -642,6 +756,7 @@ function renderSchedule(dateWindow) {
         item.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
         item.dataset.instructorIds = (cls.instructor_ids || []).join(',');
         item.dataset.classId       = cls.id;
+        item.dataset.classDate     = toISODateLocal(entry.date);
         item.dataset.dayName       = entry.dayName;
         if (cls.type) item.dataset.type = cls.type;
 
@@ -664,17 +779,15 @@ function renderSchedule(dateWindow) {
         const names = (cls.instructor_ids || []).map(id => instructorMap[id] || id);
         instructor.textContent = 'With ' + (names.join(', ') || '—');
 
-        const bookedCount = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled').length;
-        const countEl = document.createElement('div');
-        countEl.className = 'class-booked-count';
-        countEl.textContent = cls.capacity != null
-          ? bookedCount + '/' + cls.capacity + ' booked'
-          : (bookedCount === 1 ? '1 booked' : bookedCount + ' booked');
-
         body.appendChild(time);
         body.appendChild(title);
         body.appendChild(instructor);
-        body.appendChild(countEl);
+        if (cls.booking_mode === 'team') {
+          body.appendChild(renderTeamBadge(cls));
+        } else {
+          const bookedCount = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled').length;
+          body.appendChild(renderCapacityIndicator(bookedCount, cls.capacity));
+        }
         item.appendChild(bar);
         item.appendChild(body);
 
@@ -790,6 +903,7 @@ function renderCalendarView(dateWindow) {
       block.dataset.primaryInstructor = (cls.instructor_ids || [])[0] || '';
       block.dataset.instructorIds    = (cls.instructor_ids || []).join(',');
       block.dataset.classId          = cls.id;
+      block.dataset.classDate        = toISODateLocal(entry.date);
       if (cls.type) block.dataset.type = cls.type;
       block.style.top    = `${topPx}px`;
       block.style.height = `${heightPx}px`;
@@ -808,10 +922,14 @@ function renderCalendarView(dateWindow) {
       titleEl.className = 'cal-block-title';
       titleEl.textContent = displayTitle(cls);
 
-      const calCount = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled').length;
       const calCountEl = document.createElement('div');
       calCountEl.className = 'cal-block-count';
-      calCountEl.textContent = calCount + ' booked';
+      if (cls.booking_mode === 'team') {
+        calCountEl.textContent = 'Team';
+      } else {
+        const calCount = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled').length;
+        calCountEl.textContent = calCount + ' booked';
+      }
 
       block.appendChild(timeEl);
       block.appendChild(titleEl);
@@ -832,10 +950,16 @@ function renderCalendarView(dateWindow) {
 }
 
 // ── Class detail modal ─────────────────────────────────────────────────────────
-function openDetailModal(classId) {
+function openDetailModal(classId, dateStr) {
   const cls = getClassById(classId);
   if (!cls) return;
-  _detailClassId = classId;
+  _detailClassId   = classId;
+  _detailClassDate = dateStr || resolveNextOccurrenceDate(cls);
+
+  if (cls.booking_mode === 'team') {
+    const existing = getInvoices().find(i => i.id === invoiceIdFor(cls.id, _detailClassDate));
+    _teamHeadcount = existing ? existing.headcount : 0;
+  }
 
   // Populate header
   document.getElementById('detailTitle').textContent = displayTitle(cls);
@@ -859,7 +983,7 @@ function openDetailModal(classId) {
   }
 
   // Roll call section
-  renderRollCallSection(cls);
+  renderRollCallSection(cls, _detailClassDate);
 
   document.getElementById('classDetailModal').removeAttribute('hidden');
   document.body.classList.add('modal-open');
@@ -871,11 +995,12 @@ function openDetailModal(classId) {
 function closeDetailModal() {
   document.getElementById('classDetailModal').setAttribute('hidden', '');
   document.body.classList.remove('modal-open');
-  _detailClassId = null;
+  _detailClassId   = null;
+  _detailClassDate = null;
   if (_countdownTimer) { clearInterval(_countdownTimer); _countdownTimer = null; }
 }
 
-function renderRollCallSection(cls) {
+function renderRollCallSection(cls, dateStr) {
   const section     = document.getElementById('rollcallSection');
   const summaryEl   = document.getElementById('rollcallSummary');
   const lockBar     = document.getElementById('rollcallLockBar');
@@ -883,6 +1008,7 @@ function renderRollCallSection(cls) {
   const iorNote     = document.getElementById('iorNote');
   const attendeesEl = document.getElementById('rollcallAttendees');
   const footerEl    = document.getElementById('rollcallFooter');
+  const teamPanel   = document.getElementById('rollcallTeamPanel');
 
   // Only show roll call section to admin/owner or the instructor's own classes
   const canSee = ['admin', 'owner'].includes(session.role) ||
@@ -894,15 +1020,10 @@ function renderRollCallSection(cls) {
   }
   section.hidden = false;
 
-  const bookings = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled');
-  const attended = bookings.filter(b => b.attended === true).length;
-  const bookedLabel = cls.capacity != null ? bookings.length + '/' + cls.capacity : bookings.length;
-  summaryEl.textContent = bookedLabel + ' booked' + (attended ? ' · ' + attended + ' attended' : '');
-
   const unlocked = isRollCallUnlocked(cls);
   const canManage = canManageRollCall(cls);
 
-  // Lock bar (visible only when locked and user can manage)
+  // Lock bar (visible only when locked and user can manage) — shared by both modes
   if (!unlocked && canManage) {
     countdownEl.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls));
     lockBar.hidden = false;
@@ -912,6 +1033,33 @@ function renderRollCallSection(cls) {
 
   // IOR note for non-managing viewers
   iorNote.hidden = canManage;
+
+  if (cls.booking_mode === 'team') {
+    attendeesEl.hidden = true;
+    footerEl.hidden = true;
+    teamPanel.hidden = false;
+
+    summaryEl.innerHTML = '';
+    const teamText = document.createElement('div');
+    teamText.textContent = 'Team: ' + (cls.team_name || 'Unnamed') +
+      (cls.capacity != null ? ' · cap ' + cls.capacity : '');
+    summaryEl.appendChild(teamText);
+
+    renderTeamRollCall(cls, dateStr);
+    return;
+  }
+
+  attendeesEl.hidden = false;
+  teamPanel.hidden = true;
+
+  const bookings = getBookings().filter(b => b.class_id === cls.id && b.status !== 'cancelled');
+  const attended = bookings.filter(b => b.attended === true).length;
+  const bookedLabel = cls.capacity != null ? bookings.length + '/' + cls.capacity : bookings.length;
+  summaryEl.innerHTML = '';
+  const summaryText = document.createElement('div');
+  summaryText.textContent = bookedLabel + ' booked' + (attended ? ' · ' + attended + ' attended' : '');
+  summaryEl.appendChild(summaryText);
+  summaryEl.appendChild(renderCapacityIndicator(bookings.length, cls.capacity));
 
   // Attendee list
   attendeesEl.innerHTML = '';
@@ -976,6 +1124,74 @@ function renderRollCallSection(cls) {
   footerEl.hidden = !(unlocked && canManage);
 }
 
+// ── Team roll-call mode (headcount stepper + invoice draft) ────────────────────
+function renderTeamRollCall(cls, dateStr) {
+  const canManage = canManageRollCall(cls);
+  const unlocked  = isRollCallUnlocked(cls);
+  const editable  = unlocked && canManage;
+
+  document.getElementById('headcountValue').textContent = _teamHeadcount;
+  document.getElementById('headcountMinus').disabled  = !editable || _teamHeadcount <= 0;
+  document.getElementById('headcountPlus').disabled   = !editable;
+  document.getElementById('confirmInvoiceBtn').hidden = !editable;
+
+  const rateBasis = cls.rate_basis || 'per_head';
+  const rateCents = cls.rate_cents || 0;
+  const total = rateBasis === 'flat' ? rateCents : _teamHeadcount * rateCents;
+
+  const previewEl = document.getElementById('teamInvoicePreview');
+  previewEl.hidden = false;
+  previewEl.textContent = rateBasis === 'flat'
+    ? 'Flat rate: ' + formatCentsCAD(rateCents) + ' · Total: ' + formatCentsCAD(total)
+    : _teamHeadcount + ' × ' + formatCentsCAD(rateCents) + ' = ' + formatCentsCAD(total);
+
+  const statusEl = document.getElementById('teamInvoiceStatus');
+  const existing = dateStr ? getInvoices().find(i => i.id === invoiceIdFor(cls.id, dateStr)) : null;
+  if (existing) {
+    statusEl.hidden = false;
+    statusEl.textContent = 'Draft saved · ' + existing.headcount + ' attended · ' + formatCentsCAD(existing.total_cents);
+  } else {
+    statusEl.hidden = true;
+  }
+}
+
+function adjustHeadcount(delta) {
+  _teamHeadcount = Math.max(0, _teamHeadcount + delta);
+  const cls = getClassById(_detailClassId);
+  if (cls) renderTeamRollCall(cls, _detailClassDate);
+}
+
+document.getElementById('headcountMinus').addEventListener('click', () => adjustHeadcount(-1));
+document.getElementById('headcountPlus').addEventListener('click', () => adjustHeadcount(1));
+
+document.getElementById('confirmInvoiceBtn').addEventListener('click', () => {
+  const cls = getClassById(_detailClassId);
+  if (!cls || !_detailClassDate) return;
+  if (!canManageRollCall(cls) || !isRollCallUnlocked(cls)) return;
+
+  const rateBasis   = cls.rate_basis || 'per_head';
+  const rateCents   = cls.rate_cents || 0;
+  const totalCents  = rateBasis === 'flat' ? rateCents : _teamHeadcount * rateCents;
+
+  upsertInvoice({
+    id:           invoiceIdFor(cls.id, _detailClassDate),
+    class_id:     cls.id,
+    class_title:  displayTitle(cls),
+    team_name:    cls.team_name || '',
+    date:         _detailClassDate,
+    headcount:    _teamHeadcount,
+    rate_basis:   rateBasis,
+    rate_cents:   rateCents,
+    total_cents:  totalCents,
+    status:       'draft',
+    generated_at: new Date().toISOString(),
+    generated_by: session.userId
+  });
+
+  showToast('Invoice draft saved.', 'success');
+  renderTeamRollCall(cls, _detailClassDate);
+});
+
 // ── Attendance mark handler ────────────────────────────────────────────────────
 document.getElementById('rollcallAttendees').addEventListener('click', e => {
   const markBtn = e.target.closest('[data-mark]');
@@ -1001,7 +1217,7 @@ document.getElementById('rollcallAttendees').addEventListener('click', e => {
   saveBookings(bookings);
 
   const cls = getClassById(_detailClassId);
-  if (cls) renderRollCallSection(cls);
+  if (cls) renderRollCallSection(cls, _detailClassDate);
 });
 
 document.getElementById('addLateBtn').addEventListener('click', () => {
@@ -1018,7 +1234,7 @@ function startDetailCountdown(cls) {
     if (isRollCallUnlocked(cls)) {
       clearInterval(_countdownTimer);
       _countdownTimer = null;
-      renderRollCallSection(cls);
+      renderRollCallSection(cls, _detailClassDate);
     } else if (el) {
       el.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls));
     }
@@ -1035,13 +1251,13 @@ document.getElementById('classDetailModal').addEventListener('click', e => {
 document.getElementById('schedule').addEventListener('click', e => {
   const item = e.target.closest('.class-item');
   if (!item || !item.dataset.classId) return;
-  openDetailModal(item.dataset.classId);
+  openDetailModal(item.dataset.classId, item.dataset.classDate);
 });
 
 document.getElementById('calView').addEventListener('click', e => {
   const block = e.target.closest('.cal-class-block');
   if (!block || !block.dataset.classId) return;
-  openDetailModal(block.dataset.classId);
+  openDetailModal(block.dataset.classId, block.dataset.classDate);
 });
 
 document.getElementById('calScroll').addEventListener('scroll', function () {
@@ -1223,7 +1439,7 @@ document.getElementById('addAttendeeConfirm').addEventListener('click', () => {
 
   // Refresh the roll call section in the still-open detail modal
   const openCls = getClassById(_detailClassId || _addForClassId);
-  if (openCls) renderRollCallSection(openCls);
+  if (openCls) renderRollCallSection(openCls, _detailClassDate);
 });
 
 // ── Page init ──────────────────────────────────────────────────────────────────

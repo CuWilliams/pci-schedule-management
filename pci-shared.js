@@ -31,3 +31,9 @@ const ROLES = {
 // localStorage keys shared across pages
 const SESSION_KEY  = 'pci_session';
 const BOOKINGS_KEY = 'pci_bookings';
+const INVOICES_KEY = 'pci_invoices';
+
+// Shared by instructor.html (team invoice preview) and admin.html (Invoices tab)
+function formatCentsCAD(cents) {
+  return 'CA$' + (cents / 100).toFixed(2);
+}
