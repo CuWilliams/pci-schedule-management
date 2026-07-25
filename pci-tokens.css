@@ -91,6 +91,7 @@
   --inst-amber:   #F59E0B;
   --inst-teal:    #14B8A6;
   --inst-violet:  #8B5CF6;
+  --inst-cyan:    #06B6D4;
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -197,6 +198,7 @@ body {
 .color-bar.inst-amber   { background-color: var(--inst-amber); }
 .color-bar.inst-teal    { background-color: var(--inst-teal); }
 .color-bar.inst-violet  { background-color: var(--inst-violet); }
+.color-bar.inst-cyan    { background-color: var(--inst-cyan); }
 .color-bar.inst-gray    { background-color: var(--cls-gray); }
 
 /* ── Instructor border-left (calendar view) ────────────────── */
@@ -206,6 +208,7 @@ body {
 .cal-class-block.inst-amber   { border-left-color: var(--inst-amber); }
 .cal-class-block.inst-teal    { border-left-color: var(--inst-teal); }
 .cal-class-block.inst-violet  { border-left-color: var(--inst-violet); }
+.cal-class-block.inst-cyan    { border-left-color: var(--inst-cyan); }
 .cal-class-block.inst-gray    { border-left-color: var(--cls-gray); }
 
 /* ── Filter pills ──────────────────────────────────────────── */

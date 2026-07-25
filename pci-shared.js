@@ -16,7 +16,8 @@ const INSTRUCTOR_HEX = {
   indigo:  '#6366F1',
   amber:   '#F59E0B',
   teal:    '#14B8A6',
-  violet:  '#8B5CF6'
+  violet:  '#8B5CF6',
+  cyan:    '#06B6D4'
 };
 
 // Role constants — mirrors PciAuth.ROLE_HIERARCHY keys
