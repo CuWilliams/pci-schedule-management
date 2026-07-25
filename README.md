@@ -1,6 +1,6 @@
 # PCI Bookings App
 
-Staging preview and booking management platform for Power Conditioning Inc.
+Member-facing booking app and schedule change-management platform for Power Conditioning Inc. (three locations: St. John's, Clarenville, and the Ascend studio in St. John's).
 
 Live URL: https://CuWilliams.github.io/pci-schedule-management
 
@@ -21,65 +21,66 @@ Mock accounts for local development and staging review. All auth state is stored
 | Instructor (Greg) | `greg@powerconditioning.ca` | `instructor1` |
 | Member (St. John's) | `jane@example.com` | `member123` |
 | Member (Clarenville) | `john@example.com` | `member123` |
+| Member (Ascend) | `sarah@example.com` | `member123` |
+| Member (St. John's, active package) | `mike@example.com` | `member123` |
 
 > **Note:** Passwords are plaintext mock values stored in `data/users.json`. This file is intentionally non-production — the field is named `password_mock` as a reminder. Replace with real auth when a backend is integrated.
 
-**Admin also requires a GitHub PAT** (`contents: write` on this repo) after signing in, to unlock the Publish button.
+**Admin also requires a GitHub PAT** (`contents: write` on this repo) after signing in, to unlock the Publish button in `admin.html`.
 
 ---
 
 ## Purpose
 
-This repo provides a change management layer for the PCI weekly schedule before changes are applied in the Studio Bookings app. Ryan reviews and approves all changes via the live URL above prior to any updates being made in Studio Bookings.
+This repo serves two roles:
+
+1. **Member-facing app** — sign in, browse the schedule, book classes, buy credit packages, manage a profile, and (for instructors) view class rosters and take attendance.
+2. **Schedule change-management layer** — Ryan reviews proposed schedule changes at the live URL before they are applied in Studio Bookings. `admin.html` is the auth-gated editor that publishes changes directly to this repo via the GitHub Contents API.
 
 ---
 
-## Workflow
+## Pages
+
+| File | Purpose |
+|---|---|
+| `index.html` | Landing page — location selector |
+| `login.html` | Sign in against the mock accounts in `data/users.json` |
+| `schedule.html` | Schedule viewer — list + week calendar views, booking entry point |
+| `admin.html` | Auth-gated admin UI — schedule/instructor CRUD + GitHub publish |
+| `instructor.html` | Instructor view — class roster, roll-call / attendance |
+| `profile.html`, `settings.html` | Member account pages |
+| `buy-credits.html` | Credit package purchase flow (mock) |
+| `stjohns.html`, `clarenville.html`, `ascend.html` | Per-location center pages (map, About, Gallery) |
+
+See `CLAUDE.md` for full architecture details, the schedule JSON schema, the color/category system, and CSS token conventions.
+
+---
+
+## Data
+
+| File | Purpose |
+|---|---|
+| `pci_schedule.json` | Canonical weekly schedule (v2.0 schema) — published from `admin.html` |
+| `data/instructors.json` | Instructor roster — published from `admin.html` |
+| `data/class_types.json`, `data/categories.json` | Class type definitions and category/color mapping (edit directly, not published via admin) |
+| `data/locations.json` | Location definitions (edit directly, not published via admin) |
+| `data/users.json` | Mock auth accounts (see Test Credentials above) |
+| `data/bookings.json`, `data/packages.json`, `data/settings.json` | Mock booking/package/app-config seed data; live booking state lives in `localStorage` |
+
+---
+
+## Workflow (schedule changes)
 
 1. Owner requests schedule changes
-2. Update the schedule data in `index.html` (the `schedule` array in the `<script>` block)
-3. Commit and push to `main`
+2. Make the change in `admin.html` (signed in with a GitHub PAT)
+3. Publish — this commits directly to `main` via the GitHub Contents API
 4. GitHub Pages redeploys automatically (typically within 1–2 minutes)
 5. Send Owner the URL to review
 6. Once approved, apply the equivalent changes in Studio Bookings
 
 ---
 
-## Schedule Data
-
-The schedule is defined as a JavaScript array embedded directly in `index.html`. Each day contains a list of class objects with the following fields:
-
-```json
-{
-  "time_start": "17:15",
-  "time_end": "18:15",
-  "title": "Class Name As It Appears In Studio Bookings",
-  "instructors": ["Instructor Name"],
-  "color": "green"
-}
-```
-
-### Color Categories
-
-| Color  | Category |
-|--------|----------|
-| purple | Functional Fitness (co-ed) - In-Studio |
-| green  | PRO / Athletic Development / Elite Athletes |
-| yellow | Virtual Functional Fitness |
-| orange | Clarenville Athletic Advanced / Elite |
-| blue   | Athletic Development Virtual / Advanced |
-| gray   | Flexibility & Mobility / Cardio Core / Hybrid |
-
----
-
-## Source of Truth
-
-The canonical schedule source is the `pci_schedule.json` file maintained separately. The `index.html` schedule data should always reflect the current state of that JSON.
-
----
-
 ## Notes
 
-- Class titles must match Studio Bookings exactly, including punctuation and spacing
-- Saturday is currently empty
+- Saturday is intentionally empty
 - Instructor display names reflect the Studio Bookings display name exactly

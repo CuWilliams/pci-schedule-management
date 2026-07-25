@@ -4,7 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Static GitHub Pages site that manages the weekly class schedule for Power Conditioning Inc. (three locations: St. John's, Clarenville, and the Ascend studio in St. John's). It serves as a change-management staging layer — Ryan reviews schedule changes at the live URL before they are applied in Studio Bookings.
+Static GitHub Pages site for Power Conditioning Inc. (three locations: St. John's, Clarenville, and the Ascend studio in St. John's). It's both:
+
+1. A **member-facing booking app** — role-based login (owner/admin/instructor/member), schedule browsing, class booking, credit packages, and an instructor roll-call/attendance view.
+2. A **change-management staging layer** for the schedule — Ryan reviews schedule changes at the live URL before they are applied in Studio Bookings.
 
 **Live URL:** https://CuWilliams.github.io/pci-schedule-management
 
@@ -30,15 +33,25 @@ This is a **zero-dependency static site** — no framework, no bundler, no npm. 
 | File | Purpose |
 |---|---|
 | `index.html` | Landing page — location selector (St. John's, Clarenville, Ascend) |
-| `schedule.html` | Public schedule viewer — list + week calendar views |
-| `admin.html` | Auth-gated admin UI — full CRUD + GitHub publish |
+| `login.html` | Sign in — validates against `data/users.json` via `pci-auth.js` |
+| `schedule.html` | Schedule viewer — list + week calendar views, booking entry point |
+| `admin.html` | Auth-gated admin UI (owner/admin) — full CRUD + GitHub publish |
+| `instructor.html` | Instructor view — class roster, roll-call attendance, team-booking headcount/invoice drafts |
+| `profile.html`, `settings.html` | Member account pages |
+| `buy-credits.html` | Credit package purchase flow (mock) |
 | `stjohns.html`, `clarenville.html`, `ascend.html` | Per-location center pages — map, About, Gallery. Identical templates differing only in name/address strings; all three share the same nav drawer |
+| `pci-auth.js` | Shared `PciAuth` role-based session module (see Auth section) |
 | `pci-tokens.css` | Shared design tokens + component CSS (edit directly and commit; not published via admin) |
 | `pci-shared.js` | Shared JS constants that mirror CSS tokens (e.g. `COLOR_HEX`) — loaded before inline scripts in schedule.html and admin.html |
-| `pci_schedule.json` | Canonical schedule data (v2.0 schema) |
-| `data/class_types.json` | Class type definitions + color-to-category mapping |
-| `data/instructors.json` | Instructor roster |
+| `pci_schedule.json` | Canonical schedule data (v2.0 schema) — published from admin |
+| `data/class_types.json` | Class type definitions (read-only, not published via admin) |
+| `data/categories.json` | Category definitions incl. color mapping and `type_ids` (read-only, not published via admin) |
+| `data/instructors.json` | Instructor roster — published from admin |
 | `data/locations.json` | Location definitions (read-only, not published via admin) |
+| `data/users.json` | Mock auth accounts (email/`password_mock`/role) — published from admin |
+| `data/packages.json` | Credit package definitions — published from admin |
+| `data/settings.json` | App-wide config (e.g. `roll_call_unlock_minutes`) — published from admin |
+| `data/bookings.json` | Mock booking seed; live booking state lives in `localStorage` |
 
 ### Navigation
 
@@ -54,7 +67,7 @@ The site uses plain `<a href>` navigation:
 
 ### Data Flow
 
-`schedule.html` and `admin.html` both `fetch()` all JSON files on load. `admin.html` writes changes back to GitHub via the Contents API (base64 PUT). Only `pci_schedule.json` and `data/instructors.json` are currently writable from admin — `class_types.json`, `locations.json`, and `pci-tokens.css` must be edited directly and committed.
+Pages `fetch()` the JSON files they need on load. `admin.html` writes changes back to GitHub via the Contents API (base64 PUT). Writable from admin: `pci_schedule.json`, `data/instructors.json`, `data/users.json`, `data/packages.json`, and `data/settings.json`. `class_types.json`, `categories.json`, `locations.json`, and `pci-tokens.css` must be edited directly and committed.
 
 ### `pci_schedule.json` Schema (v2.0)
 
@@ -70,14 +83,16 @@ The site uses plain `<a href>` navigation:
   "instructor_ids": ["ryan_power"],
   "color": "purple",
   "type": "functional_hiit",
-  "sub_location": null
+  "sub_location": null,
+  "capacity": 18
 }
 ```
 
 - `id` follows the pattern `{day_abbrev}_{NNN}` (e.g. `sun_001`, `mon_012`)
-- `title` must be **prefixed with the location name** exactly as it appears in Studio Bookings (e.g. `"St. John's Functional HIIT (co-ed)"`)
+- `title` is prefixed with the location name (e.g. `"St. John's Functional HIIT (co-ed)"`) — conventionally matching Studio Bookings, but this is a styling convention, not a hard requirement, now that the app is diverging from a pure SB mirror
 - `instructors` (legacy string array) and `instructor_ids` (reference array) are both kept in sync
 - `sub_location: "upper_gym"` renders a "↑ Upper" tag in the calendar view
+- `capacity` caps bookings for the class; the roll-call/booking UI enforces it and shows fill-level dots
 
 ### Color / Category System
 
@@ -89,7 +104,7 @@ Color is derived from `location_id` + `is_online` + whether the class type is at
 | clarenville | gray | orange | yellow |
 | ascend | purple | red | blue |
 
-`red` is reserved for new St. John's Athletic classes — Ascend (a St. John's-area studio) uses it for all its in-studio athletic classes. There are only 7 class color tokens and all are in use, so Ascend shares the St. John's palette rather than introducing an 8th. The mapping is declared in `data/class_types.json` under `class_categories`.
+`red` is reserved for new St. John's Athletic classes — Ascend (a St. John's-area studio) uses it for all its in-studio athletic classes. There are only 7 class color tokens and all are in use, so Ascend shares the St. John's palette rather than introducing an 8th. Athletic-vs-adult classification is looked up via `type_ids` in `data/categories.json`.
 
 ### Title Display
 
@@ -97,11 +112,17 @@ Color is derived from `location_id` + `is_online` + whether the class type is at
 ```js
 cls.title.replace(/^St\.\s*John's\s+/i, '').replace(/^Clarenville\s+/i, '')
 ```
-Raw titles in the JSON must retain the prefix so they match Studio Bookings exactly.
 
-### Auth (admin.html)
+### Auth — two independent systems
 
-- GitHub Personal Access Token stored in `localStorage` under key `pci_admin_pat`
+**Member/staff app (`pci-auth.js`, `PciAuth`)**
+- Role-based session (`owner` > `admin` > `instructor` > `member`) stored in `localStorage` under `pci_session`
+- `login()` validates email + `password_mock` against `data/users.json` (mock-first; only this function changes when a real backend is added)
+- `requireRole([...])` gates a page — no session → `login.html?redirect=...`; wrong role → `index.html?error=unauthorized`
+- Used by `schedule.html`, `admin.html`, `instructor.html`, `profile.html`, `settings.html`, `buy-credits.html`
+
+**Admin GitHub publish (`admin.html` only)**
+- GitHub Personal Access Token stored in `localStorage` under key `pci_admin_pat` — independent of `pci_session`; `logout()` does not clear it
 - Token requires `contents: write` on this repo (fine-grained PAT)
 - On load, admin.html validates the stored token against the GitHub API; clears it on 401
 - `index.html` and `schedule.html` both read `localStorage.getItem('pci_admin_pat')` to show a green dot on the Admin link when already authenticated
@@ -167,7 +188,6 @@ The Publish button only becomes active when unsaved changes exist (`state.dirty`
 
 ## Key Constraints
 
-- **Class titles must match Studio Bookings exactly** — including punctuation, spacing, and location prefix.
-- `class_types.json` and `locations.json` are not editable from the admin UI — edit them directly and commit.
+- `class_types.json`, `categories.json`, and `locations.json` are not editable from the admin UI — edit them directly and commit.
 - Saturday is intentionally empty.
 - The admin "← Schedule" back-link is inside `#app`, only visible after successful login, and points to `schedule.html`.
