@@ -99,8 +99,19 @@
     .ior-note { font-size: 11px; color: var(--muted); font-style: italic; padding: 4px 0; margin-bottom: 8px; }
     .no-bookings-row { padding: var(--sp-4); font-size: 12px; color: var(--muted); text-align: center; font-style: italic; }
     .attendee-meta { font-size: 11px; color: var(--muted); }
-    .attendee-row.attended .attendee-actions button[data-mark="attended"],
-    .attendee-row.no-show  .attendee-actions button[data-mark="no_show"] { opacity: 0.35; pointer-events: none; }
+
+    /* Roll-call attendance marks. Both buttons build on .btn-outline —
+       .btn-ghost is styled for the dark topbar (white text on translucent
+       white) and is all but invisible on this light modal surface. */
+    .attendee-actions { display: flex; gap: var(--sp-2); flex-shrink: 0; }
+    .attendee-actions .mark-btn { font-size: 13px; font-weight: 700; line-height: 1; min-width: 36px; justify-content: center; }
+    .mark-btn--attended { color: var(--success); border-color: color-mix(in srgb, var(--success) 45%, var(--border)); }
+    .mark-btn--attended:not(:disabled):hover { background: color-mix(in srgb, var(--success) 12%, transparent); }
+    .mark-btn--no-show { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, var(--border)); }
+    .mark-btn--no-show:not(:disabled):hover { background: color-mix(in srgb, var(--danger) 12%, transparent); }
+    /* The active mark stays enabled — clicking it again clears the mark. */
+    .attendee-row.attended .mark-btn--attended { background: var(--success); border-color: var(--success); color: var(--pci-white); }
+    .attendee-row.no-show  .mark-btn--no-show  { background: var(--danger);  border-color: var(--danger);  color: var(--pci-white); }
     .rollcall-footer { padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--border); }
     .late-badge { font-size: 10px; font-weight: 700; color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); border-radius: var(--radius-sm); padding: 1px 5px; letter-spacing: 0.04em; }
 
@@ -585,24 +596,36 @@ function canManageRollCall(cls) {
 }
 
 // ── Time-gating ────────────────────────────────────────────────────────────────
-function minsUntilClass(cls) {
-  const now = new Date();
-  const [h, m] = cls.time_start.split(':').map(Number);
-  const start = new Date(now);
-  start.setHours(h, m, 0, 0);
-  return (start - now) / 60000;
+// The occurrence date matters: pci_schedule.json only stores a weekday + a
+// start time, so the gate must be anchored to the specific date being viewed.
+// Without it every occurrence of a class resolves to *today* at that time, and
+// a class days away reads as already started — roll call unlocks immediately.
+function classStartAt(cls, dateStr) {
+  const iso = dateStr || resolveNextOccurrenceDate(cls);
+  const [y, mo, d] = iso.split('-').map(Number);
+  const [h, mi] = cls.time_start.split(':').map(Number);
+  return new Date(y, mo - 1, d, h, mi, 0, 0);
 }
 
-function isRollCallUnlocked(cls) {
-  return minsUntilClass(cls) <= UNLOCK_MINUTES;
+function minsUntilClass(cls, dateStr) {
+  return (classStartAt(cls, dateStr) - new Date()) / 60000;
+}
+
+function isRollCallUnlocked(cls, dateStr) {
+  return minsUntilClass(cls, dateStr) <= UNLOCK_MINUTES;
 }
 
 function formatCountdown(mins) {
   if (mins <= 0) return 'In progress';
   if (mins < 60) return 'Opens in ' + Math.ceil(mins) + ' min';
-  const h = Math.floor(mins / 60);
-  const rem = Math.round(mins % 60);
-  return 'Opens in ' + h + 'h ' + rem + 'm';
+  if (mins < 1440) {
+    const h = Math.floor(mins / 60);
+    const rem = Math.round(mins % 60);
+    return 'Opens in ' + h + 'h ' + rem + 'm';
+  }
+  const days = Math.floor(mins / 1440);
+  const hrs  = Math.floor((mins % 1440) / 60);
+  return 'Opens in ' + days + 'd ' + hrs + 'h';
 }
 
 // ── Eligibility check ──────────────────────────────────────────────────────────
@@ -1022,12 +1045,12 @@ function renderRollCallSection(cls, dateStr) {
   }
   section.hidden = false;
 
-  const unlocked = isRollCallUnlocked(cls);
+  const unlocked = isRollCallUnlocked(cls, dateStr);
   const canManage = canManageRollCall(cls);
 
   // Lock bar (visible only when locked and user can manage) — shared by both modes
   if (!unlocked && canManage) {
-    countdownEl.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls));
+    countdownEl.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls, dateStr));
     lockBar.hidden = false;
   } else {
     lockBar.hidden = true;
@@ -1093,20 +1116,26 @@ function renderRollCallSection(cls, dateStr) {
       row.appendChild(nameWrap);
 
       if (unlocked && canManage) {
+        const isAttended = booking.attended === true;
+        const isNoShow   = booking.status === 'no_show';
+
         const actions = document.createElement('div');
         actions.className = 'attendee-actions';
+
         const attendBtn = document.createElement('button');
-        attendBtn.className = 'btn btn-sm btn-outline';
+        attendBtn.className = 'btn btn-sm btn-outline mark-btn mark-btn--attended';
         attendBtn.dataset.mark = 'attended';
         attendBtn.textContent = '✓';
-        attendBtn.title = 'Mark attended';
-        attendBtn.style.fontSize = '12px';
+        attendBtn.title = isAttended ? 'Clear attendance mark' : 'Mark attended';
+        attendBtn.setAttribute('aria-pressed', String(isAttended));
+
         const noShowBtn = document.createElement('button');
-        noShowBtn.className = 'btn btn-sm btn-ghost';
+        noShowBtn.className = 'btn btn-sm btn-outline mark-btn mark-btn--no-show';
         noShowBtn.dataset.mark = 'no_show';
         noShowBtn.textContent = '✗';
-        noShowBtn.title = 'Mark no-show';
-        noShowBtn.style.fontSize = '12px';
+        noShowBtn.title = isNoShow ? 'Clear no-show mark' : 'Mark no-show';
+        noShowBtn.setAttribute('aria-pressed', String(isNoShow));
+
         actions.appendChild(attendBtn);
         actions.appendChild(noShowBtn);
         row.appendChild(actions);
@@ -1129,7 +1158,7 @@ function renderRollCallSection(cls, dateStr) {
 // ── Team roll-call mode (headcount stepper + invoice draft) ────────────────────
 function renderTeamRollCall(cls, dateStr) {
   const canManage = canManageRollCall(cls);
-  const unlocked  = isRollCallUnlocked(cls);
+  const unlocked  = isRollCallUnlocked(cls, dateStr);
   const editable  = unlocked && canManage;
 
   document.getElementById('headcountValue').textContent = _teamHeadcount;
@@ -1169,7 +1198,7 @@ document.getElementById('headcountPlus').addEventListener('click', () => adjustH
 document.getElementById('confirmInvoiceBtn').addEventListener('click', () => {
   const cls = getClassById(_detailClassId);
   if (!cls || !_detailClassDate) return;
-  if (!canManageRollCall(cls) || !isRollCallUnlocked(cls)) return;
+  if (!canManageRollCall(cls) || !isRollCallUnlocked(cls, _detailClassDate)) return;
 
   const rateBasis   = cls.rate_basis || 'per_head';
   const rateCents   = cls.rate_cents || 0;
@@ -1203,11 +1232,26 @@ document.getElementById('rollcallAttendees').addEventListener('click', e => {
   const bookingId = row.dataset.bookingId;
   const mark = markBtn.dataset.mark;
 
+  const cls = getClassById(_detailClassId);
+  if (!cls) return;
+  // Re-check the gate at commit time rather than trusting that the buttons were
+  // only rendered while unlocked.
+  if (!canManageRollCall(cls) || !isRollCallUnlocked(cls, _detailClassDate)) return;
+
   const bookings = getBookings();
   const booking  = bookings.find(b => b.id === bookingId);
   if (!booking) return;
 
-  if (mark === 'attended') {
+  const current = booking.attended === true ? 'attended'
+                : booking.status === 'no_show' ? 'no_show'
+                : null;
+
+  if (mark === current) {
+    // Clicking the active mark clears it — lets an instructor undo a mis-tap.
+    booking.attended = null;
+    booking.status   = 'booked';
+    showToast('Attendance cleared.');
+  } else if (mark === 'attended') {
     booking.attended = true;
     booking.status   = 'attended';
     showToast('Marked as attended.', 'success');
@@ -1218,8 +1262,7 @@ document.getElementById('rollcallAttendees').addEventListener('click', e => {
   }
   saveBookings(bookings);
 
-  const cls = getClassById(_detailClassId);
-  if (cls) renderRollCallSection(cls, _detailClassDate);
+  renderRollCallSection(cls, _detailClassDate);
 });
 
 document.getElementById('addLateBtn').addEventListener('click', () => {
@@ -1229,16 +1272,17 @@ document.getElementById('addLateBtn').addEventListener('click', () => {
 // ── Countdown refresh while detail modal is open ───────────────────────────────
 function startDetailCountdown(cls) {
   if (_countdownTimer) clearInterval(_countdownTimer);
-  if (isRollCallUnlocked(cls)) return;
+  const dateStr = _detailClassDate;
+  if (isRollCallUnlocked(cls, dateStr)) return;
   _countdownTimer = setInterval(() => {
     if (!_detailClassId) { clearInterval(_countdownTimer); return; }
     const el = document.getElementById('rollcallCountdown');
-    if (isRollCallUnlocked(cls)) {
+    if (isRollCallUnlocked(cls, dateStr)) {
       clearInterval(_countdownTimer);
       _countdownTimer = null;
-      renderRollCallSection(cls, _detailClassDate);
+      renderRollCallSection(cls, dateStr);
     } else if (el) {
-      el.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls));
+      el.textContent = '🔒 ' + formatCountdown(minsUntilClass(cls, dateStr));
     }
   }, 60000);
 }
@@ -1409,6 +1453,9 @@ document.getElementById('addAttendeeConfirm').addEventListener('click', () => {
   if (!_selectedUserId || !_addForClassId) return;
   const cls = getClassById(_addForClassId);
   if (!cls) return;
+  // Adding a late attendee marks them attended, so it lives behind the same
+  // gate as the ✓/✗ buttons.
+  if (!canManageRollCall(cls) || !isRollCallUnlocked(cls, _detailClassDate)) return;
   const user = usersData.users.find(u => u.id === _selectedUserId);
   if (!user) return;
   const elig = checkEligibility(user, cls);
