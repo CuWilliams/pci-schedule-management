@@ -1444,13 +1444,13 @@ document.getElementById('addAttendeeConfirm').addEventListener('click', () => {
 
 // ── Page init ──────────────────────────────────────────────────────────────────
 Promise.all([
-  fetch('pci_schedule.json').then(r => r.json()),
-  fetch('data/class_types.json').then(r => r.json()),
-  fetch('data/instructors.json').then(r => r.json()),
-  fetch('data/categories.json').then(r => r.json()),
-  fetch('data/users.json').then(r => r.json()),
-  fetch('data/settings.json').then(r => r.json()).catch(() => ({ roll_call_unlock_minutes: 10 })),
-  fetch('data/locations.json').then(r => r.json()).catch(() => ({ locations: [] }))
+  fetch('pci_schedule.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/class_types.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/instructors.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/categories.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/users.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/settings.json', { cache: 'no-store' }).then(r => r.json()).catch(() => ({ roll_call_unlock_minutes: 10 })),
+  fetch('data/locations.json', { cache: 'no-store' }).then(r => r.json()).catch(() => ({ locations: [] }))
 ]).then(([sched, classTypesData, instructorsData, cats, users, settings, locs]) => {
   scheduleData   = sched;
   usersData      = users;

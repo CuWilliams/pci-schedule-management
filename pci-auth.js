@@ -59,7 +59,8 @@
   async function login(email, password) {
     let data;
     try {
-      const res = await fetch('data/users.json');
+      // no-store: auth must never validate against a stale cached user list
+      const res = await fetch('data/users.json', { cache: 'no-store' });
       data = await res.json();
     } catch {
       throw new Error('Could not load user data. Try again.');

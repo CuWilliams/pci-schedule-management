@@ -165,8 +165,8 @@ function showToast(msg, type) {
 
 // ── Packages ─────────────────────────────────────────────────────────────────
 Promise.all([
-  fetch('data/packages.json').then(r => r.json()),
-  fetch('data/categories.json').then(r => r.json())
+  fetch('data/packages.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/categories.json', { cache: 'no-store' }).then(r => r.json())
 ])
   .then(([pkgData, catData]) => {
     const catMap = {};

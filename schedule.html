@@ -2073,10 +2073,10 @@ document.getElementById('datePicker').addEventListener('change', e => {
 // ── Bootstrap ────────────────────────────────────────────
 
 Promise.all([
-  fetch('pci_schedule.json').then(r => r.json()),
-  fetch('data/class_types.json').then(r => r.json()),
-  fetch('data/instructors.json').then(r => r.json()),
-  fetch('data/categories.json').then(r => r.json())
+  fetch('pci_schedule.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/class_types.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/instructors.json', { cache: 'no-store' }).then(r => r.json()),
+  fetch('data/categories.json', { cache: 'no-store' }).then(r => r.json())
 ])
   .then(([scheduleData, classTypesData, instructorsData, categoriesData]) => {
     instructorsData.instructors.forEach(i => {

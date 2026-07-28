@@ -985,14 +985,14 @@ async function validateToken(token) {
 // ── Data Loading ─────────────────────────────────────────────────────────────
 async function loadData() {
   const [scheduleData, classTypesData, instructorsData, locationsData, packagesData, usersData, categoriesData, settingsData] = await Promise.all([
-    fetch('pci_schedule.json').then(r => r.json()),
-    fetch('data/class_types.json').then(r => r.json()),
-    fetch('data/instructors.json').then(r => r.json()),
-    fetch('data/locations.json').then(r => r.json()),
-    fetch('data/packages.json').then(r => r.json()),
-    fetch('data/users.json').then(r => r.json()),
-    fetch('data/categories.json').then(r => r.json()),
-    fetch('data/settings.json').then(r => r.json()).catch(() => ({ version: '1.0', roll_call_unlock_minutes: 10 }))
+    fetch('pci_schedule.json', { cache: 'no-store' }).then(r => r.json()),
+    fetch('data/class_types.json', { cache: 'no-store' }).then(r => r.json()),
+    fetch('data/instructors.json', { cache: 'no-store' }).then(r => r.json()),
+    fetch('data/locations.json', { cache: 'no-store' }).then(r => r.json()),
+    fetch('data/packages.json', { cache: 'no-store' }).then(r => r.json()),
+    fetch('data/users.json', { cache: 'no-store' }).then(r => r.json()),
+    fetch('data/categories.json', { cache: 'no-store' }).then(r => r.json()),
+    fetch('data/settings.json', { cache: 'no-store' }).then(r => r.json()).catch(() => ({ version: '1.0', roll_call_unlock_minutes: 10 }))
   ]);
 
   state.scheduleData    = scheduleData;
@@ -1878,7 +1878,7 @@ async function renderBookings() {
 
   let usersData;
   try {
-    const res = await fetch('data/users.json');
+    const res = await fetch('data/users.json', { cache: 'no-store' });
     usersData = await res.json();
   } catch {
     usersData = { users: [] };
