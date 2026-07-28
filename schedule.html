@@ -524,7 +524,7 @@
     <div style="padding:12px 16px 4px">
       <p id="bookModalClass" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:6px"></p>
       <p id="bookModalTime" style="font-size:12px;color:var(--muted);margin-bottom:14px"></p>
-      <p style="font-size:13px;color:var(--text);margin-bottom:20px">1 credit will be deducted from your balance.</p>
+      <p id="bookModalCost" style="font-size:13px;color:var(--text);margin-bottom:20px"></p>
       <div style="display:flex;gap:8px">
         <button class="btn btn-primary" id="bookModalConfirm" style="flex:1">Confirm Booking</button>
         <button class="btn btn-ghost" id="bookModalCancel">Cancel</button>
@@ -542,7 +542,7 @@
     <div style="padding:12px 16px 4px">
       <p id="cancelModalClass" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:6px"></p>
       <p id="cancelModalTime" style="font-size:12px;color:var(--muted);margin-bottom:14px"></p>
-      <p style="font-size:13px;color:var(--text);margin-bottom:20px">1 credit will be restored to your balance.</p>
+      <p id="cancelModalRefund" style="font-size:13px;color:var(--text);margin-bottom:20px"></p>
       <div style="display:flex;gap:8px">
         <button class="btn btn-danger" id="cancelModalConfirm" style="flex:1">Cancel Booking</button>
         <button class="btn btn-ghost" id="cancelModalKeep">Keep</button>
@@ -875,33 +875,25 @@ function buildBookingCTA(cls) {
         btn.textContent = 'Full';
         wrapper.appendChild(btn);
       } else {
-        const credits = session.credits != null ? session.credits : 0;
-        const unlimitedOk = isEligibleViaUnlimited(cls, session);
-        const creditsOk   = isEligibleViaCredits(cls, session);
+        // One resolution drives the button; the same call re-runs at commit.
+        const entry = resolveCoverage(cls, session);
+        const hasAnyPackage = (session.packages || []).length > 0;
 
-        if (unlimitedOk) {
+        if (entry) {
           const btn = document.createElement('button');
           btn.className = 'btn btn-primary btn-sm book-btn';
           btn.dataset.classId    = cls.id;
           btn.dataset.classTitle = displayTitle(cls);
           btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
-          btn.dataset.pipeline   = 'unlimited';
+          btn.dataset.pipeline   = entry.type === 'unlimited' ? 'unlimited' : 'credits';
+          btn.dataset.walletId   = entry.wallet_id;
           btn.textContent = 'Book';
           wrapper.appendChild(btn);
-        } else if (credits > 0 && creditsOk) {
-          const btn = document.createElement('button');
-          btn.className = 'btn btn-primary btn-sm book-btn';
-          btn.dataset.classId    = cls.id;
-          btn.dataset.classTitle = displayTitle(cls);
-          btn.dataset.classTime  = formatTime(cls.time_start) + ' – ' + formatTime(cls.time_end);
-          btn.dataset.pipeline   = 'credits';
-          btn.textContent = 'Book';
-          wrapper.appendChild(btn);
-        } else if (credits > 0 && !creditsOk) {
+        } else if (hasAnyPackage) {
           const btn = document.createElement('button');
           btn.className = 'btn btn-outline btn-sm';
           btn.disabled = true;
-          btn.title = 'Your package doesn\'t cover this class type';
+          btn.title = coverageDenialReason(cls, session);
           btn.textContent = 'Not Covered';
           wrapper.appendChild(btn);
         } else {
@@ -933,10 +925,25 @@ function buildBookingCTA(cls) {
 // ── Booking modal state ──────────────────────────────────────────────────────
 let _pendingBooking = null;
 
-function openBookModal(classId, classTitle, classTime, pipeline) {
-  _pendingBooking = { classId, classTitle, classTime, pipeline: pipeline || 'credits' };
+function openBookModal(classId, classTitle, classTime, pipeline, walletId) {
+  _pendingBooking = { classId, classTitle, classTime, pipeline: pipeline || 'credits', walletId };
   document.getElementById('bookModalClass').textContent = classTitle;
   document.getElementById('bookModalTime').textContent = classTime;
+
+  // Name the package that will pay, so a member holding several knows which
+  // one this booking draws down.
+  const session = PciAuth.getSession();
+  const entry = (session && session.packages || []).find(e => e.wallet_id === walletId);
+  const costEl = document.getElementById('bookModalCost');
+  if (!entry) {
+    costEl.textContent = '1 credit will be deducted from your balance.';
+  } else if (entry.type === 'unlimited') {
+    costEl.textContent = 'Covered by your ' + entry.name + ' — no credits used.';
+  } else {
+    costEl.textContent = '1 credit will be deducted from your ' + entry.name +
+      ' (' + entry.credits_remaining + ' remaining).';
+  }
+
   document.getElementById('bookModal').removeAttribute('hidden');
 }
 
@@ -951,6 +958,22 @@ document.getElementById('bookModal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeBookModal();
 });
 
+// Returns a credit to the exact package that paid for the booking, and returns
+// the toast message describing what happened. Unlimited bookings cost nothing
+// so they refund nothing; an expired package can't take a credit back either.
+// Shared by both cancel paths so neither can hand out a free credit.
+function refundBooking(booking) {
+  if (booking.pipeline === 'unlimited') return 'Booking cancelled.';
+  if (!booking.wallet_id) {
+    // Pre-wallet booking — no package to refund to.
+    return 'Booking cancelled.';
+  }
+  const refunded = PciAuth.refundToWallet(booking.wallet_id);
+  return refunded
+    ? 'Booking cancelled. 1 credit restored.'
+    : 'Booking cancelled. That package has expired, so the credit could not be restored.';
+}
+
 // ── Cancel modal state ───────────────────────────────────────────────────────
 let _pendingCancelClassId = null;
 
@@ -958,7 +981,28 @@ function openCancelModal(classId, classTitle, classTime) {
   _pendingCancelClassId = classId;
   document.getElementById('cancelModalClass').textContent = classTitle;
   document.getElementById('cancelModalTime').textContent = classTime;
+
+  // Only a credit booking gets a credit back, and only to the package that paid.
+  const session = PciAuth.getSession();
+  const booking = session && getBookings().find(
+    b => b.class_id === classId && b.user_id === session.userId && b.status === 'booked'
+  );
+  document.getElementById('cancelModalRefund').textContent = describeRefund(booking, session);
+
   document.getElementById('cancelModal').removeAttribute('hidden');
+}
+
+// What the member will get back, phrased for a confirm prompt.
+function describeRefund(booking, session) {
+  if (!booking || booking.pipeline === 'unlimited') {
+    return 'Your spot will be released. No credits were used for this booking.';
+  }
+  const entry = (session && session.packages || []).find(e => e.wallet_id === booking.wallet_id);
+  if (!entry) return '1 credit will be restored to your balance.';
+  if (!isWalletEntryActive(entry)) {
+    return 'Your ' + entry.name + ' has expired, so the credit cannot be restored.';
+  }
+  return '1 credit will be restored to your ' + entry.name + '.';
 }
 
 function closeCancelModal() {
@@ -986,11 +1030,8 @@ document.getElementById('cancelModalConfirm').addEventListener('click', () => {
   bookings.splice(idx, 1);
   saveBookings(bookings);
 
-  const wasCredits = cancelled.pipeline !== 'unlimited';
-  if (wasCredits) PciAuth.updateCredits(+1);
-
   closeCancelModal();
-  showToast(wasCredits ? 'Booking cancelled. 1 credit restored.' : 'Booking cancelled.', 'success');
+  showToast(refundBooking(cancelled), 'success');
   refreshBookingCTAs();
 });
 
@@ -999,7 +1040,6 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
   const session = PciAuth.getSession();
   if (!session) { closeBookModal(); return; }
 
-  const pipeline = _pendingBooking.pipeline || 'credits';
   const cls = _allClasses.find(c => c.id === _pendingBooking.classId);
 
   // Re-check capacity as guard before committing
@@ -1009,26 +1049,16 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
     return;
   }
 
-  // Re-check eligibility as guard before committing
-  if (pipeline === 'unlimited') {
-    if (!cls || !isEligibleViaUnlimited(cls, session)) {
-      showToast('Your package no longer covers this class.', 'error');
-      closeBookModal();
-      return;
-    }
-  } else {
-    const currentCredits = session.credits != null ? session.credits : 0;
-    if (currentCredits <= 0) {
-      showToast('Not enough credits.', 'error');
-      closeBookModal();
-      return;
-    }
-    if (cls && !isEligibleViaCredits(cls, session)) {
-      showToast('Your package doesn\'t cover this class type.', 'error');
-      closeBookModal();
-      return;
-    }
+  // Re-resolve coverage from the wallet rather than trusting the button's
+  // dataset — a tampered or stale CTA must never buy a class the member's
+  // packages don't cover.
+  const entry = cls ? resolveCoverage(cls, session) : null;
+  if (!entry) {
+    showToast(cls ? coverageDenialReason(cls, session) : 'This class is no longer bookable.', 'error');
+    closeBookModal();
+    return;
   }
+  const pipeline = entry.type === 'unlimited' ? 'unlimited' : 'credits';
 
   // Check for duplicate booking
   const bookings = getBookings();
@@ -1038,15 +1068,13 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
     return;
   }
 
-  // Deduct one credit (credits pipeline only)
-  if (pipeline !== 'unlimited') {
-    try {
-      PciAuth.updateCredits(-1);
-    } catch (e) {
-      showToast(e.message, 'error');
-      closeBookModal();
-      return;
-    }
+  // Deduct from the resolved package (no-op for an unlimited pass)
+  try {
+    PciAuth.spendFromWallet(entry.wallet_id);
+  } catch (e) {
+    showToast(e.message, 'error');
+    closeBookModal();
+    return;
   }
 
   const record = {
@@ -1059,7 +1087,10 @@ document.getElementById('bookModalConfirm').addEventListener('click', () => {
     status:        'booked',
     attended:      null,
     pipeline:      pipeline,
-    credits_spent: pipeline === 'unlimited' ? 0 : 1
+    credits_spent: pipeline === 'unlimited' ? 0 : 1,
+    // Which package paid — so cancelling refunds to that exact package.
+    wallet_id:     entry.wallet_id,
+    package_id:    entry.package_id
   };
   bookings.push(record);
   saveBookings(bookings);
@@ -1383,42 +1414,44 @@ function cancelBooking(bookingId) {
   const bookings = getBookings();
   const idx = bookings.findIndex(b => b.id === bookingId);
   if (idx === -1) return;
+  const cancelled = bookings[idx];
   bookings.splice(idx, 1);
   saveBookings(bookings);
-  try { PciAuth.updateCredits(+1); } catch (e) {}
+  const msg = refundBooking(cancelled);
   renderMyBookings();
-  showToast('Booking cancelled. 1 credit restored.', 'success');
+  showToast(msg, 'success');
 }
 
 // Cache of all class objects for CTA refresh (populated in data load)
 let _allClasses = [];
 
-// ── Package eligibility helpers ──────────────────────────────────────────────
-// Uses typeToCategory map (populated during data load, declared at line ~1316)
+// ── Package eligibility ──────────────────────────────────────────────────────
+// Resolution is delegated entirely to selectWalletEntry() in pci-shared.js, so
+// the CTA, the confirm modal, and the commit-time guard can never disagree
+// about which package pays. Uses the typeToCategory map populated during data
+// load (declared at line ~1316).
 
-function getClassCategoryId(cls) {
-  const cat = typeToCategory[cls.type];
-  return cat ? cat.id : null;
+function classCategoryId(cls) {
+  return getClassCategoryId(cls, typeToCategory);
 }
 
-// Empty eligible_categories means no restriction (backward-compatible with old sessions)
-function isEligibleViaCredits(cls, session) {
-  if (!session.eligible_categories || session.eligible_categories.length === 0) return true;
-  const catId = getClassCategoryId(cls);
-  return catId !== null && session.eligible_categories.includes(catId);
+function categoryName(catId) {
+  const cat = (_allCategories || []).find(c => c.id === catId);
+  return cat ? cat.name : catId;
 }
 
-function isEligibleViaUnlimited(cls, session) {
-  if (!session.active_packages || !session.active_packages.length) return false;
-  const today = new Date().toISOString().split('T')[0];
-  const catId = getClassCategoryId(cls);
-  if (!catId) return false;
-  return session.active_packages.some(p =>
-    Array.isArray(p.eligible_categories) &&
-    p.eligible_categories.includes(catId) &&
-    today >= p.start_date &&
-    today <= p.end_date
-  );
+// Returns the wallet entry that will cover this class, or null if none does.
+function resolveCoverage(cls, session) {
+  return selectWalletEntry(session.packages, classCategoryId(cls));
+}
+
+// Explains why a member can't book — names the class category and what they
+// actually hold, rather than a bare "Not Covered".
+function coverageDenialReason(cls, session) {
+  const wanted = categoryName(classCategoryId(cls));
+  const held   = walletCategories(session.packages).map(categoryName);
+  if (!held.length) return 'You have no active package that covers ' + wanted + ' classes.';
+  return 'Your ' + held.join(' / ') + ' package doesn\'t cover ' + wanted + ' classes.';
 }
 
 // Pre-select location from URL param (?loc=stjohns | ?loc=clarenville | ?loc=ascend)
@@ -1642,6 +1675,7 @@ document.getElementById('locationTabs').addEventListener('click', e => {
 let activeCategories   = new Set();
 let activeInstructors  = new Set();
 let typeToCategory     = {};
+let _allCategories     = [];
 let instructorColorMap = {};
 
 function _syncAllPill() {
@@ -1841,7 +1875,7 @@ document.getElementById('schedule').addEventListener('click', e => {
   const bookBtn = e.target.closest('.book-btn');
   if (bookBtn) {
     e.stopPropagation();
-    openBookModal(bookBtn.dataset.classId, bookBtn.dataset.classTitle, bookBtn.dataset.classTime, bookBtn.dataset.pipeline);
+    openBookModal(bookBtn.dataset.classId, bookBtn.dataset.classTitle, bookBtn.dataset.classTime, bookBtn.dataset.pipeline, bookBtn.dataset.walletId);
     return;
   }
   // Booked button — open cancel confirmation modal
@@ -2086,9 +2120,8 @@ Promise.all([
     classTypesData.class_types.forEach(ct => {
       classDescriptions[ct.id] = { name: ct.name, description: ct.description };
     });
-    categoriesData.categories.forEach(cat => {
-      cat.type_ids.forEach(tid => { typeToCategory[tid] = cat; });
-    });
+    _allCategories = categoriesData.categories;
+    typeToCategory = buildTypeToCategory(categoriesData.categories);
     scheduleData.schedule.forEach(day => {
       _scheduleByDay[day.day] = day;
       day.classes.forEach(cls => {

@@ -606,15 +606,17 @@ function formatCountdown(mins) {
 }
 
 // ── Eligibility check ──────────────────────────────────────────────────────────
+// Same wallet resolution the member-facing booking flow uses, so an instructor
+// adding someone to a class can't grant coverage the member didn't buy.
 function checkEligibility(user, cls) {
-  if ((user.credits || 0) > 0) return { eligible: true, pipeline: 'credits' };
-  const cat = getCategoryForType(cls.type);
-  const today = new Date().toISOString().slice(0, 10);
-  const pkg = (user.active_packages || []).find(p =>
-    p.end_date >= today && (p.eligible_categories || []).includes(cat)
-  );
-  if (pkg) return { eligible: true, pipeline: 'unlimited' };
-  return { eligible: false };
+  const wallet = Array.isArray(user.packages) ? user.packages : migrateLegacyWallet(user);
+  const entry = selectWalletEntry(wallet, getCategoryForType(cls.type));
+  if (!entry) return { eligible: false };
+  return {
+    eligible: true,
+    pipeline: entry.type === 'unlimited' ? 'unlimited' : 'credits',
+    entry:    entry
+  };
 }
 
 // ── Filter ─────────────────────────────────────────────────────────────────────
@@ -1367,14 +1369,16 @@ function buildPickList(query) {
     const eligEl = document.createElement('div');
     eligEl.className = 'pick-eligibility ' + (elig.eligible ? 'eligible' : 'ineligible');
     eligEl.textContent = elig.eligible
-      ? (elig.pipeline === 'credits' ? `${user.credits} credit${user.credits !== 1 ? 's' : ''}` : 'Unlimited package')
-      : 'No credits or active package';
+      ? (elig.pipeline === 'credits'
+          ? `${elig.entry.name} · ${elig.entry.credits_remaining} left`
+          : elig.entry.name)
+      : 'No package covering this class';
     row.appendChild(nameEl);
     row.appendChild(eligEl);
     list.appendChild(row);
     row.addEventListener('click', () => {
       if (!elig.eligible) {
-        document.getElementById('addAttendeeError').textContent = user.display_name + ' has no active credits or eligible package.';
+        document.getElementById('addAttendeeError').textContent = user.display_name + ' has no active package covering this class type.';
         document.getElementById('addAttendeeError').style.display = 'block';
         document.getElementById('addAttendeeConfirm').disabled = true;
         _selectedUserId = null;
@@ -1421,6 +1425,8 @@ document.getElementById('addAttendeeConfirm').addEventListener('click', () => {
     attended:            true,
     pipeline:            elig.pipeline,
     credits_spent:       elig.pipeline === 'credits' ? 1 : 0,
+    wallet_id:           elig.entry.wallet_id,
+    package_id:          elig.entry.package_id,
     added_by_instructor: session.userId,
     booking_type:        'individual',
     team_booking_id:     null,
@@ -1430,8 +1436,14 @@ document.getElementById('addAttendeeConfirm').addEventListener('click', () => {
   bookings.push(booking);
   saveBookings(bookings);
 
+  // Debit the specific package that covered them. This updates the in-memory
+  // copy of users.json only — instructor.html has no write-back, so the debit
+  // is reflected for the rest of this session and must be reconciled in admin.
   if (elig.pipeline === 'credits') {
-    user.credits = Math.max(0, (user.credits || 0) - 1);
+    if (!Array.isArray(user.packages)) user.packages = migrateLegacyWallet(user);
+    const entry = user.packages.find(e => e.wallet_id === elig.entry.wallet_id);
+    if (entry) entry.credits_remaining = Math.max(0, (entry.credits_remaining || 0) - 1);
+    user.credits = deriveCredits(user.packages);
   }
 
   closeAddAttendeeModal();

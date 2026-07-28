@@ -38,19 +38,20 @@ This is a **zero-dependency static site** — no framework, no bundler, no npm. 
 | `admin.html` | Auth-gated admin UI (owner/admin) — full CRUD + GitHub publish |
 | `instructor.html` | Instructor view — class roster, roll-call attendance, team-booking headcount/invoice drafts |
 | `profile.html`, `settings.html` | Member account pages |
-| `buy-credits.html` | Credit package purchase flow (mock) |
+| `buy-credits.html` | My Packages (member's wallet) + package catalog and purchase flow |
 | `stjohns.html`, `clarenville.html`, `ascend.html` | Per-location center pages — map, About, Gallery. Identical templates differing only in name/address strings; all three share the same nav drawer |
 | `pci-auth.js` | Shared `PciAuth` role-based session module (see Auth section) |
 | `pci-tokens.css` | Shared design tokens + component CSS (edit directly and commit; not published via admin) |
-| `pci-shared.js` | Shared JS constants that mirror CSS tokens (e.g. `COLOR_HEX`) — loaded before inline scripts in schedule.html and admin.html |
+| `pci-shared.js` | Shared JS constants that mirror CSS tokens (e.g. `COLOR_HEX`) + all package-wallet logic — loaded by **every** page that loads `pci-auth.js` |
+| `pci-payments.js` | Payment provider adapter (`PciPayments`) — mock today, Stripe later; loaded only by buy-credits.html |
 | `pci_schedule.json` | Canonical schedule data (v2.0 schema) — published from admin |
 | `data/class_types.json` | Class type definitions (read-only, not published via admin) |
 | `data/categories.json` | Category definitions incl. color mapping and `type_ids` (read-only, not published via admin) |
 | `data/instructors.json` | Instructor roster — published from admin |
 | `data/locations.json` | Location definitions (read-only, not published via admin) |
-| `data/users.json` | Mock auth accounts (email/`password_mock`/role) — published from admin |
+| `data/users.json` | Mock auth accounts (email/`password_mock`/role) + each member's `packages[]` wallet — published from admin |
 | `data/packages.json` | Credit package definitions — published from admin |
-| `data/settings.json` | App-wide config (e.g. `roll_call_unlock_minutes`) — published from admin |
+| `data/settings.json` | App-wide config (`roll_call_unlock_minutes`, `payment_provider`) — published from admin |
 | `data/bookings.json` | Mock booking seed; live booking state lives in `localStorage` |
 
 ### Navigation
@@ -120,12 +121,68 @@ cls.title.replace(/^St\.\s*John's\s+/i, '').replace(/^Clarenville\s+/i, '')
 - `login()` validates email + `password_mock` against `data/users.json` (mock-first; only this function changes when a real backend is added)
 - `requireRole([...])` gates a page — no session → `login.html?redirect=...`; wrong role → `index.html?error=unauthorized`
 - Used by `schedule.html`, `admin.html`, `instructor.html`, `profile.html`, `settings.html`, `buy-credits.html`
+- **Wallet API** (see Package Wallet section): `getWallet()`, `spendFromWallet(walletId)`, `refundToWallet(walletId)`, `addWalletEntry(entry)`. `updateCredits()`, `setEligibleCategories()`, and `setActivePackages()` were **removed** — the wallet replaces all three
+- `getSession()` runs `migrateSession()`, so pre-wallet sessions already in `localStorage` upgrade in place instead of throwing
+- `pci-auth.js` now depends on `pci-shared.js`; **every** page that loads `pci-auth.js` must load `pci-shared.js` too
 
 **Admin GitHub publish (`admin.html` only)**
 - GitHub Personal Access Token stored in `localStorage` under key `pci_admin_pat` — independent of `pci_session`; `logout()` does not clear it
 - Token requires `contents: write` on this repo (fine-grained PAT)
 - On load, admin.html validates the stored token against the GitHub API; clears it on 401
 - `index.html` and `schedule.html` both read `localStorage.getItem('pci_admin_pat')` to show a green dot on the Admin link when already authenticated
+
+### Package Wallet — booking entitlements
+
+Each member owns a **`packages[]` wallet** on their `data/users.json` record. One entry per package purchased or granted; entries never merge. Credits from one package can never pay for a class another package covers.
+
+```json
+{
+  "wallet_id": "wal_1751328000000_a3f",
+  "package_id": "pkg_athletic_8",
+  "name": "8 Credits for Athletic Development",
+  "type": "credits",
+  "credits_total": 8,
+  "credits_remaining": 6,
+  "start_date": "2026-07-01",
+  "end_date": "2027-07-01",
+  "eligible_categories": ["athletic", "athletic_virtual"],
+  "payment_ref": "mock_1751328000000",
+  "granted_at": "2026-07-01"
+}
+```
+
+- `type: "unlimited"` entries carry `credits_total: null` / `credits_remaining: null`; `end_date = start_date + duration_days`.
+- `name` and `eligible_categories` are **snapshotted at grant time** — re-pricing or re-scoping a package in `packages.json` never retroactively changes what a member already bought.
+- `user.credits` / `session.credits` is a **derived read-only mirror** (`deriveCredits()` — sum of `credits_remaining` across unexpired credit entries), recomputed on every wallet mutation so the topbar badge and admin member list keep working. Never write it directly.
+- `user.eligible_categories` and `user.active_packages` are gone. `migrateLegacyWallet(record)` upgrades any record still on the old shape.
+- There is **no "empty means unrestricted" fallback**. No covering wallet entry = not bookable.
+
+**`selectWalletEntry(wallet, catId, today)` in `pci-shared.js` is the single source of truth for what pays for a booking.** Priority:
+1. Active **unlimited** entry covering `catId` (soonest expiry first) → cost 0
+2. Otherwise active **credits** entry with `credits_remaining > 0`, **earliest `end_date` first** (use-it-or-lose-it), tie-broken by fewest remaining
+3. Otherwise `null` → not covered
+
+All three booking paths (`schedule.html`, `instructor.html`, and admin grant) go through it. `schedule.html` **re-resolves at commit time** rather than trusting the button's `dataset` — that re-resolve is the anti-tamper guard. Bookings persist `wallet_id` + `package_id`; cancel refunds to that specific entry, and refuses to refund an unlimited or expired entry.
+
+**Package → category map** (`eligible_categories` in `data/packages.json`):
+
+| Packages | Categories |
+|---|---|
+| `pkg_athletic_1/8/12` | `athletic`, `athletic_virtual` |
+| `pkg_studio_virtual_5/10/20`, `pkg_unlimited_1m/3m` | `functional_hiit`, `cardio_core`, `flexibility_mobility`, `virtual` |
+| `pkg_dropin_studio` | `functional_hiit`, `cardio_core`, `flexibility_mobility` (studio only) |
+| `pkg_unlimited_2w_virtual` | `virtual` |
+| `pkg_private`, `pkg_team`, `pkg_hockey_team` | `private_team` |
+
+`pro` and `pro_virtual` are their own categories with **no package granting them** — PRO is invitation-only, so admin must grant it. `private_team` covers the `private` / `team_training` class types.
+
+### Payments — `pci-payments.js`
+
+`PciPayments.checkout(pkg)` → `Promise<{ status, provider, reference, paid_at }>`. The provider comes from `payment_provider` in `data/settings.json` (`"mock"` today), so cutover is a published settings change, not a code deploy. It defaults to `mock` if settings are unreachable — a missing config must never hand a member a real payment form.
+
+Fulfilment is identical for every provider and lives in one place: `PciAuth.addWalletEntry(buildWalletEntry(pkg, { paymentRef }))`. `buildWalletEntry()` is shared with admin's Grant Package.
+
+**Stripe cutover:** Checkout cannot be fulfilled client-side — creating a session needs a secret key, and crediting a wallet must be driven by a webhook. A static GitHub Pages site can do neither. The real cutover also needs serverless `create-checkout-session` + `stripe-webhook` endpoints and a real backend replacing `users.json` as the wallet store. **Never credit a wallet from a `return_url`.**
 
 ### GitHub Publish Flow (admin.html)
 
@@ -172,9 +229,14 @@ The Publish button only becomes active when unsaved changes exist (`state.dirty`
 - **Bottom-sheet modal** (schedule.html): `class="modal-overlay"` — renders as bottom sheet on mobile (<600px), centered on desktop.
 - **Dialog modal** (admin.html): `class="modal-overlay modal-overlay--center"` — always centered. Use this for all form/confirm dialogs. **Never redefine `.modal-overlay` inside a page's `<style>` block** — it will silently override the token and break the responsive behavior.
 
-### Shared JS constants (`pci-shared.js`)
+### Shared JS (`pci-shared.js`)
 
-`COLOR_HEX` is declared **once** in `pci-shared.js` and loaded via `<script src="pci-shared.js"></script>` before the inline `<script>` in both `schedule.html` and `admin.html`. Do not re-declare `COLOR_HEX` in any page script. If you add a new class color token to `pci-tokens.css`, update `pci-shared.js` to match.
+Loaded via `<script src="pci-shared.js"></script>` before the inline `<script>` on **every** page — `pci-auth.js` depends on it, so any page loading auth must load it first.
+
+It holds two things:
+
+1. **Constants mirroring CSS tokens** — `COLOR_HEX` is declared **once** here. Do not re-declare it in any page script. If you add a new class color token to `pci-tokens.css`, update `pci-shared.js` to match.
+2. **Package-wallet logic** (pure functions, no DOM, no storage) — `selectWalletEntry`, `buildWalletEntry`, `deriveCredits`, `walletCategories`, `migrateLegacyWallet`, `buildTypeToCategory`, `getClassCategoryId`, `isWalletEntryActive`, `walletEntryCovers`, `walletEntryIsSpendable`, and the date helpers `todayISO` / `addDaysISO` / `daysUntilISO`. Entitlement rules go here, never in a page script — three separate pages book classes.
 
 ### Responsive breakpoint
 
@@ -191,3 +253,6 @@ The Publish button only becomes active when unsaved changes exist (`state.dirty`
 - `class_types.json`, `categories.json`, and `locations.json` are not editable from the admin UI — edit them directly and commit.
 - Saturday is intentionally empty.
 - The admin "← Schedule" back-link is inside `#app`, only visible after successful login, and points to `schedule.html`.
+- The `private` and `team_training` class types exist but **no scheduled class uses them yet**, so `pkg_private` / `pkg_team` / `pkg_hockey_team` credits are not redeemable in-app — those sessions are arranged directly with the studio. Add such classes to `pci_schedule.json` if that changes.
+- **PRO classes are admin-grant only** — no purchasable package covers the `pro` / `pro_virtual` categories.
+- Mock purchases write to `localStorage` only; they are not published back to `data/users.json` (same as `pci_bookings`). An admin must re-grant in `admin.html` to persist a wallet entry. The same applies to bookings made from `instructor.html`, which has no write-back.

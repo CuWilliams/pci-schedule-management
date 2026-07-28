@@ -1554,14 +1554,36 @@ function renderMembers() {
     info.appendChild(nameEl);
     info.appendChild(emailEl);
 
-    if (user.role === 'member' && Array.isArray(user.active_packages) && user.active_packages.length > 0) {
-      const today = new Date().toISOString().split('T')[0];
-      const active = user.active_packages.filter(p => today <= p.end_date);
-      if (active.length > 0) {
+    // Per-package breakdown — with credits scoped to their own package, a flat
+    // total no longer tells an admin what a member can actually book.
+    if (user.role === 'member') {
+      const wallet = Array.isArray(user.packages) ? user.packages : migrateLegacyWallet(user);
+      const active = wallet.filter(e => isWalletEntryActive(e));
+      active.forEach(entry => {
         const pkgLine = document.createElement('div');
-        pkgLine.style.cssText = 'font-size:11px;color:var(--accent);margin-top:2px';
-        pkgLine.textContent = active.length + ' active unlimited pass' + (active.length !== 1 ? 'es' : '');
+        pkgLine.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:11px;color:var(--accent);margin-top:2px';
+
+        const label = document.createElement('span');
+        label.textContent = entry.type === 'unlimited'
+          ? entry.name + ' · ' + Math.max(0, daysUntilISO(entry.end_date)) + 'd left'
+          : entry.name + ' · ' + entry.credits_remaining + '/' + entry.credits_total;
+        pkgLine.appendChild(label);
+
+        const revoke = document.createElement('button');
+        revoke.className = 'btn-icon';
+        revoke.style.cssText = 'font-size:11px;color:var(--danger);background:none;border:none;cursor:pointer;padding:0 2px';
+        revoke.title = 'Revoke ' + entry.name;
+        revoke.textContent = '✕';
+        revoke.addEventListener('click', () => revokeWalletEntry(user.id, entry.wallet_id));
+        pkgLine.appendChild(revoke);
+
         info.appendChild(pkgLine);
+      });
+      if (active.length === 0 && wallet.length > 0) {
+        const noneLine = document.createElement('div');
+        noneLine.style.cssText = 'font-size:11px;color:var(--muted);margin-top:2px';
+        noneLine.textContent = 'All packages expired';
+        info.appendChild(noneLine);
       }
     }
 
@@ -1573,10 +1595,12 @@ function renderMembers() {
     badge.textContent = user.role;
     meta.appendChild(badge);
 
-    if (user.role === 'member' && user.credits != null) {
+    if (user.role === 'member') {
+      // Derived from the wallet, never stored independently of it.
+      const total = deriveCredits(Array.isArray(user.packages) ? user.packages : migrateLegacyWallet(user));
       const credits = document.createElement('span');
       credits.style.cssText = 'font-size:11px;color:var(--muted)';
-      credits.textContent = user.credits + ' credit' + (user.credits !== 1 ? 's' : '');
+      credits.textContent = total + ' credit' + (total !== 1 ? 's' : '');
       meta.appendChild(credits);
     }
 
@@ -1784,23 +1808,21 @@ function openGrantModal(userId) {
   document.getElementById('grantModal').removeAttribute('hidden');
 }
 
+// Credit packages carry a real validity window too, so the start date applies
+// to every package type — not just unlimited passes.
 function updateGrantDateVisibility() {
-  const select = document.getElementById('grantPackageSelect');
-  const chosen = select.options[select.selectedIndex];
-  const isUnlimited = chosen && chosen.dataset.type === 'unlimited';
-  document.getElementById('grantStartDateGroup').style.display = isUnlimited ? '' : 'none';
+  document.getElementById('grantStartDateGroup').style.display = '';
 }
 
 function updateGrantEndPreview() {
   const select = document.getElementById('grantPackageSelect');
   const chosen = select.options[select.selectedIndex];
-  if (!chosen || chosen.dataset.type !== 'unlimited') return;
+  if (!chosen) return;
   const startVal = document.getElementById('grantStartDate').value;
   if (!startVal) return;
-  const end = new Date(startVal);
-  end.setDate(end.getDate() + parseInt(chosen.dataset.durationDays, 10));
   document.getElementById('grantEndDatePreview').textContent =
-    'Expires: ' + end.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
+    'Expires: ' + new Date(addDaysISO(startVal, parseInt(chosen.dataset.durationDays, 10)) + 'T00:00:00')
+      .toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 document.getElementById('grantPackageSelect').addEventListener('change', () => {
@@ -1830,34 +1852,34 @@ document.getElementById('grantModalConfirm').addEventListener('click', () => {
   const pkg = state.packages.find(p => p.id === pkgId);
   if (!pkg) return;
 
-  if (pkg.type === 'unlimited') {
-    const startDate = document.getElementById('grantStartDate').value;
-    if (!startDate) { showToast('Please select a start date.', 'error'); return; }
-    const end = new Date(startDate);
-    end.setDate(end.getDate() + pkg.duration_days);
-    const endDate = end.toISOString().split('T')[0];
+  const startDate = document.getElementById('grantStartDate').value;
+  if (!startDate) { showToast('Please select a start date.', 'error'); return; }
 
-    if (!Array.isArray(user.active_packages)) user.active_packages = [];
-    user.active_packages.push({
-      package_id:          pkg.id,
-      start_date:          startDate,
-      end_date:            endDate,
-      eligible_categories: [...pkg.eligible_categories]
-    });
-  } else {
-    // Credit package: add credits and merge eligible categories
-    user.credits = (user.credits || 0) + pkg.credits;
-    if (!Array.isArray(user.eligible_categories)) user.eligible_categories = [];
-    pkg.eligible_categories.forEach(catId => {
-      if (!user.eligible_categories.includes(catId)) user.eligible_categories.push(catId);
-    });
-  }
+  // Every package — credit or unlimited — becomes its own wallet entry with its
+  // own expiry and its own eligible categories. Credits are never pooled, so an
+  // Athletic pack can never pay for a Functional HIIT class.
+  if (!Array.isArray(user.packages)) user.packages = migrateLegacyWallet(user);
+  user.packages.push(buildWalletEntry(pkg, { startDate: startDate }));
+  user.credits = deriveCredits(user.packages);
 
   markDirty(true);
   closeGrantModal();
   renderMembers();
   showToast('Package granted. Publish to save.', 'success');
 });
+
+// Removes a wallet entry outright — the undo for a mis-grant.
+function revokeWalletEntry(userId, walletId) {
+  const user = state.users.find(u => u.id === userId);
+  if (!user || !Array.isArray(user.packages)) return;
+  const idx = user.packages.findIndex(e => e.wallet_id === walletId);
+  if (idx === -1) return;
+  const [removed] = user.packages.splice(idx, 1);
+  user.credits = deriveCredits(user.packages);
+  markDirty(true);
+  renderMembers();
+  showToast('Revoked ' + removed.name + '. Publish to save.', 'success');
+}
 
 // ── Bookings Tab ──────────────────────────────────────────────────────────────
 async function renderBookings() {

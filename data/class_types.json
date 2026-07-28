@@ -59,6 +59,18 @@
       "name": "Athletic – Online",
       "online_variant_id": null,
       "description": "The same high-quality sports conditioning your athlete gets in the studio, delivered in real time via Zoom alongside in-studio participants. Coaches are actively working with online athletes throughout every session, calling out modifications so every exercise translates effectively from home. All sports, all ability levels, U13 to U18 — select your age group and delivery format to view class times and availability. To receive your Zoom link, make sure you register for the online class."
+    },
+    {
+      "id": "private",
+      "name": "Private Training",
+      "online_variant_id": null,
+      "description": "One-on-one training built entirely around you — your goals, your starting point, your schedule. Sessions are arranged directly with the studio rather than booked from the public schedule."
+    },
+    {
+      "id": "team_training",
+      "name": "Team Training",
+      "online_variant_id": null,
+      "description": "Full-team conditioning sessions for sports teams, including hockey teams training with Athletic Performance players. Sessions are arranged directly with the studio rather than booked from the public schedule."
     }
   ]
 }

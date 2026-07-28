@@ -78,7 +78,7 @@
 
 <header class="topbar">
   <a href="schedule.html" class="topbar-back">← Schedule</a>
-  <div class="topbar-logo">Buy Credits</div>
+  <div class="topbar-logo">My Packages</div>
   <div class="topbar-actions">
     <span class="credit-badge" id="topbarCredits"></span>
   </div>
@@ -91,7 +91,7 @@
     <div>
       <div class="credits-hero-label">Your Credit Balance</div>
       <div class="credits-hero-count" id="heroCredits">–</div>
-      <div class="credits-hero-sub">Each credit books one class session.</div>
+      <div class="credits-hero-sub">Credits are tied to the package they came from — see below.</div>
     </div>
     <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;opacity:0.15;color:#fff">
       <circle cx="24" cy="24" r="20"/>
@@ -99,21 +99,47 @@
     </svg>
   </div>
 
-  <!-- Stripe notice -->
-  <div class="coming-soon-notice">
+  <!-- Payment provider notice -->
+  <div class="coming-soon-notice" id="paymentNotice" hidden>
     <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;flex-shrink:0">
       <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
     </svg>
-    Payment integration coming soon — packages are displayed for preview. Purchases are not yet active.
+    <span id="paymentNoticeText"></span>
   </div>
 
-  <!-- Package list -->
-  <div class="packages-heading">Available Packages</div>
+  <!-- Wallet — what the member currently holds -->
+  <div class="packages-heading" id="walletHeading">My Packages</div>
+  <div id="walletList">
+    <div style="color:var(--muted);font-size:13px">Loading your packages…</div>
+  </div>
+
+  <!-- Catalog -->
+  <div class="packages-heading" style="margin-top:24px">Available Packages</div>
   <div id="packageList">
     <div style="color:var(--muted);font-size:13px">Loading packages…</div>
   </div>
 
 </main>
+
+<!-- ── Purchase confirmation modal ───────────────────────────────────────── -->
+<div id="buyModal" class="modal-overlay" role="dialog" aria-modal="true" hidden>
+  <div class="modal-sheet">
+    <div class="modal-header">
+      <span class="modal-title">Confirm Purchase</span>
+      <button class="modal-close" id="buyModalClose" aria-label="Close">&#x2715;</button>
+    </div>
+    <div style="padding:12px 16px 4px">
+      <p id="buyModalName" style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:6px"></p>
+      <p id="buyModalPrice" style="font-size:12px;color:var(--muted);margin-bottom:10px"></p>
+      <div class="cat-pill-row" id="buyModalCats" style="margin-bottom:12px"></div>
+      <p id="buyModalCovers" style="font-size:13px;color:var(--text);margin-bottom:20px"></p>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="buyModalConfirm" style="flex:1">Confirm Purchase</button>
+        <button class="btn btn-ghost" id="buyModalCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -124,16 +150,26 @@
 
 <script src="pci-auth.js"></script>
 <script src="pci-shared.js"></script>
+<script src="pci-payments.js"></script>
 <script>
 // ── Role gate ────────────────────────────────────────────────────────────────
-const session = PciAuth.requireRole(['member', 'instructor', 'admin', 'owner']);
+PciAuth.requireRole(['member', 'instructor', 'admin', 'owner']);
+
+// Re-read after every wallet mutation — never cache the session across a purchase.
+function currentSession() { return PciAuth.getSession(); }
 
 // ── Dev mode ─────────────────────────────────────────────────────────────────
 document.body.classList.toggle('dev-mobile', localStorage.getItem('pci_dev_mobile') === '1');
 
+let catMap = {};
+
 // ── Credit display ───────────────────────────────────────────────────────────
+// The hero number is the derived total across every unexpired credit package.
+// It is a summary only — the wallet cards below are what actually govern
+// booking, since credits never move between packages.
 function renderCreditDisplay() {
-  const credits = (session.role === 'member' && session.credits != null) ? session.credits : null;
+  const s = currentSession();
+  const credits = (s.role === 'member' && s.credits != null) ? s.credits : null;
 
   const heroEl  = document.getElementById('heroCredits');
   const badgeEl = document.getElementById('topbarCredits');
@@ -152,7 +188,140 @@ function renderCreditDisplay() {
   badgeEl.className   = 'credit-badge' + (credits === 0 ? ' empty' : credits <= 2 ? ' low' : '');
 }
 
-renderCreditDisplay();
+// ── Category pills ───────────────────────────────────────────────────────────
+// Shared by the wallet cards and the catalog so an entitlement reads the same
+// in both places.
+function buildCatPills(categoryIds) {
+  const row = document.createElement('div');
+  row.className = 'cat-pill-row';
+  (categoryIds || []).forEach(catId => {
+    const cat = catMap[catId];
+    const pill = document.createElement('span');
+    pill.className = 'cat-pill';
+    pill.style.background = `var(--cls-${cat ? cat.color : 'gray'}-tint, var(--gray-100))`;
+    pill.textContent = cat ? cat.name : catId;
+    row.appendChild(pill);
+  });
+  return row;
+}
+
+function formatExpiry(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-CA', {
+    year: 'numeric', month: 'short', day: 'numeric'
+  });
+}
+
+// ── My Packages (wallet) ─────────────────────────────────────────────────────
+let _showExpired = false;
+
+function buildWalletCard(entry) {
+  const expired = !isWalletEntryActive(entry);
+  const card = document.createElement('div');
+  card.className = 'wallet-card' +
+    (expired ? ' wallet-card--expired' : entry.type === 'unlimited' ? ' wallet-card--unlimited' : '');
+
+  const head = document.createElement('div');
+  head.className = 'wallet-card-head';
+
+  const name = document.createElement('div');
+  name.className = 'wallet-card-name';
+  name.textContent = entry.name;
+
+  const badge = document.createElement('span');
+  badge.className = 'wallet-card-badge' +
+    (expired ? ' wallet-card-badge--expired' : entry.type === 'unlimited' ? ' wallet-card-badge--unlimited' : '');
+  badge.textContent = expired ? 'Expired'
+    : entry.type === 'unlimited' ? 'Unlimited'
+    : entry.credits_total + ' credits';
+
+  head.appendChild(name);
+  head.appendChild(badge);
+  card.appendChild(head);
+
+  // Remaining line + meter: credits for credit packs, days for time-based passes.
+  const remaining = document.createElement('div');
+  remaining.className = 'wallet-card-remaining';
+  const meter = document.createElement('div');
+  meter.className = 'wallet-meter';
+  const fill = document.createElement('div');
+  fill.className = 'wallet-meter-fill';
+
+  if (entry.type === 'unlimited') {
+    const daysLeft = Math.max(0, daysUntilISO(entry.end_date));
+    const totalDays = Math.max(1, daysUntilISO(entry.end_date) - daysUntilISO(entry.start_date));
+    const pct = expired ? 0 : Math.min(100, (daysLeft / totalDays) * 100);
+    remaining.textContent = expired ? 'Expired'
+      : daysLeft === 0 ? 'Last day'
+      : daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' left';
+    if (!expired && daysLeft <= 7) { remaining.classList.add('low'); fill.classList.add('low'); }
+    if (expired) { remaining.classList.add('empty'); fill.classList.add('empty'); }
+    fill.style.width = pct + '%';
+  } else {
+    const left  = entry.credits_remaining || 0;
+    const total = entry.credits_total || 0;
+    const pct   = total ? (left / total) * 100 : 0;
+    remaining.textContent = left + ' of ' + total + ' credit' + (total !== 1 ? 's' : '') + ' left';
+    if (left === 0)            { remaining.classList.add('empty'); fill.classList.add('empty'); }
+    else if (pct <= 25)        { remaining.classList.add('low');   fill.classList.add('low'); }
+    fill.style.width = pct + '%';
+  }
+
+  meter.appendChild(fill);
+  card.appendChild(remaining);
+  card.appendChild(meter);
+
+  card.appendChild(buildCatPills(entry.eligible_categories));
+
+  const expiry = document.createElement('div');
+  expiry.className = 'wallet-card-expiry';
+  expiry.textContent = (expired ? 'Expired ' : 'Expires ') + formatExpiry(entry.end_date);
+  card.appendChild(expiry);
+
+  return card;
+}
+
+function renderWallet() {
+  const list = document.getElementById('walletList');
+  list.innerHTML = '';
+
+  // Only members hold packages; staff have no wallet to show.
+  if (currentSession().role !== 'member') {
+    document.getElementById('walletHeading').setAttribute('hidden', '');
+    list.setAttribute('hidden', '');
+    return;
+  }
+
+  const wallet = PciAuth.getWallet();
+  if (!wallet.length) {
+    list.innerHTML = '<div class="wallet-empty">You don\'t have any packages yet — browse the options below.</div>';
+    return;
+  }
+
+  // Active first, then soonest to expire, so what's about to lapse reads first.
+  const sorted = [...wallet].sort((a, b) => {
+    const aExp = isWalletEntryActive(a) ? 0 : 1;
+    const bExp = isWalletEntryActive(b) ? 0 : 1;
+    return aExp - bExp || a.end_date.localeCompare(b.end_date);
+  });
+  const active  = sorted.filter(e => isWalletEntryActive(e));
+  const expired = sorted.filter(e => !isWalletEntryActive(e));
+
+  if (!active.length) {
+    list.innerHTML = '<div class="wallet-empty">You have no active packages. Browse the options below.</div>';
+  } else {
+    active.forEach(e => list.appendChild(buildWalletCard(e)));
+  }
+
+  if (expired.length) {
+    const toggle = document.createElement('button');
+    toggle.className = 'wallet-toggle-expired';
+    toggle.textContent = (_showExpired ? 'Hide' : 'Show') + ' ' + expired.length +
+      ' expired package' + (expired.length !== 1 ? 's' : '');
+    toggle.addEventListener('click', () => { _showExpired = !_showExpired; renderWallet(); });
+    list.appendChild(toggle);
+    if (_showExpired) expired.forEach(e => list.appendChild(buildWalletCard(e)));
+  }
+}
 
 // ── Toast ────────────────────────────────────────────────────────────────────
 function showToast(msg, type) {
@@ -163,93 +332,164 @@ function showToast(msg, type) {
   el._t = setTimeout(() => { el.className = ''; }, 3200);
 }
 
-// ── Packages ─────────────────────────────────────────────────────────────────
+// ── Purchase ─────────────────────────────────────────────────────────────────
+// Checkout is delegated to PciPayments so the provider (mock today, Stripe
+// later) is swappable without touching fulfilment: whatever succeeds, the
+// wallet entry is minted the same way, by the same shared buildWalletEntry.
+let _pendingPurchase = null;
+
+function openBuyModal(pkg) {
+  _pendingPurchase = pkg;
+  document.getElementById('buyModalName').textContent = pkg.name;
+  document.getElementById('buyModalPrice').textContent =
+    pkg.price + ' · valid ' + pkg.duration_days + ' days from today';
+
+  const cats = document.getElementById('buyModalCats');
+  cats.innerHTML = '';
+  cats.appendChild(buildCatPills(pkg.eligible_categories));
+
+  // Spell out the scope — this package books these class types and nothing else.
+  const names = (pkg.eligible_categories || []).map(id => catMap[id] ? catMap[id].name : id);
+  document.getElementById('buyModalCovers').textContent = pkg.type === 'unlimited'
+    ? 'Unlimited ' + names.join(', ') + ' classes for ' + pkg.duration_days + ' days. Not valid for other class types.'
+    : pkg.credits + ' credit' + (pkg.credits !== 1 ? 's' : '') + ' usable only on ' +
+      names.join(', ') + ' classes. Credits from this package cannot be used on any other class type.';
+
+  document.getElementById('buyModalConfirm').disabled = false;
+  document.getElementById('buyModalConfirm').textContent = 'Confirm Purchase';
+  document.getElementById('buyModal').removeAttribute('hidden');
+}
+
+function closeBuyModal() {
+  document.getElementById('buyModal').setAttribute('hidden', '');
+  _pendingPurchase = null;
+}
+
+document.getElementById('buyModalClose').addEventListener('click', closeBuyModal);
+document.getElementById('buyModalCancel').addEventListener('click', closeBuyModal);
+document.getElementById('buyModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeBuyModal();
+});
+
+document.getElementById('buyModalConfirm').addEventListener('click', async () => {
+  if (!_pendingPurchase) return;
+  const pkg = _pendingPurchase;
+  const btn = document.getElementById('buyModalConfirm');
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+
+  let result;
+  try {
+    result = await PciPayments.checkout(pkg);
+  } catch (e) {
+    closeBuyModal();
+    showToast(e.message, 'error');
+    return;
+  }
+
+  // Fulfilment — identical for every provider.
+  PciAuth.addWalletEntry(buildWalletEntry(pkg, { paymentRef: result.reference }));
+
+  closeBuyModal();
+  renderCreditDisplay();
+  renderWallet();
+  showToast(pkg.name + ' added to your packages.', 'success');
+});
+
+// ── Catalog ──────────────────────────────────────────────────────────────────
+function renderCatalog(packages) {
+  const list = document.getElementById('packageList');
+  list.innerHTML = '';
+  packages.filter(p => p.active).forEach(pkg => {
+    const card = document.createElement('div');
+    card.className = 'package-card';
+
+    const info = document.createElement('div');
+    info.className = 'package-info';
+
+    const nameLine = document.createElement('div');
+    nameLine.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px';
+
+    const name = document.createElement('div');
+    name.className = 'package-name';
+    name.textContent = pkg.name;
+
+    const pill = document.createElement('span');
+    pill.className = 'package-credits-pill';
+    pill.textContent = pkg.type === 'unlimited' ? 'Unlimited' : pkg.credits + ' credit' + (pkg.credits !== 1 ? 's' : '');
+
+    nameLine.appendChild(name);
+    nameLine.appendChild(pill);
+    info.appendChild(nameLine);
+
+    if (pkg.eligible_categories && pkg.eligible_categories.length > 0) {
+      const catRow = buildCatPills(pkg.eligible_categories);
+      catRow.style.marginBottom = '6px';
+      info.appendChild(catRow);
+    }
+
+    const desc = document.createElement('div');
+    desc.className = 'package-desc';
+    desc.textContent = pkg.description;
+    info.appendChild(desc);
+
+    const right = document.createElement('div');
+    right.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0';
+
+    const price = document.createElement('div');
+    price.className = 'package-price';
+    price.textContent = pkg.price;
+
+    const dur = document.createElement('div');
+    dur.style.cssText = 'font-size:11px;color:var(--muted)';
+    if (pkg.type === 'unlimited') {
+      dur.textContent = pkg.duration_days <= 14 ? 'Valid for ' + pkg.duration_days + ' days'
+        : pkg.duration_days <= 31 ? 'Valid for 1 month' : 'Valid for 3 months';
+    } else {
+      dur.textContent = pkg.duration_days >= 365 ? 'Valid for 12 months' : 'Valid for ' + pkg.duration_days + ' days';
+    }
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary btn-sm';
+    btn.textContent = 'Purchase';
+    btn.addEventListener('click', () => openBuyModal(pkg));
+
+    right.appendChild(price);
+    right.appendChild(dur);
+    right.appendChild(btn);
+
+    card.appendChild(info);
+    card.appendChild(right);
+    list.appendChild(card);
+  });
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+function renderPaymentNotice() {
+  const notice = document.getElementById('paymentNotice');
+  if (!PciPayments.isMock()) { notice.setAttribute('hidden', ''); return; }
+  document.getElementById('paymentNoticeText').textContent =
+    'Simulated purchases — no payment is taken and no card details are collected. ' +
+    'Packages added here are stored on this device only.';
+  notice.removeAttribute('hidden');
+}
+
+renderCreditDisplay();
+
 Promise.all([
   fetch('data/packages.json', { cache: 'no-store' }).then(r => r.json()),
-  fetch('data/categories.json', { cache: 'no-store' }).then(r => r.json())
+  fetch('data/categories.json', { cache: 'no-store' }).then(r => r.json()),
+  PciPayments.init()
 ])
   .then(([pkgData, catData]) => {
-    const catMap = {};
     catData.categories.forEach(c => { catMap[c.id] = c; });
-
-    const list = document.getElementById('packageList');
-    list.innerHTML = '';
-    pkgData.packages
-      .filter(p => p.active)
-      .forEach(pkg => {
-        const card = document.createElement('div');
-        card.className = 'package-card';
-
-        const info = document.createElement('div');
-        info.className = 'package-info';
-
-        const nameLine = document.createElement('div');
-        nameLine.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px';
-
-        const name = document.createElement('div');
-        name.className = 'package-name';
-        name.textContent = pkg.name;
-
-        const pill = document.createElement('span');
-        pill.className = 'package-credits-pill';
-        pill.textContent = pkg.type === 'unlimited' ? 'Unlimited' : pkg.credits + ' credit' + (pkg.credits !== 1 ? 's' : '');
-
-        nameLine.appendChild(name);
-        nameLine.appendChild(pill);
-        info.appendChild(nameLine);
-
-        if (pkg.eligible_categories && pkg.eligible_categories.length > 0) {
-          const catRow = document.createElement('div');
-          catRow.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px';
-          pkg.eligible_categories.forEach(catId => {
-            const cat = catMap[catId];
-            const catPill = document.createElement('span');
-            catPill.style.cssText = `font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--radius-pill);background:var(--cls-${cat ? cat.color : 'gray'}-tint,var(--gray-100));color:var(--text)`;
-            catPill.textContent = cat ? cat.name : catId;
-            catRow.appendChild(catPill);
-          });
-          info.appendChild(catRow);
-        }
-
-        const desc = document.createElement('div');
-        desc.className = 'package-desc';
-        desc.textContent = pkg.description;
-        info.appendChild(desc);
-
-        const right = document.createElement('div');
-        right.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0';
-
-        const price = document.createElement('div');
-        price.className = 'package-price';
-        price.textContent = pkg.price;
-
-        const dur = document.createElement('div');
-        dur.style.cssText = 'font-size:11px;color:var(--muted)';
-        if (pkg.type === 'unlimited') {
-          dur.textContent = pkg.duration_days <= 14 ? 'Valid for ' + pkg.duration_days + ' days'
-            : pkg.duration_days <= 31 ? 'Valid for 1 month' : 'Valid for 3 months';
-        } else {
-          dur.textContent = pkg.duration_days >= 365 ? 'Valid for 12 months' : 'Valid for ' + pkg.duration_days + ' days';
-        }
-
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-primary btn-sm';
-        btn.textContent = 'Purchase';
-        btn.disabled = true;
-        btn.title = 'Payment integration coming soon';
-        btn.style.opacity = '0.5';
-        btn.addEventListener('click', () => showToast('Payment integration coming soon.', ''));
-
-        right.appendChild(price);
-        right.appendChild(dur);
-        right.appendChild(btn);
-
-        card.appendChild(info);
-        card.appendChild(right);
-        list.appendChild(card);
-      });
+    renderPaymentNotice();
+    renderWallet();
+    renderCatalog(pkgData.packages);
   })
   .catch(() => {
+    document.getElementById('walletList').innerHTML =
+      '<div style="color:var(--danger);font-size:13px">Failed to load your packages.</div>';
     document.getElementById('packageList').innerHTML =
       '<div style="color:var(--danger);font-size:13px">Failed to load packages.</div>';
   });

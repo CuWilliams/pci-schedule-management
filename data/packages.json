@@ -128,8 +128,8 @@
       "duration_days": 365,
       "price_cents": 27600,
       "price": "CA$276.00",
-      "description": "Team training session for hockey teams with Athletic Performance players. Valid for 12 months.",
-      "eligible_categories": ["athletic", "athletic_virtual"],
+      "description": "Team training session for hockey teams with Athletic Performance players. Valid for 12 months. Arranged directly with the studio.",
+      "eligible_categories": ["private_team"],
       "active": true
     },
     {
@@ -140,8 +140,8 @@
       "duration_days": 365,
       "price_cents": 8000,
       "price": "CA$80.00",
-      "description": "Single private one-on-one training session. Valid for 12 months from purchase.",
-      "eligible_categories": ["athletic", "athletic_virtual"],
+      "description": "Single private one-on-one training session. Valid for 12 months from purchase. Arranged directly with the studio.",
+      "eligible_categories": ["private_team"],
       "active": true
     },
     {
@@ -152,8 +152,8 @@
       "duration_days": 365,
       "price_cents": 23500,
       "price": "CA$235.00",
-      "description": "Team training session. Valid for 12 months from purchase.",
-      "eligible_categories": ["athletic", "athletic_virtual"],
+      "description": "Team training session. Valid for 12 months from purchase. Arranged directly with the studio.",
+      "eligible_categories": ["private_team"],
       "active": true
     }
   ]

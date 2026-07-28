@@ -86,8 +86,21 @@
       "location_id": "stjohns",
       "credits": 8,
       "instructor_id": null,
-      "eligible_categories": [],
-      "active_packages": [],
+      "packages": [
+        {
+          "wallet_id": "wal_seed_m001_a",
+          "package_id": "pkg_athletic_12",
+          "name": "12 Credits for Athletic Development",
+          "type": "credits",
+          "credits_total": 12,
+          "credits_remaining": 8,
+          "start_date": "2026-03-15",
+          "end_date": "2027-03-15",
+          "eligible_categories": ["athletic", "athletic_virtual"],
+          "payment_ref": null,
+          "granted_at": "2026-03-15"
+        }
+      ],
       "active": true
     },
     {
@@ -99,8 +112,21 @@
       "location_id": "clarenville",
       "credits": 3,
       "instructor_id": null,
-      "eligible_categories": [],
-      "active_packages": [],
+      "packages": [
+        {
+          "wallet_id": "wal_seed_m002_a",
+          "package_id": "pkg_studio_virtual_5",
+          "name": "5 Credits - Studio/Virtual",
+          "type": "credits",
+          "credits_total": 5,
+          "credits_remaining": 3,
+          "start_date": "2026-05-02",
+          "end_date": "2027-05-02",
+          "eligible_categories": ["functional_hiit", "cardio_core", "flexibility_mobility", "virtual"],
+          "payment_ref": null,
+          "granted_at": "2026-05-02"
+        }
+      ],
       "active": true
     },
     {
@@ -112,8 +138,34 @@
       "location_id": "ascend",
       "credits": 8,
       "instructor_id": null,
-      "eligible_categories": [],
-      "active_packages": [],
+      "packages": [
+        {
+          "wallet_id": "wal_seed_m003_a",
+          "package_id": "pkg_studio_virtual_10",
+          "name": "10 Credits - Studio/Virtual",
+          "type": "credits",
+          "credits_total": 10,
+          "credits_remaining": 5,
+          "start_date": "2026-06-10",
+          "end_date": "2027-06-10",
+          "eligible_categories": ["functional_hiit", "cardio_core", "flexibility_mobility", "virtual"],
+          "payment_ref": null,
+          "granted_at": "2026-06-10"
+        },
+        {
+          "wallet_id": "wal_seed_m003_b",
+          "package_id": "pkg_athletic_8",
+          "name": "8 Credits for Athletic Development",
+          "type": "credits",
+          "credits_total": 8,
+          "credits_remaining": 3,
+          "start_date": "2026-04-20",
+          "end_date": "2027-04-20",
+          "eligible_categories": ["athletic", "athletic_virtual"],
+          "payment_ref": null,
+          "granted_at": "2026-04-20"
+        }
+      ],
       "active": true
     },
     {
@@ -125,13 +177,32 @@
       "location_id": "stjohns",
       "credits": 0,
       "instructor_id": null,
-      "eligible_categories": [],
-      "active_packages": [
+      "packages": [
         {
+          "wallet_id": "wal_seed_m004_a",
           "package_id": "pkg_unlimited_1m",
+          "name": "1 Month Unlimited - Studio/Virtual",
+          "type": "unlimited",
+          "credits_total": null,
+          "credits_remaining": null,
           "start_date": "2026-07-01",
           "end_date": "2026-08-01",
-          "eligible_categories": ["functional_hiit", "cardio_core", "flexibility_mobility", "virtual"]
+          "eligible_categories": ["functional_hiit", "cardio_core", "flexibility_mobility", "virtual"],
+          "payment_ref": null,
+          "granted_at": "2026-07-01"
+        },
+        {
+          "wallet_id": "wal_seed_m004_b",
+          "package_id": "pkg_studio_virtual_5",
+          "name": "5 Credits - Studio/Virtual",
+          "type": "credits",
+          "credits_total": 5,
+          "credits_remaining": 2,
+          "start_date": "2025-06-30",
+          "end_date": "2026-06-30",
+          "eligible_categories": ["functional_hiit", "cardio_core", "flexibility_mobility", "virtual"],
+          "payment_ref": null,
+          "granted_at": "2025-06-30"
         }
       ],
       "active": true

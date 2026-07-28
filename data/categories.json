@@ -1,10 +1,14 @@
 {
+  "_comment": "color drives the small text-labelled category pills in buy-credits.html and admin.html only — never a schedule block. All 7 --cls-* tokens were already in use, so pro_virtual reuses blue and private_team reuses red; the pills always carry a text label so the reuse is cosmetic.",
   "categories": [
     { "id": "functional_hiit",     "name": "Functional HIIT",        "color": "orange", "type_ids": ["functional_hiit"] },
     { "id": "cardio_core",         "name": "Cardio & Core",           "color": "red",    "type_ids": ["cardio_core"] },
     { "id": "flexibility_mobility","name": "Flexibility & Mobility",  "color": "green",  "type_ids": ["flexibility_mobility"] },
     { "id": "virtual",             "name": "Virtual",                 "color": "blue",   "type_ids": ["functional_hiit_online", "cardio_core_online", "flexibility_mobility_online"] },
-    { "id": "athletic",            "name": "Athletic",                "color": "purple", "type_ids": ["athletic", "pro"] },
-    { "id": "athletic_virtual",    "name": "Athletic Virtual",        "color": "yellow", "type_ids": ["athletic_online", "pro_online"] }
+    { "id": "athletic",            "name": "Athletic",                "color": "purple", "type_ids": ["athletic"] },
+    { "id": "athletic_virtual",    "name": "Athletic Virtual",        "color": "yellow", "type_ids": ["athletic_online"] },
+    { "id": "pro",                 "name": "PRO",                     "color": "gray",   "type_ids": ["pro"] },
+    { "id": "pro_virtual",         "name": "PRO Virtual",             "color": "blue",   "type_ids": ["pro_online"] },
+    { "id": "private_team",        "name": "Private & Team",          "color": "red",    "type_ids": ["private", "team_training"] }
   ]
 }

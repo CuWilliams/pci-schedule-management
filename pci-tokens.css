@@ -772,6 +772,118 @@ body.dev-mobile .nav-drawer.open { display: block; }
   margin-right: var(--sp-3);
 }
 
+/* ── Category pill ────────────────────────────────────────────────────────── */
+/* Names the class categories a package covers. Shared by the buy-credits
+   catalog, the My Packages wallet cards, and the admin packages tab, so an
+   entitlement reads identically everywhere. Tint is set inline per category. */
+.cat-pill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--gray-100);
+  color: var(--text);
+  white-space: nowrap;
+}
+.cat-pill-row {
+  display: flex;
+  gap: var(--sp-1);
+  flex-wrap: wrap;
+}
+
+/* ── Wallet card (My Packages) ────────────────────────────────────────────── */
+/* One card per package the member holds — each with its own remaining credits
+   or days, because credits are never pooled across packages. */
+.wallet-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4) var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--border);
+  margin-bottom: var(--sp-3);
+}
+.wallet-card--unlimited { border-color: var(--accent); }
+.wallet-card--expired   { opacity: 0.55; border-style: dashed; }
+
+.wallet-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+.wallet-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 0;
+}
+.wallet-card-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--gray-200);
+  color: var(--gray-700);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.wallet-card-badge--unlimited { background: var(--accent); color: var(--on-dark-primary); }
+.wallet-card-badge--expired   { background: var(--gray-300); color: var(--gray-700); }
+
+.wallet-card-remaining {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--sp-2);
+}
+.wallet-card-remaining.low   { color: var(--warn); }
+.wallet-card-remaining.empty { color: var(--danger); }
+
+.wallet-meter {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--gray-200);
+  overflow: hidden;
+  margin-bottom: var(--sp-3);
+}
+.wallet-meter-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--success);
+  transition: width 0.2s;
+}
+.wallet-meter-fill.low   { background: var(--warn); }
+.wallet-meter-fill.empty { background: var(--danger); }
+
+.wallet-card-expiry {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: var(--sp-2);
+}
+.wallet-empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5);
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: var(--sp-4);
+}
+.wallet-toggle-expired {
+  background: none;
+  border: none;
+  padding: 0 0 var(--sp-3);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 /* ── Coming-soon notice ───────────────────────────────────────────────────── */
 .coming-soon-notice {
   background: var(--cls-yellow-tint);
