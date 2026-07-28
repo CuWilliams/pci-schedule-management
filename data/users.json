@@ -42,7 +42,7 @@
       "location_id": null,
       "credits": null,
       "instructor_id": "brendan_mccarthy",
-      "active": true
+      "active": false
     },
     {
       "id": "inst_003",
@@ -75,6 +75,17 @@
       "location_id": null,
       "credits": null,
       "instructor_id": "greg_pittman",
+      "active": true
+    },
+    {
+      "id": "inst_006",
+      "email": "liam@powerconditioning.ca",
+      "password_mock": "instructor1",
+      "display_name": "Liam Bridger",
+      "role": "instructor",
+      "location_id": null,
+      "credits": null,
+      "instructor_id": "liam_bridger",
       "active": true
     },
     {

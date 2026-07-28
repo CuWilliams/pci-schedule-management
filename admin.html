@@ -898,6 +898,17 @@ function nameToId(name) {
   return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 }
 
+// Instructors need a color for the schedule/instructor filter pill dots.
+// Pick the least-used token from INSTRUCTOR_HEX (pci-shared.js) so a new
+// instructor never lands on the '#999' fallback.
+function nextInstructorColor() {
+  const palette = Object.keys(INSTRUCTOR_HEX);
+  const used = {};
+  palette.forEach(c => used[c] = 0);
+  state.instructors.forEach(i => { if (i.color in used) used[i.color]++; });
+  return palette.reduce((best, c) => used[c] < used[best] ? c : best, palette[0]);
+}
+
 function resolveInstructorNames(ids) {
   if (!ids || ids.length === 0) return '';
   return ids.map(id => {
@@ -1370,11 +1381,13 @@ function renderInstructors() {
     const initials = inst.display_name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
 
     const isActive = inst.active !== false;
+    // Mirror the filter-pill dot color so admins can see which accent each instructor owns.
+    const instHex = INSTRUCTOR_HEX[inst.color] || '#999';
 
     const row = document.createElement('div');
     row.className = 'instructor-row' + (isActive ? '' : ' instructor-row--inactive');
     row.innerHTML = `
-      <div class="instructor-avatar">${initials}</div>
+      <div class="instructor-avatar" style="border:2px solid ${instHex};color:${instHex}">${initials}</div>
       <div style="flex:1;min-width:0">
         <div class="instructor-name">${inst.display_name}${isActive ? '' : ' <span class="inactive-badge">Inactive</span>'}</div>
         <div class="instructor-meta">
@@ -1435,7 +1448,7 @@ function saveInstructor() {
     if (state.instructors.find(i => i.id === newId)) {
       alert('An instructor with a similar name already exists.'); return;
     }
-    state.instructors.push({ id: newId, display_name: name, active: true, bio: null, photo_url: null });
+    state.instructors.push({ id: newId, display_name: name, color: nextInstructorColor(), active: true, bio: null, photo_url: null });
   } else {
     const inst = state.instructors.find(i => i.id === id);
     if (inst) {
